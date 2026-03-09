@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware: Las partes de la PC - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #f472b6 50%, #2563eb 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            transition: all 0.5s ease;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+            border-color: white;
+        }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .error-shake { animation: shake 0.4s; }
+
+        /* Estilos Memoria Corregidos */
+        .memory-card {
+            aspect-ratio: 1/1;
+            perspective: 1000px;
+        }
+        .memory-card-inner {
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.6s; transform-style: preserve-3d;
+        }
+        .memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
+        .memory-front, .memory-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .memory-front { background: #38bdf8; color: white; font-size: 2rem; border: 2px solid white; }
+        .memory-back { background: white; color: #1e293b; transform: rotateY(180deg); font-weight: bold; text-align: center; padding: 5px; border: 2px solid white; }
+
+        .drop-zone {
+            min-height: 60px;
+            border: 3px dashed rgba(255,255,255,0.4);
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10">
+        
+        <header class="glass-panel p-8 mb-10 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl">🛠️</span>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black">Hardware</h1>
+                    <p class="text-xl font-bold text-sky-200">Las partes de la computadora</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-gray-200 transition">⬅️ Volver</a>
+        </header>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-sky-400">
+            <h2 class="text-3xl font-black mb-4">¿Qué es el Hardware?</h2>
+            <p class="text-2xl font-bold mb-6 text-pink-100 italic">"El hardware son todas las partes de la computadora que podemos VER y TOCAR."</p>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="text-center bg-white/10 p-4 rounded-xl">
+                    <span class="text-5xl block mb-2">🖥️</span><p class="font-bold">Monitor</p>
+                </div>
+                <div class="text-center bg-white/10 p-4 rounded-xl">
+                    <span class="text-5xl block mb-2">⌨️</span><p class="font-bold">Teclado</p>
+                </div>
+                <div class="text-center bg-white/10 p-4 rounded-xl">
+                    <span class="text-5xl block mb-2">🖱️</span><p class="font-bold">Mouse</p>
+                </div>
+                <div class="text-center bg-white/10 p-4 rounded-xl">
+                    <span class="text-5xl block mb-2">📦</span><p class="font-bold">Gabinete</p>
+                </div>
+                <div class="text-center bg-white/10 p-4 rounded-xl">
+                    <span class="text-5xl block mb-2">🔊</span><p class="font-bold">Parlantes</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-pink-400">
+            <h2 class="text-3xl font-black mb-6">¿Para qué sirven?</h2>
+            <p class="mb-6 text-lg">Haz clic en cada nombre para descubrir su función:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button onclick="info('Monitor', 'Muestra la información y los dibujos en la pantalla.')" class="card-btn p-6 rounded-2xl text-xl font-black">🖥️ Monitor</button>
+                <button onclick="info('Teclado', 'Sirve para escribir letras, números y símbolos.')" class="card-btn p-6 rounded-2xl text-xl font-black">⌨️ Teclado</button>
+                <button onclick="info('Mouse', 'Sirve para mover el cursor y hacer clic en las cosas.')" class="card-btn p-6 rounded-2xl text-xl font-black">🖱️ Mouse</button>
+                <button onclick="info('Gabinete', 'Contiene las piezas internas que hacen funcionar la compu.')" class="card-btn p-6 rounded-2xl text-xl font-black">📦 Gabinete</button>
+                <button onclick="info('Parlantes', 'Reproducen los sonidos y la música de la compu.')" class="card-btn p-6 rounded-2xl text-xl font-black">🔊 Parlantes</button>
+            </div>
+            <div id="display-info" class="mt-8 p-6 bg-white/20 rounded-2xl text-2xl font-bold text-center min-h-[80px] flex items-center justify-center border-2 border-white/30 hidden"></div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-purple-500">
+            <h2 class="text-3xl font-black mb-4">Misión 1: Colocar Etiquetas</h2>
+            <p class="mb-6">Haz clic en una palabra y luego en el signo de pregunta <strong>(?)</strong> correcto:</p>
+            
+            <div class="flex flex-wrap gap-4 mb-8" id="etiquetas-drag">
+                <div onclick="selectLabel(this)" class="bg-white text-blue-900 px-6 py-2 rounded-full font-bold cursor-pointer hover:scale-105 transition shadow-lg border-2 border-transparent" data-target="m">Monitor</div>
+                <div onclick="selectLabel(this)" class="bg-white text-blue-900 px-6 py-2 rounded-full font-bold cursor-pointer hover:scale-105 transition shadow-lg border-2 border-transparent" data-target="t">Teclado</div>
+                <div onclick="selectLabel(this)" class="bg-white text-blue-900 px-6 py-2 rounded-full font-bold cursor-pointer hover:scale-105 transition shadow-lg border-2 border-transparent" data-target="mo">Mouse</div>
+                <div onclick="selectLabel(this)" class="bg-white text-blue-900 px-6 py-2 rounded-full font-bold cursor-pointer hover:scale-105 transition shadow-lg border-2 border-transparent" data-target="g">Gabinete</div>
+                <div onclick="selectLabel(this)" class="bg-white text-blue-900 px-6 py-2 rounded-full font-bold cursor-pointer hover:scale-105 transition shadow-lg border-2 border-transparent" data-target="p">Parlantes</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-black/20 p-6 rounded-3xl">
+                <div class="text-8xl text-center drop-shadow-lg">🖥️📦⌨️🖱️</div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4"><span>Pantalla:</span> <div onclick="checkDrop(this, 'm')" class="drop-zone w-full cursor-pointer">?</div></div>
+                    <div class="flex items-center gap-4"><span>CPU / Caja:</span> <div onclick="checkDrop(this, 'g')" class="drop-zone w-full cursor-pointer">?</div></div>
+                    <div class="flex items-center gap-4"><span>Periférico de escritura:</span> <div onclick="checkDrop(this, 't')" class="drop-zone w-full cursor-pointer">?</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-green-400">
+            <h2 class="text-3xl font-black mb-6">Misión 2: ¿Es Hardware?</h2>
+            <p class="mb-4">Toca solo las cosas que se pueden tocar físicamente:</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="esHardware(this, true)" class="card-btn p-4 rounded-xl font-bold">🖱️ Mouse</button>
+                <button onclick="esHardware(this, false)" class="card-btn p-4 rounded-xl font-bold">🎨 Paint</button>
+                <button onclick="esHardware(this, true)" class="card-btn p-4 rounded-xl font-bold">⌨️ Teclado</button>
+                <button onclick="esHardware(this, false)" class="card-btn p-4 rounded-xl font-bold">🎮 Juego</button>
+                <button onclick="esHardware(this, true)" class="card-btn p-4 rounded-xl font-bold">🔊 Parlantes</button>
+                <button onclick="esHardware(this, false)" class="card-btn p-4 rounded-xl font-bold">🌐 Internet</button>
+                <button onclick="esHardware(this, true)" class="card-btn p-4 rounded-xl font-bold">🖥️ Monitor</button>
+                <button onclick="esHardware(this, false)" class="card-btn p-4 rounded-xl font-bold">🤖 Algoritmo</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-yellow-400">
+            <h2 class="text-3xl font-black mb-6">Misión 3: Memoria de Hardware</h2>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="memory-board">
+                </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-orange-500 text-center">
+            <h2 class="text-3xl font-black mb-6">Video Educativo</h2>
+            <div class="bg-black aspect-video rounded-2xl overflow-hidden mb-6 shadow-2xl">
+                <video controls class="w-full h-full">
+                    <source src="hardware.mp4" type="video/mp4">
+                    Tu navegador no soporta el video.
+                </video>
+            </div>
+            <button class="bg-white text-blue-900 px-8 py-3 rounded-xl font-black shadow-lg">Ver explicación en video</button>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-red-500">
+            <h2 class="text-3xl font-black mb-8">Gran Quiz Final</h2>
+            <div id="quiz-box">
+                <p id="q-text" class="text-2xl font-bold mb-6"></p>
+                <div id="q-options" class="space-y-4"></div>
+            </div>
+            <div id="quiz-result" class="hidden text-center mt-8">
+                <span class="text-7xl mb-4 block">🏆</span>
+                <h3 class="text-3xl font-black">¡Clase Terminada!</h3>
+                <p class="text-4xl font-black text-pink-400 mt-4" id="final-score"></p>
+                <button onclick="location.reload()" class="mt-8 bg-white text-blue-900 font-black px-8 py-3 rounded-xl hover:scale-105 transition">Jugar de nuevo</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-yellow-400">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-5xl">🤔</span>
+                <div>
+                    <h2 class="text-3xl font-black text-yellow-400">Reflexión Final</h2>
+                    <p class="text-lg font-bold text-white/80">Completá el formulario para que tu respuesta le llegue al Profe Braian.</p>
+                </div>
+            </div>
+            
+            <div class="max-w-3xl mx-auto px-2 md:px-0">
+                <div class="rounded-2xl overflow-hidden bg-white shadow-2xl border-4 border-yellow-400/30">
+                    <iframe 
+                        src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" 
+                        width="100%" 
+                        height="700" 
+                        frameborder="0" 
+                        marginheight="0" 
+                        marginwidth="0">
+                        Cargando formulario...
+                    </iframe>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-yellow-200 font-bold italic drop-shadow-md">
+                    🚀 ¡No te olvides de darle al botón "Enviar" antes de cerrar la página!
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- TEMA ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('btnT').innerHTML = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+        }
+
+        // --- INFO ---
+        function info(titulo, texto) {
+            const box = document.getElementById('display-info');
+            box.classList.remove('hidden');
+            box.innerHTML = `<strong>${titulo}:</strong> ${texto}`;
+        }
+
+        // --- ETIQUETADO ---
+        let selectedLabel = null;
+        function selectLabel(el) {
+            document.querySelectorAll('#etiquetas-drag div').forEach(d => d.classList.remove('ring-4', 'ring-pink-400'));
+            el.classList.add('ring-4', 'ring-pink-400');
+            selectedLabel = el;
+        }
+        function checkDrop(el, target) {
+            if(!selectedLabel) return;
+            if(selectedLabel.dataset.target === target) {
+                el.innerHTML = "✅ " + selectedLabel.innerText;
+                el.classList.add('bg-green-500/50');
+                selectedLabel.style.visibility = 'hidden';
+                selectedLabel = null;
+            } else {
+                el.classList.add('error-shake', 'bg-red-500/50');
+                setTimeout(() => el.classList.remove('error-shake', 'bg-red-500/50'), 500);
+            }
+        }
+
+        // --- ES HARDWARE ---
+        function esHardware(btn, correct) {
+            if(correct) {
+                btn.classList.add('bg-green-500', 'text-white');
+                btn.innerHTML += ' ✅';
+                btn.disabled = true;
+            } else {
+                btn.classList.add('error-shake', 'bg-red-500');
+                setTimeout(() => btn.classList.remove('error-shake', 'bg-red-500'), 500);
+            }
+        }
+
+        // --- MEMORIA (CORREGIDA) ---
+        const parejas = [
+            { id: 1, v: '🖥️' }, { id: 1, v: 'Monitor' },
+            { id: 2, v: '⌨️' }, { id: 2, v: 'Teclado' },
+            { id: 3, v: '🖱️' }, { id: 3, v: 'Mouse' },
+            { id: 4, v: '📦' }, { id: 4, v: 'Gabinete' },
+            { id: 5, v: '🔊' }, { id: 5, v: 'Parlantes' },
+            { id: 6, v: '🎧' }, { id: 6, v: 'Auricular' }
+        ];
+
+        let board = document.getElementById('memory-board');
+        let flipped = [];
+        let matches = 0;
+        
+        parejas.sort(() => Math.random() - 0.5).forEach((item) => {
+            const card = document.createElement('div');
+            card.className = 'memory-card cursor-pointer';
+            card.dataset.id = item.id;
+            card.innerHTML = `<div class="memory-card-inner"><div class="memory-front">?</div><div class="memory-back text-xs md:text-sm">${item.v}</div></div>`;
+            
+            card.onclick = () => {
+                if(flipped.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                    card.classList.add('flipped');
+                    flipped.push(card);
+
+                    if(flipped.length === 2) {
+                        if(flipped[0].dataset.id === flipped[1].dataset.id) {
+                            flipped.forEach(c => {
+                                c.classList.add('matched');
+                                c.querySelector('.memory-back').style.background = '#10b981';
+                                c.querySelector('.memory-back').style.color = 'white';
+                            });
+                            flipped = [];
+                            matches++;
+                        } else {
+                            setTimeout(() => {
+                                flipped.forEach(c => c.classList.remove('flipped'));
+                                flipped = [];
+                            }, 1000);
+                        }
+                    }
+                }
+            };
+            board.appendChild(card);
+        });
+
+        // --- QUIZ ---
+        const quizData = [
+            { q: "¿Qué es el hardware?", o: ["Las partes que se pueden tocar", "Los programas invisibles", "El internet"], a: 0 },
+            { q: "¿Cuál de estos es una pieza de hardware?", o: ["Teclado", "Paint", "Juego de Roblox"], a: 0 },
+            { q: "¿Para qué sirve el monitor?", o: ["Para escribir cuentos", "Para ver las imágenes", "Para escuchar música"], a: 1 },
+            { q: "¿En qué parte se guardan las piezas internas?", o: ["En el Mouse", "En el Gabinete", "En los Parlantes"], a: 1 },
+            { q: "Si toco el mouse, ¿qué estoy tocando?", o: ["Hardware", "Software", "Un cable solamente"], a: 0 }
+        ];
+        let qIdx = 0, score = 0;
+        function loadQ() {
+            if(qIdx >= quizData.length) {
+                document.getElementById('quiz-box').classList.add('hidden');
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('final-score').innerText = `${score} / 5`;
+                return;
+            }
+            const data = quizData[qIdx];
+            document.getElementById('q-text').innerText = data.q;
+            const opt = document.getElementById('q-options');
+            opt.innerHTML = "";
+            data.o.forEach((o, i) => {
+                const b = document.createElement('button');
+                b.className = "w-full p-4 glass-panel text-left font-bold hover:bg-white/20 transition";
+                b.innerText = o;
+                b.onclick = () => {
+                    if(i === data.a) score++;
+                    qIdx++;
+                    loadQ();
+                };
+                opt.appendChild(b);
+            });
+        }
+        loadQ();
+    </script>
+</body>
+</html>
