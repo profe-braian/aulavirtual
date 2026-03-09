@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3: Trabajo Colaborativo - 1er Año</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #1e3a8a 0%, #3b0764 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --texto-principal: #f8fafc;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #171717 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .step-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/10 p-3 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10 md:pt-4">
+        
+        <header class="glass-panel p-8 mb-10 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up">
+            <div class="flex items-center gap-5">
+                <span class="text-6xl drop-shadow-md">🤝</span>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-black mb-2 leading-tight">Clase 3 — Compartir archivos y trabajo colaborativo</h1>
+                    <p class="text-lg font-bold text-blue-300">Trabajo en grupo y uso responsable de documentos compartidos en la nube.</p>
+                </div>
+            </div>
+            <a href="index1sec.html" class="bg-white text-blue-900 font-bold px-8 py-3 rounded-xl hover:bg-blue-100 transition shadow-lg flex items-center gap-2 shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-blue-400" style="animation-delay: 0.1s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔗</span>
+                <h2 class="text-2xl font-black">¿Qué significa compartir un archivo?</h2>
+            </div>
+            <p class="text-lg mb-4 leading-relaxed">
+                A diferencia de los archivos tradicionales (como un Word en un pendrive) que solo puede usar una persona a la vez, <strong>los documentos en la nube pueden ser utilizados por varias personas al mismo tiempo</strong>.
+            </p>
+            <p class="text-lg mb-6 leading-relaxed">
+                Google Drive permite compartir tus archivos enviando una invitación por correo electrónico o generando un enlace. Esta función es fundamental en la escuela para:
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-500/30 flex items-center gap-3">
+                    <span class="text-2xl">📤</span> <p class="font-bold">Enviar trabajos al profesor.</p>
+                </div>
+                <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-500/30 flex items-center gap-3">
+                    <span class="text-2xl">👥</span> <p class="font-bold">Realizar actividades grupales simultáneas.</p>
+                </div>
+                <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-500/30 flex items-center gap-3">
+                    <span class="text-2xl">📝</span> <p class="font-bold">Recibir correcciones o sugerencias.</p>
+                </div>
+                <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-500/30 flex items-center gap-3">
+                    <span class="text-2xl">🤝</span> <p class="font-bold">Colaborar aportando ideas en un solo lugar.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-emerald-400" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔐</span>
+                <h2 class="text-2xl font-black">Permisos al compartir documentos</h2>
+            </div>
+            <p class="text-lg mb-6">
+                No siempre queremos que quien reciba nuestro archivo pueda borrar o cambiar las cosas. Por eso, al compartir, debes elegir el <strong>rol correcto</strong>:
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white/5 p-6 rounded-2xl border-t-4 border-gray-400">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-black">Lector</h3>
+                        <span class="text-3xl">👁️</span>
+                    </div>
+                    <p class="opacity-90 text-sm mb-4">La persona puede abrir y leer el documento, pero <strong>no puede modificar ni una coma</strong>.</p>
+                    <p class="text-xs font-bold text-gray-300 bg-black/20 p-2 rounded">Ideal para: Compartir apuntes terminados.</p>
+                </div>
+                
+                <div class="bg-white/5 p-6 rounded-2xl border-t-4 border-yellow-400">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-black">Comentador</h3>
+                        <span class="text-3xl">💬</span>
+                    </div>
+                    <p class="opacity-90 text-sm mb-4">Puede leer y dejar "notas" al margen o <strong>sugerir cambios</strong> sin alterar el texto original.</p>
+                    <p class="text-xs font-bold text-yellow-200 bg-black/20 p-2 rounded">Ideal para: Entregar borradores al profesor.</p>
+                </div>
+
+                <div class="bg-white/5 p-6 rounded-2xl border-t-4 border-emerald-400">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-black">Editor</h3>
+                        <span class="text-3xl">✏️</span>
+                    </div>
+                    <p class="opacity-90 text-sm mb-4">Tiene control total. <strong>Puede modificar, borrar o agregar</strong> contenido al documento.</p>
+                    <p class="text-xs font-bold text-emerald-300 bg-black/20 p-2 rounded">Ideal para: Trabajos prácticos en grupo.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <section class="glass-panel p-8 fade-up" style="animation-delay: 0.3s;">
+                <h2 class="text-2xl font-black mb-6 text-blue-200">¿Cómo compartir un archivo?</h2>
+                <div class="space-y-4">
+                    <div class="flex gap-4 items-center"><div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold shrink-0">1</div><p>Abre el documento en Google Docs o Drive.</p></div>
+                    <div class="flex gap-4 items-center"><div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold shrink-0">2</div><p>Presiona el botón azul grande <strong>"Compartir"</strong> arriba a la derecha.</p></div>
+                    <div class="flex gap-4 items-center"><div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold shrink-0">3</div><p>Escribe el correo institucional de la persona.</p></div>
+                    <div class="flex gap-4 items-center"><div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold shrink-0">4</div><p>Elige el <strong>tipo de permiso</strong> (Lector, Comentador, Editor).</p></div>
+                    <div class="flex gap-4 items-center"><div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold shrink-0">5</div><p>Haz clic en "Enviar".</p></div>
+                </div>
+                <p class="mt-6 text-sm opacity-80 italic">También puedes copiar el enlace ("Copiar vínculo") y pasarlo, pero asegúrate de ajustar quién puede acceder a él.</p>
+            </section>
+
+            <section class="glass-panel p-8 fade-up flex flex-col justify-between" style="animation-delay: 0.4s;">
+                <div>
+                    <h2 class="text-2xl font-black mb-4 text-purple-200">Magia en tiempo real</h2>
+                    <p class="mb-4 opacity-90">Cuando varias personas editan a la vez, vas a ver cursores de distintos colores moviéndose por la pantalla. Google guarda automáticamente cada letra que escriben.</p>
+                </div>
+                
+                <div class="bg-gradient-to-r from-orange-500/80 to-red-500/80 p-5 rounded-xl border border-orange-300 shadow-lg mt-4">
+                    <h3 class="font-black flex items-center gap-2 mb-2"><span class="text-2xl">🚨</span> Tip de Supervivencia</h3>
+                    <p class="text-sm">¿Alguien del grupo borró tu parte por error? ¡No entres en pánico! Ve a <strong>Archivo > Historial de versiones</strong>. Allí podrás ver quién hizo cada cambio, a qué hora, y restaurar el documento a una versión anterior.</p>
+                </div>
+            </section>
+        </div>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-yellow-400" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">⚖️</span>
+                <h2 class="text-2xl font-black">Normas para trabajar en documentos compartidos</h2>
+            </div>
+            <p class="text-lg mb-6">
+                Tener poder de "Editor" conlleva una gran responsabilidad. Para mantener el orden y no arruinar el trabajo, respetá estas reglas básicas:
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
+                <div class="bg-black/20 p-4 rounded-xl flex items-center gap-3"><span class="text-red-400">🚫</span> No borrar ni modificar el trabajo de otros compañeros sin preguntar.</div>
+                <div class="bg-black/20 p-4 rounded-xl flex items-center gap-3"><span class="text-green-400">✅</span> Escribir únicamente en el espacio o sección que te fue asignada.</div>
+                <div class="bg-black/20 p-4 rounded-xl flex items-center gap-3"><span class="text-blue-400">💬</span> Mantener un lenguaje respetuoso, incluso en los comentarios o el chat interno.</div>
+                <div class="bg-black/20 p-4 rounded-xl flex items-center gap-3"><span class="text-purple-400">📋</span> Organizar la información usando títulos y subtítulos.</div>
+                <div class="bg-black/20 p-4 rounded-xl flex items-center gap-3 sm:col-span-2"><span class="text-yellow-400">🔍</span> Leer y revisar el contenido final entre todos antes de enviarlo al profesor.</div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-4 border-fuchsia-500 shadow-[0_0_20px_rgba(217,70,239,0.2)]" style="animation-delay: 0.6s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🚀</span>
+                <h2 class="text-3xl font-black text-fuchsia-300">Actividad: Trabajo Colaborativo</h2>
+            </div>
+            
+            <p class="text-xl mb-6 font-bold">Reúnanse en pequeños grupos. Deberán coordinarse para hacer lo siguiente:</p>
+            
+            <div class="bg-fuchsia-900/30 p-6 rounded-2xl mb-6 border border-fuchsia-500/30">
+                <h3 class="font-black text-xl mb-4 text-fuchsia-200">Fase 1: Preparación</h3>
+                <ul class="list-decimal list-inside space-y-2 opacity-90 text-lg">
+                    <li><strong>Un integrante</strong> crea un documento en Google Docs.</li>
+                    <li>Nombra el archivo como: <code class="bg-black/30 px-2 py-1 rounded text-fuchsia-100">Uso responsable de la tecnología</code></li>
+                    <li>Lo <strong>comparte</strong> con los correos del resto del grupo otorgándoles permiso de <strong>"Editor"</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="bg-white/5 p-6 rounded-2xl border-l-4 border-fuchsia-400">
+                <h3 class="font-black text-xl mb-4 text-white">Fase 2: Redacción en vivo</h3>
+                <p class="mb-4 opacity-90">Todos los integrantes deben entrar al documento y escribir simultáneamente. El documento final debe contener obligatoriamente:</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 text-center">
+                    <div class="bg-black/20 p-3 rounded-lg"><span class="block text-2xl mb-1">👍</span> 2 ventajas de la tecnología</div>
+                    <div class="bg-black/20 p-3 rounded-lg"><span class="block text-2xl mb-1">⚠️</span> 2 posibles riesgos o problemas</div>
+                    <div class="bg-black/20 p-3 rounded-lg"><span class="block text-2xl mb-1">📜</span> 2 normas de uso responsable</div>
+                </div>
+                <p class="text-sm font-bold text-fuchsia-300 text-center uppercase tracking-wide">¡Cada integrante debe aportar al menos una idea!</p>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-teal-400" style="animation-delay: 0.7s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🧠</span>
+                <h2 class="text-2xl font-black">Ejercicio de Reflexión</h2>
+            </div>
+            <p class="text-lg mb-6">
+                Al final del mismo documento que acaban de crear, respondan grupalmente estas tres preguntas:
+            </p>
+            
+            <div class="space-y-4">
+                <div class="bg-teal-900/20 border border-teal-500/30 p-4 rounded-xl text-lg font-medium">
+                    1. ¿Qué ventajas notaron al trabajar todos juntos en un mismo archivo al mismo tiempo?
+                </div>
+                <div class="bg-teal-900/20 border border-teal-500/30 p-4 rounded-xl text-lg font-medium">
+                    2. ¿Qué problemas pueden aparecer si un integrante no respeta las normas del trabajo colaborativo?
+                </div>
+                <div class="bg-teal-900/20 border border-teal-500/30 p-4 rounded-xl text-lg font-medium">
+                    3. ¿Por qué creen que es importante organizar los párrafos y títulos cuando varias personas escriben a la vez?
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.8s;">
+            <div class="bg-gradient-to-r from-blue-700 to-indigo-700 rounded-3xl p-8 text-center shadow-2xl border border-white/20 relative overflow-hidden">
+                <div class="absolute -left-4 -bottom-4 text-9xl opacity-10">🌍</div>
+                <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">Idea Clave</h2>
+                <p class="text-lg md:text-xl font-medium leading-relaxed text-blue-50 max-w-3xl mx-auto">
+                    Las herramientas digitales no solo sirven para "guardar" información, sino para <strong>conectar mentes</strong>. <br><br>
+                    Aprender a compartir archivos, gestionar permisos y trabajar colaborativamente con respeto es una de las habilidades más buscadas hoy en día en universidades y empresas de todo el mundo.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modoSecundaria', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        if (localStorage.getItem('modoSecundaria') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+    </script>
+</body>
+</html>

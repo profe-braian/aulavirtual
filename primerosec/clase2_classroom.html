@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 2: Google Classroom - 1er Año</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #1e3a8a 0%, #3b0764 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --texto-principal: #f8fafc;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #171717 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .section-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Estilo para simular una hoja de papel en la consigna */
+        .paper-box {
+            background: #fdfbf7;
+            color: #333;
+            border-left: 6px solid #fbbf24;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+        .dark-mode .paper-box {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-left: 6px solid #f59e0b;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/10 p-3 rounded-full backdrop-blur-md border border-white/20 hover:bg-white/20 transition" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10 md:pt-4">
+        
+        <header class="glass-panel p-8 mb-10 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up">
+            <div class="flex items-center gap-5">
+                <span class="text-6xl drop-shadow-md">🎓</span>
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-black mb-2 leading-tight">Clase 2 — Uso de Google Classroom</h1>
+                    <p class="text-lg font-bold text-blue-300">Gestión de tareas, lectura de consignas y entrega de trabajos digitales.</p>
+                </div>
+            </div>
+            <a href="index1sec.html" class="bg-white text-blue-900 font-bold px-8 py-3 rounded-xl hover:bg-blue-100 transition shadow-lg flex items-center gap-2 shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-blue-500" style="animation-delay: 0.1s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🏫</span>
+                <h2 class="text-2xl font-black">¿Qué es Google Classroom?</h2>
+            </div>
+            <p class="text-lg mb-6 leading-relaxed">
+                Google Classroom es una <strong>plataforma educativa</strong> utilizada para organizar el flujo de trabajo entre profesores y estudiantes. Es tu aula virtual principal. Aprender a usarla correctamente te ayudará a organizar mejor el estudio y evitar errores al momento de evaluar.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="section-card p-4 rounded-xl text-center">
+                    <span class="text-3xl block mb-2">📢</span><p class="font-bold text-sm">Publicar tareas y materiales</p>
+                </div>
+                <div class="section-card p-4 rounded-xl text-center">
+                    <span class="text-3xl block mb-2">📤</span><p class="font-bold text-sm">Entregar trabajos digitales</p>
+                </div>
+                <div class="section-card p-4 rounded-xl text-center">
+                    <span class="text-3xl block mb-2">✅</span><p class="font-bold text-sm">Recibir devoluciones</p>
+                </div>
+                <div class="section-card p-4 rounded-xl text-center">
+                    <span class="text-3xl block mb-2">🗂️</span><p class="font-bold text-sm">Mantener todo organizado</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-900/40 p-4 rounded-lg border border-blue-500/50 flex items-start gap-4">
+                <span class="text-2xl">☁️</span>
+                <p class="text-sm md:text-base">
+                    <strong>¡Importante!</strong> Classroom funciona conectado de forma nativa con <strong>Google Drive</strong>. Todos los archivos que crees o entregues a través de esta plataforma se guardan automáticamente en tu nube.
+                </p>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-purple-500" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">📑</span>
+                <h2 class="text-2xl font-black">Estructura de Google Classroom</h2>
+            </div>
+            <p class="text-lg mb-6">Al ingresar a una materia, encontrarás cuatro secciones principales en el menú superior:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="text-xl font-bold mb-2 text-purple-300 flex items-center gap-2">📰 Novedades (o Tablón)</h3>
+                    <p class="opacity-90">Es el espacio donde el profesor publica avisos importantes, recordatorios o información urgente para toda la clase. Funciona como un muro de noticias.</p>
+                </div>
+                <div class="bg-purple-900/40 p-6 rounded-2xl border-2 border-purple-400">
+                    <h3 class="text-xl font-bold mb-2 text-purple-200 flex items-center gap-2">📝 Trabajo en clase</h3>
+                    <p class="opacity-90"><strong>Es la sección más importante.</strong> Aquí se organizan las tareas, trabajos prácticos, materiales de estudio, cuestionarios y guías. <em>Debes revisarla regularmente para no perder fechas de entrega.</em></p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="text-xl font-bold mb-2 text-purple-300 flex items-center gap-2">👥 Personas</h3>
+                    <p class="opacity-90">Muestra quiénes forman parte del aula virtual: los profesores a cargo y el listado de tus compañeros de clase.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="text-xl font-bold mb-2 text-purple-300 flex items-center gap-2">💯 Calificaciones</h3>
+                    <p class="opacity-90">Te permite hacer un seguimiento de tu progreso y ver las notas o comentarios obtenidos en las actividades entregadas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-teal-400" style="animation-delay: 0.3s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">👁️</span>
+                <h2 class="text-2xl font-black">Cómo leer correctamente una consigna</h2>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1">
+                    <p class="text-lg mb-4">
+                        Uno de los errores más comunes y que más afecta las calificaciones es <strong>no leer toda la consigna</strong> antes de empezar.
+                    </p>
+                    <p class="font-bold text-teal-200 mb-2">Toda actividad suele incluir:</p>
+                    <ul class="list-disc list-inside space-y-1 opacity-90 ml-2 mb-6">
+                        <li>Título del trabajo.</li>
+                        <li>Instrucciones detalladas de lo que se pide.</li>
+                        <li>Archivos adjuntos (PDFs, videos o textos de apoyo).</li>
+                        <li>Fecha y hora límite de entrega.</li>
+                        <li>El tipo de archivo que el profesor espera recibir.</li>
+                    </ul>
+                </div>
+                
+                <div class="flex-1 w-full bg-teal-900/30 p-6 rounded-2xl border border-teal-500/50">
+                    <h3 class="font-black text-xl mb-4 text-center text-teal-300">⭐ Recomendaciones Clave</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg"><span class="text-xl">1️⃣</span> Leer TODA la instrucción antes de abrir un documento.</div>
+                        <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg"><span class="text-xl">2️⃣</span> Revisar si hay material adjunto para leer primero.</div>
+                        <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg"><span class="text-xl">3️⃣</span> Verificar tu calendario o la fecha de entrega.</div>
+                        <div class="flex items-center gap-3 bg-black/20 p-3 rounded-lg"><span class="text-xl">4️⃣</span> Confirmar el formato (¿Pide un Documento o una Presentación?).</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <section class="glass-panel p-8 fade-up border-t-8 border-indigo-500" style="animation-delay: 0.4s;">
+                <h2 class="text-2xl font-black mb-4">📎 Adjuntar trabajos</h2>
+                <p class="mb-4 opacity-90">Classroom te da tres opciones principales en el botón "Agregar o crear":</p>
+                <div class="space-y-4 mb-6">
+                    <div class="bg-white/10 p-3 rounded-lg border-l-4 border-blue-400">
+                        <strong>📄 Documento de Google:</strong> Se crea en el momento, lleva tu nombre automáticamente y se guarda en Drive.
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-lg border-l-4 border-green-400">
+                        <strong>☁️ Desde Drive:</strong> Permite adjuntar un archivo que ya tenías guardado en tu nube.
+                    </div>
+                    <div class="bg-white/10 p-3 rounded-lg border-l-4 border-gray-400">
+                        <strong>💻 Desde la PC:</strong> Para subir PDFs, fotos o documentos descargados en tu computadora.
+                    </div>
+                </div>
+                <div class="bg-indigo-900/50 p-4 rounded-xl text-center border border-indigo-400/50">
+                    <p class="text-sm text-indigo-200 mb-1">Ejemplo de nombre correcto de archivo:</p>
+                    <code class="text-lg font-black tracking-wider text-white">Apellido_Nombre_TP1</code>
+                </div>
+            </section>
+
+            <section class="glass-panel p-8 fade-up border-t-8 border-emerald-500" style="animation-delay: 0.5s;">
+                <h2 class="text-2xl font-black mb-4">✔️ Buenas prácticas</h2>
+                <p class="mb-6 opacity-90">Antes de presionar el temido botón <strong>"Entregar"</strong>, realiza este check-list mental:</p>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 text-lg">
+                        <div class="bg-emerald-500/20 p-2 rounded-full"><span class="text-emerald-400">✔</span></div> 
+                        ¿El archivo está completo?
+                    </li>
+                    <li class="flex items-center gap-3 text-lg">
+                        <div class="bg-emerald-500/20 p-2 rounded-full"><span class="text-emerald-400">✔</span></div> 
+                        ¿Tiene el título correspondiente?
+                    </li>
+                    <li class="flex items-center gap-3 text-lg">
+                        <div class="bg-emerald-500/20 p-2 rounded-full"><span class="text-emerald-400">✔</span></div> 
+                        ¿El contenido responde exactamente a la consigna?
+                    </li>
+                    <li class="flex items-center gap-3 text-lg">
+                        <div class="bg-emerald-500/20 p-2 rounded-full"><span class="text-emerald-400">✔</span></div> 
+                        ¿Adjunté el archivo correcto (y no uno vacío)?
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-4 border-fuchsia-500 shadow-[0_0_20px_rgba(217,70,239,0.2)]" style="animation-delay: 0.6s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">⚙️</span>
+                <h2 class="text-3xl font-black text-fuchsia-300">Actividad: Normas para el trabajo digital</h2>
+            </div>
+            
+            <p class="text-xl mb-6 font-bold">Realiza los siguientes pasos en tu computadora:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-3">
+                    <div class="bg-white/5 p-3 rounded-lg flex items-center gap-3 border border-white/10"><span class="font-black text-fuchsia-400">1.</span> Entrar a Google Classroom.</div>
+                    <div class="bg-white/5 p-3 rounded-lg flex items-center gap-3 border border-white/10"><span class="font-black text-fuchsia-400">2.</span> Abrir la actividad publicada por el profesor.</div>
+                    <div class="bg-white/5 p-3 rounded-lg flex items-center gap-3 border border-white/10"><span class="font-black text-fuchsia-400">3.</span> Clic en "Agregar o crear" > "Documento".</div>
+                    <div class="bg-white/5 p-3 rounded-lg flex items-center gap-3 border border-white/10"><span class="font-black text-fuchsia-400">4.</span> Nombrar el documento: <strong>Normas de trabajo digital</strong>.</div>
+                </div>
+
+                <div class="bg-fuchsia-900/30 p-6 rounded-2xl border-l-4 border-fuchsia-400">
+                    <h3 class="font-black text-lg mb-2">Contenido a escribir:</h3>
+                    <p class="text-sm opacity-90 mb-4">Escribe una lista con al menos 4 normas importantes para trabajar con herramientas digitales. Ejemplos:</p>
+                    <ul class="list-disc list-inside text-sm space-y-1 mb-4 opacity-80">
+                        <li>No compartir contraseñas.</li>
+                        <li>Mantener organizados los archivos.</li>
+                        <li>Respetar los documentos compartidos.</li>
+                        <li>Leer las consignas completas.</li>
+                    </ul>
+                    <p class="text-sm font-bold text-fuchsia-200">✨ Agrega una norma propia tuya sobre el uso responsable de la tecnología.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 fade-up border-l-8 border-orange-400" style="animation-delay: 0.7s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔍</span>
+                <h2 class="text-2xl font-black">Ejercicio: Análisis de consigna</h2>
+            </div>
+            <p class="mb-6 opacity-90">Lee atentamente la siguiente consigna ficticia. Luego, intenta responder mentalmente las preguntas y <strong>toca los botones para verificar si acertaste.</strong></p>
+            
+            <div class="paper-box p-6 rounded-xl mb-8">
+                <p class="font-mono text-sm opacity-60 mb-2">FECHA DE ENTREGA: VIERNES 23:59 HS</p>
+                <p class="font-bold text-lg mb-2">Trabajo Práctico N°1</p>
+                <p class="leading-relaxed">
+                    "Crear un documento de Google Docs titulado <strong>'Mi experiencia con la tecnología'</strong>. El documento debe incluir una breve reflexión personal de al menos 10 líneas sobre cómo utilizan la tecnología en su vida diaria. El trabajo debe entregarse a través de Google Classroom antes del viernes."
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-black/20 border border-white/10 p-4 rounded-xl">
+                    <p class="font-bold mb-3">1. ¿Qué tipo de archivo se debe crear?</p>
+                    <button onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')" class="w-full bg-white/10 hover:bg-white/20 p-2 rounded-lg text-sm font-bold transition">Ver respuesta</button>
+                    <p class="hidden text-orange-300 font-black animate-pulse">👉 Un Documento de Google Docs.</p>
+                </div>
+                <div class="bg-black/20 border border-white/10 p-4 rounded-xl">
+                    <p class="font-bold mb-3">2. ¿Cuál debe ser el título del documento?</p>
+                    <button onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')" class="w-full bg-white/10 hover:bg-white/20 p-2 rounded-lg text-sm font-bold transition">Ver respuesta</button>
+                    <p class="hidden text-orange-300 font-black animate-pulse">👉 Mi experiencia con la tecnología.</p>
+                </div>
+                <div class="bg-black/20 border border-white/10 p-4 rounded-xl">
+                    <p class="font-bold mb-3">3. ¿Cuántas líneas mínimas debe tener?</p>
+                    <button onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')" class="w-full bg-white/10 hover:bg-white/20 p-2 rounded-lg text-sm font-bold transition">Ver respuesta</button>
+                    <p class="hidden text-orange-300 font-black animate-pulse">👉 Al menos 10 líneas.</p>
+                </div>
+                <div class="bg-black/20 border border-white/10 p-4 rounded-xl">
+                    <p class="font-bold mb-3">4. ¿Por dónde se debe entregar?</p>
+                    <button onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')" class="w-full bg-white/10 hover:bg-white/20 p-2 rounded-lg text-sm font-bold transition">Ver respuesta</button>
+                    <p class="hidden text-orange-300 font-black animate-pulse">👉 A través de Google Classroom.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.8s;">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 text-center shadow-2xl border border-white/20 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 text-9xl opacity-10">💡</div>
+                <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">Idea Clave</h2>
+                <p class="text-lg md:text-xl font-medium leading-relaxed text-blue-50 max-w-3xl mx-auto">
+                    El uso correcto de herramientas digitales no solo te permite entregar trabajos, sino desarrollar habilidades de <strong>organización, responsabilidad y trabajo autónomo</strong>. <br><br>
+                    Estas plataformas forman parte del entorno digital que utilizarás en tus estudios superiores y en tu futuro laboral. ¡Dominarlas hoy es una gran ventaja!
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modoSecundaria', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        if (localStorage.getItem('modoSecundaria') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+    </script>
+</body>
+</html>

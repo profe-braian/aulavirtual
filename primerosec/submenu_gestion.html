@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Aula y Nube - 1er Año</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #1e3a8a 0%, #3b0764 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --texto-principal: #f8fafc;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #171717 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: background 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card-hover {
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* BOTÓN SOL/LUNA */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); }
+
+        /* Animación de entrada */
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10 md:pt-4">
+        
+        <header class="glass-panel p-8 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl drop-shadow-md">☁️</span>
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black mb-2">Gestión de Aula y Nube</h1>
+                    <p class="text-xl font-bold text-blue-300">Elige la clase para comenzar a trabajar</p>
+                </div>
+            </div>
+            <a href="index1sec.html" class="bg-white text-blue-900 font-black px-8 py-3 rounded-xl hover:bg-blue-100 transition shadow-lg flex items-center gap-2 text-lg shrink-0">
+                <span>⬅️</span> Volver al Menú
+            </a>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <a href="clase1_drive.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-blue-400 fade-up" style="animation-delay: 0.2s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">📁</span>
+                <h2 class="text-2xl font-black mb-2">Clase 1</h2>
+                <p class="text-blue-300 font-bold text-lg">Cuenta Institucional y Drive</p>
+            </a>
+
+            <a href="clase2_classroom.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-purple-400 fade-up" style="animation-delay: 0.3s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">🎓</span>
+                <h2 class="text-2xl font-black mb-2">Clase 2</h2>
+                <p class="text-purple-300 font-bold text-lg">Uso de Google Classroom</p>
+            </a>
+
+            <a href="clase3_drive.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-emerald-400 fade-up" style="animation-delay: 0.4s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">🤝</span>
+                <h2 class="text-2xl font-black mb-2">Clase 3</h2>
+                <p class="text-emerald-300 font-bold text-lg">Trabajo Colaborativo</p>
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modoSecundaria', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        if (localStorage.getItem('modoSecundaria') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+    </script>
+</body>
+</html>
