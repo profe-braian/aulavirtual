@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Ailin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700;900&display=swap');
+        
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            
+            /* --- FONDO DE PATRÓN DIAGONAL MÁS VISIBLE --- */
+            background-color: #e0f2fe; 
+            background-image: repeating-linear-gradient(
+                -45deg,
+                #e0f2fe,
+                #e0f2fe 60px, 
+                #fce7f3 60px, 
+                #fce7f3 120px
+            );
+            background-attachment: fixed;
+        }
+
+        .tarjeta {
+            background: white;
+            border: 8px solid #bae6fd; 
+            border-radius: 50px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            position: relative; 
+        }
+
+        .btn-juego {
+            cursor: pointer;
+            border: 12px solid #e2e8f0;
+        }
+        
+        .btn-juego:hover {
+            transform: scale(1.05);
+            border-color: #7dd3fc;
+        }
+
+        .acierto {
+            background-color: #bbf7d0 !important; 
+            border-color: #4ade80 !important;
+            transform: scale(1.1) !important;
+            pointer-events: none; /* No deja que lo toque de nuevo si ya acertó */
+        }
+
+        .error {
+            opacity: 0.4;
+            transform: scale(0.95);
+            pointer-events: none; /* Lo deshabilita para que toque el otro */
+        }
+        
+        input[type="text"] {
+            text-transform: uppercase;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        @keyframes dance {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(-10deg); }
+            50% { transform: scale(1.2) translateY(-10px) rotate(10deg); }
+            75% { transform: scale(1.2) rotate(-5deg); }
+        }
+
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-dance { animation: dance 0.6s ease-in-out; animation-iteration-count: 2; }
+    </style>
+</head>
+<body class="p-6 md:p-12 pb-40"> 
+
+    <div id="amigo-cpu" class="fixed bottom-6 right-6 z-50 flex flex-col items-center animate-float cursor-pointer" onclick="festejarMascota()">
+        <div class="relative bg-white p-4 rounded-full border-8 border-sky-300 shadow-2xl">
+            <span class="text-[7rem] block">💻</span>
+            <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[60%] text-6xl">😊</span>
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto space-y-24">
+        
+        <header class="text-center bg-white p-12 rounded-[50px] border-8 border-sky-300 shadow-2xl relative z-10">
+            <h1 class="text-7xl font-black text-sky-600 mb-6">COMPUTADORA</h1>
+            <span class="text-[10rem] block">🖥️</span>
+        </header>
+
+        <section class="bg-blue-100 p-10 md:p-16 rounded-[60px] border-8 border-blue-400 relative z-10 shadow-xl">
+            <p class="text-6xl md:text-7xl font-black text-center text-blue-800 mb-16">¿Dónde está la compu?</p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-12">
+                <button onclick="verificarOpcion(this, false, 'Pelota')" class="tarjeta btn-juego relative w-full md:w-1/2 aspect-square flex flex-col items-center justify-center">
+                    <span class="text-[9rem] md:text-[11rem] block">⚽</span>
+                </button>
+                <button onclick="verificarOpcion(this, true, 'Compu')" class="tarjeta btn-juego relative w-full md:w-1/2 aspect-square flex flex-col items-center justify-center">
+                    <span class="text-[9rem] md:text-[11rem] block">🖥️</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="bg-teal-100 p-10 md:p-16 rounded-[60px] border-8 border-teal-400 relative z-10 shadow-xl">
+            <p class="text-6xl md:text-7xl font-black text-center text-teal-800 mb-16">¿Dónde está el celular?</p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-12">
+                <button onclick="verificarOpcion(this, true, 'Celular')" class="tarjeta btn-juego relative w-full md:w-1/2 aspect-square flex flex-col items-center justify-center">
+                    <span class="text-[9rem] md:text-[11rem] block">📱</span>
+                </button>
+                <button onclick="verificarOpcion(this, false, 'Manzana')" class="tarjeta btn-juego relative w-full md:w-1/2 aspect-square flex flex-col items-center justify-center">
+                    <span class="text-[9rem] md:text-[11rem] block">🍎</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="bg-purple-100 p-10 md:p-16 rounded-[60px] border-8 border-purple-400 text-center relative z-10 shadow-xl">
+            <h2 class="text-7xl font-black text-purple-900 mb-12">Tu nombre</h2>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-16">
+                <button onclick="pintarLetra(this)" class="tarjeta btn-juego relative w-24 h-32 md:w-36 md:h-44 flex items-center justify-center text-[4.5rem] md:text-[5.5rem] font-black text-purple-900 border-purple-300 bg-white">A</button>
+                <button onclick="pintarLetra(this)" class="tarjeta btn-juego relative w-24 h-32 md:w-36 md:h-44 flex items-center justify-center text-[4.5rem] md:text-[5.5rem] font-black text-purple-900 border-purple-300 bg-white">I</button>
+                <button onclick="pintarLetra(this)" class="tarjeta btn-juego relative w-24 h-32 md:w-36 md:h-44 flex items-center justify-center text-[4.5rem] md:text-[5.5rem] font-black text-purple-900 border-purple-300 bg-white">L</button>
+                <button onclick="pintarLetra(this)" class="tarjeta btn-juego relative w-24 h-32 md:w-36 md:h-44 flex items-center justify-center text-[4.5rem] md:text-[5.5rem] font-black text-purple-900 border-purple-300 bg-white">I</button>
+                <button onclick="pintarLetra(this)" class="tarjeta btn-juego relative w-24 h-32 md:w-36 md:h-44 flex items-center justify-center text-[4.5rem] md:text-[5.5rem] font-black text-purple-900 border-purple-300 bg-white">N</button>
+            </div>
+
+            <span class="text-[7rem] block mb-10">⌨️</span>
+            
+            <input type="text" id="inputNombre" oninput="chequearTipeo()" class="w-full md:w-3/4 text-center text-7xl md:text-8xl p-8 rounded-[40px] border-8 border-purple-400 text-purple-900 font-black focus:outline-none focus:border-purple-600 shadow-2xl transition-colors relative z-10" placeholder="A I L I N" maxlength="5" autocomplete="off">
+            
+            <div id="msj-tipeo" class="h-24 mt-10 text-5xl md:text-6xl font-black text-green-600 flex items-center justify-center"></div>
+        </section>
+
+        <section class="bg-orange-100 p-10 md:p-16 rounded-[60px] border-8 border-orange-400 relative z-10 shadow-xl">
+            <p class="text-6xl md:text-7xl font-black text-center text-orange-800 mb-16">¡Pintar y dibujar!</p>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-12">
+                <button onclick="verificarOpcion(this, false, 'Cama')" class="tarjeta btn-juego relative w-full md:w-1/2 aspect-square flex flex-col items-center justify-center">
+                    <span class="text-[9rem] md:text-[11rem] block">🛏️</span>
+                </button>
+                <button onclick="verificarOpcion(this, true, 'Pintar')" class="tarjeta btn-juego relative w-full md:w-1/2 aspect-square flex flex-col items-center justify-center">
+                    <span class="text-[9rem] md:text-[11rem] block">🎨</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="tarjeta border-8 border-green-400 bg-white py-24 relative z-10 shadow-2xl">
+            <span class="text-[12rem] block mb-12 relative z-10">👧🎉</span>
+            
+            <button onclick="terminarActividad()" id="btn-fin" class="bg-green-500 text-white font-black text-6xl md:text-7xl px-20 py-12 rounded-[50px] shadow-[0_15px_0_#166534] hover:mt-3 hover:shadow-[0_12px_0_#166534] transition-all w-full md:w-auto relative z-10 border-4 border-white">
+                ¡FIN! ⭐
+            </button>
+        </section>
+
+    </div>
+
+    <script>
+        // --- LÓGICA DE LA MASCOTA ---
+        const amigoCompu = document.getElementById('amigo-cpu');
+
+        function festejarMascota() {
+            amigoCompu.classList.remove('animate-float');
+            amigoCompu.classList.add('animate-dance');
+            
+            setTimeout(() => {
+                amigoCompu.classList.remove('animate-dance');
+                amigoCompu.classList.add('animate-float');
+            }, 1200);
+        }
+
+        // --- LÓGICA DE LOS JUEGOS DE 2 OPCIONES (AHORA MUESTRA EL NOMBRE) ---
+        function verificarOpcion(btn, esCorrecto, palabra) {
+            // Evitamos que vuelva a agregar la palabra si hace doble click
+            if (btn.querySelector('.nombre-objeto')) return;
+
+            // Agregamos la palabra gigante abajo del dibujo
+            btn.innerHTML += '<span class="nombre-objeto text-5xl md:text-6xl font-black mt-4 block uppercase text-gray-800 animate-pulse">' + palabra + '</span>';
+
+            if(esCorrecto) {
+                btn.classList.add('acierto');
+                if(!btn.innerHTML.includes('⭐')) {
+                    btn.innerHTML += '<span class="absolute -top-10 -right-10 text-[7rem] animate-bounce z-20">⭐</span>';
+                }
+                festejarMascota(); 
+            } else {
+                btn.classList.add('error');
+            }
+        }
+
+        // --- LÓGICA DEL NOMBRE ---
+        function pintarLetra(btn) {
+            if(!btn.classList.contains('acierto')) {
+                btn.classList.add('acierto');
+                btn.classList.replace('text-purple-900', 'text-green-800');
+                btn.innerHTML += '<span class="absolute -top-6 -right-6 text-6xl animate-bounce z-20">⭐</span>';
+                festejarMascota(); 
+            }
+        }
+
+        let tipeoCompletado = false; 
+
+        function chequearTipeo() {
+            const input = document.getElementById('inputNombre');
+            const msj = document.getElementById('msj-tipeo');
+            let texto = input.value.toUpperCase(); 
+            
+            input.value = texto; 
+
+            if (texto === "AILIN") {
+                msj.innerHTML = "¡EXCELENTE! ⭐";
+                input.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                if(!tipeoCompletado) {
+                    lanzarEstrellas(5); 
+                    festejarMascota(); 
+                    tipeoCompletado = true;
+                }
+            } else {
+                msj.innerHTML = "";
+                input.classList.remove('bg-green-100', 'border-green-500', 'text-green-800');
+                tipeoCompletado = false;
+            }
+        }
+
+        function terminarActividad() {
+            const btn = document.getElementById('btn-fin');
+            btn.classList.replace('bg-green-500', 'bg-yellow-400');
+            btn.classList.replace('shadow-[0_15px_0_#166534]', 'shadow-[0_15px_0_#b45309]');
+            btn.innerHTML = '¡MUY BIEN! 🎉👏';
+            lanzarEstrellas(30);
+            festejarMascota(); 
+        }
+
+        function lanzarEstrellas(cantidad) {
+            for(let i=0; i<cantidad; i++) {
+                let emoji = document.createElement('div');
+                emoji.innerHTML = ['⭐','🎉','🎈','💖','🥳'][Math.floor(Math.random()*5)];
+                emoji.className = 'fixed text-[8rem] z-50 transition-all duration-1000 pointer-events-none';
+                emoji.style.left = Math.random() * 90 + 'vw';
+                emoji.style.top = '-100px';
+                document.body.appendChild(emoji);
+                
+                setTimeout(() => {
+                    emoji.style.top = '120vh';
+                    emoji.style.transform = `rotate(${Math.random()*360}deg)`;
+                }, 50);
+                
+                setTimeout(() => emoji.remove(), 2500);
+            }
+        }
+    </script>
+</body>
+</html>

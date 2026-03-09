@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula Virtual - Ingreso - Profe Braian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --card-dark-bg: rgba(15, 23, 42, 0.75);
+            --header-light-bg: rgba(255, 255, 255, 0.98);
+            --text-color: #ffffff;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --input-text: #111827;
+        }
+        
+        .light-theme {
+            --card-dark-bg: rgba(255, 255, 255, 0.5);
+            --text-color: #1e293b;
+        }
+        
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            margin: 0; padding: 0; min-height: 100vh;
+            color: var(--text-color);
+            position: relative;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        #canvas-matrix {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+        }
+        
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.2); border: none; 
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+
+        .glass-card {
+            background: var(--card-dark-bg);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 0 0 24px 24px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%; max-width: 32rem;
+            z-index: 10;
+        }
+
+        .glass-header {
+            background: var(--header-light-bg);
+            border-radius: 24px 24px 0 0;
+            padding: 30px; 
+            display: flex; justify-content: center; align-items: center;
+            gap: 40px; 
+            width: 100%; max-width: 32rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 11;
+        }
+
+        .glass-header img {
+            height: 120px; 
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
+        .input-style {
+            background: var(--input-bg);
+            color: var(--input-text);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .input-style:focus {
+            border-color: #f472b6;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(244, 114, 182, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <canvas id="canvas-matrix"></canvas>
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="animate-fade-in flex flex-col items-center w-full relative z-10">
+        
+        <div class="glass-header">
+            <img src="donbosco.png" alt="Logo Don Bosco" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x120?text=DonBosco';">
+            <img src="maria.png" alt="Logo María" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x120?text=María';">
+        </div>
+
+        <div class="glass-card p-8 md:p-10 text-center">
+            
+            <div class="mb-8">
+                <h1 class="text-4xl font-black drop-shadow-md mb-1">Aula Virtual</h1>
+                <p class="text-xl font-bold opacity-80">Informática Educativa</p>
+            </div>
+            
+            <div class="space-y-6">
+                
+                <div class="text-left">
+                    <label for="grado" class="block font-bold text-lg ml-1 mb-2">Elegí tu Nivel:</label>
+                    <select id="grado" class="input-style w-full p-4 rounded-xl text-lg font-bold shadow-inner cursor-pointer">
+                        <option value="" disabled selected>Selecciona tu grado/año...</option>
+                        <optgroup label="Primaria">
+                            <option value="1ro">1er Grado</option>
+                            <option value="2do">2do Grado</option>
+                            <option value="3ro">3er Grado</option>
+                            <option value="4to">4to Grado</option>
+                            <option value="5to">5to Grado</option>
+                            <option value="6to">6to Grado</option>
+                            <option value="7mo">7mo Grado</option>
+                        </optgroup>
+                        <optgroup label="Secundaria">
+                            <option value="1sec">1er Año</option>
+                            <option value="2sec">2do Año</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="text-left">
+                    <label for="clave" class="block font-bold text-lg ml-1 mb-2">Palabra Secreta:</label>
+                    <input type="password" id="clave" placeholder="••••••••" 
+                        class="input-style w-full p-4 rounded-xl text-xl text-center font-bold shadow-inner tracking-widest">
+                    <p class="text-sm opacity-80 mt-2 ml-1 text-center font-bold">Pista: Palabra de compu en minúsculas 🤫</p>
+                </div>
+                
+                <button onclick="intentarIngreso()" 
+                    class="w-full bg-pink-500 hover:bg-pink-600 text-white font-black py-4 rounded-xl text-xl shadow-lg transition transform hover:scale-105 active:scale-95 mt-4">
+                    ¡ENTRAR AL AULA! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center font-bold pb-2 opacity-70 relative z-10">
+        <p>Diseñado por Profe Braian - 2026</p>
+    </footer>
+
+    <script>
+        // --- EFECTO MATRIX ---
+        const canvas = document.getElementById('canvas-matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const matrixChars = '01<>/{}[]'.split('');
+        const fontSize = 18;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) { drops[x] = 1; }
+        const colores = ['#38bdf8', '#f472b6', '#3b82f6'];
+        function drawMatrix() {
+            const isLight = document.body.classList.contains('light-theme');
+            ctx.fillStyle = isLight ? 'rgba(240, 249, 255, 0.1)' : 'rgba(15, 23, 42, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillStyle = colores[Math.floor(Math.random() * colores.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) { drops[i] = 0; }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // --- MODO OSCURO / CLARO ---
+        const btn = document.getElementById('btnT');
+        if (localStorage.getItem('modo') === 'claro') { document.body.classList.add('light-theme'); btn.innerHTML = '🌙'; }
+        else { btn.innerHTML = '☀️'; }
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            btn.innerHTML = isLight ? '🌙' : '☀️';
+            localStorage.setItem('modo', isLight ? 'claro' : 'oscuro');
+        }
+
+        // --- SISTEMA DE ENLACES (ÍNDICE CENTRAL) ---
+        // Aquí es donde todo se conecta. Cada grado tiene su clave y su archivo destino.
+        const baseDeDatosGrados = {
+            "1ro": { clave: "pantalla", archivoDestino: "index1ro.html" },
+            "2do": { clave: "juego", archivoDestino: "index2do.html" },
+            "3ro": { clave: "mouse", archivoDestino: "index3ro.html" },
+            "4to": { clave: "teclado", archivoDestino: "cuarto/index4to.html" },
+            "5to": { clave: "robot", archivoDestino: "index5to.html" },
+            "6to": { clave: "codigo", archivoDestino: "index6to.html" },
+            "7mo": { clave: "pixel", archivoDestino: "index7mo.html" },
+            "1sec": { clave: "hardware", archivoDestino: "primerosec/index1sec.html" },
+            "2sec": { clave: "software", archivoDestino: "index2sec.html" }
+        };
+
+        function intentarIngreso() {
+            const gradoSeleccionado = document.getElementById('grado').value;
+            const claveIngresada = document.getElementById('clave').value.toLowerCase().trim();
+            
+            if (gradoSeleccionado === "") { 
+                alert("¡No te olvides de elegir tu nivel!"); 
+                return; 
+            }
+            
+            const datosDelGrado = baseDeDatosGrados[gradoSeleccionado];
+            
+            if (claveIngresada === datosDelGrado.clave) { 
+                // Si la clave es correcta, abre el archivo correspondiente
+                window.location.href = datosDelGrado.archivoDestino; 
+            } else { 
+                alert("❌ Palabra secreta incorrecta. Recordá que es todo en minúsculas."); 
+                document.getElementById('clave').value = ''; 
+                document.getElementById('clave').focus(); 
+            }
+        }
+    </script>
+</body>
+</html>
