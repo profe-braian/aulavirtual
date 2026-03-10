@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5to Grado - Aula Virtual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #f472b6 50%, #2563eb 100%);
+            --texto-principal: #ffffff;
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --header-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            --texto-principal: #e2e8f0;
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --tarjeta-hover: rgba(0, 0, 0, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(0, 0, 0, 0.4);
+        }
+
+        body, html { 
+            margin: 0; padding: 0; min-height: 100%; 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+            transition: background 0.5s ease;
+        }
+
+        /* BOTÓN SOL/LUNA */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.2); border: none; 
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+
+        /* PORTADA CON MATRIX */
+        #portada-5to {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; transition: opacity 0.8s ease;
+            background-color: transparent; 
+        }
+
+        #canvas-matrix {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: -1; 
+        }
+
+        .cartel-bienvenida { 
+            width: 80%; max-width: 500px; cursor: pointer; 
+            animation: flotar 3s ease-in-out infinite; 
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+            z-index: 10; 
+        }
+
+        @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* CONTENIDO PRINCIPAL */
+        #contenido-clase { display: none; opacity: 0; position: relative; z-index: 10; }
+        .fade-up { animation: fadeUp 1s forwards; }
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* TARJETAS */
+        .tema-card {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .tema-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: var(--tarjeta-hover);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .borde-t1 { border-bottom: 4px solid #38bdf8; }
+        .borde-t2 { border-bottom: 4px solid #f472b6; }
+        .borde-t3 { border-bottom: 4px solid #2563eb; }
+
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div id="portada-5to">
+        <canvas id="canvas-matrix"></canvas>
+
+        <div class="cartel-bienvenida bg-white/20 p-8 rounded-3xl backdrop-blur-md border border-white/40 text-center" onclick="entrar()">
+            <span class="text-8xl block mb-4">🤖</span>
+            <h1 class="text-4xl md:text-5xl font-black text-white drop-shadow-lg mb-2">Entrar a 5to Grado</h1>
+            <p class="text-xl font-bold text-blue-200">¡Clic para empezar!</p>
+        </div>
+    </div>
+
+    <div id="contenido-clase" class="w-full max-w-6xl mx-auto pt-16 md:pt-4">
+        
+        <header class="flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-6 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg mb-10">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-black drop-shadow-lg">⚙️ Aula Virtual - 5to Grado</h1>
+                <p class="text-lg font-bold opacity-80 mt-1">Exploradores Digitales</p>
+            </div>
+            <a href="index.html" class="mt-4 md:mt-0 bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-gray-200 transition shadow-md">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <div class="space-y-12">
+
+            <section class="fade-up" style="animation-delay: 0.1s;">
+                <div class="flex items-center gap-4 mb-6 borde-t1 pb-2">
+                    <span class="bg-sky-400 text-blue-900 font-black px-4 py-2 rounded-xl text-xl shadow">1º TRIMESTRE</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div onclick="window.location.href='submenu_hardware_5to.html'" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">💻</span>
+                        <h4 class="font-bold text-lg leading-tight">La computadora</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema2_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">🧠</span>
+                        <h4 class="font-bold text-lg leading-tight">Hardware interno</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema3_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">📱</span>
+                        <h4 class="font-bold text-lg leading-tight">Dispositivos digitales</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema4_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <svg class="w-12 h-12 mb-3 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/>
+                        </svg>
+                        <h4 class="font-bold text-lg leading-tight">Windows y archivos</h4>
+                    </div>
+                </div>
+            </section>
+
+            <section class="fade-up" style="animation-delay: 0.3s;">
+                <div class="flex items-center gap-4 mb-6 borde-t2 pb-2">
+                    <span class="bg-pink-500 text-white font-black px-4 py-2 rounded-xl text-xl shadow">2º TRIMESTRE</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div onclick="abrirClase('tema5_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">📝</span>
+                        <h4 class="font-bold text-lg leading-tight">Word avanzado</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema6_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">📊</span>
+                        <h4 class="font-bold text-lg leading-tight">PowerPoint</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema7_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">🔍</span>
+                        <h4 class="font-bold text-lg leading-tight">Búsqueda en internet</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema8_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">🕵️‍♂️</span>
+                        <h4 class="font-bold text-lg leading-tight">Validación de fuentes</h4>
+                    </div>
+
+                    <div onclick="abrirClase('tema9_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">🦸‍♂️</span>
+                        <h4 class="font-bold text-lg leading-tight">Ciudadanía digital</h4>
+                    </div>
+                </div>
+            </section>
+
+            <section class="fade-up" style="animation-delay: 0.5s;">
+                <div class="flex items-center gap-4 mb-6 borde-t3 pb-2">
+                    <span class="bg-blue-600 text-white font-black px-4 py-2 rounded-xl text-xl shadow">3º TRIMESTRE</span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div onclick="abrirClase('tema10_5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
+                        <span class="text-6xl mb-4">📋</span>
+                        <h4 class="font-bold text-xl leading-tight">Algoritmos</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema11_5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
+                        <span class="text-6xl mb-4">🧩</span>
+                        <h4 class="font-bold text-xl leading-tight">Programación por bloques</h4>
+                    </div>
+                    
+                    <div onclick="abrirClase('tema12_5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
+                        <span class="text-6xl mb-4">🔄</span>
+                        <h4 class="font-bold text-xl leading-tight">Bucles en programación</h4>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+        
+        <footer class="mt-12 text-center opacity-60 font-bold pb-6">
+            <p>Diseñado por Profe Braian - 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- EFECTO MATRIX ESTILO AULA VIRTUAL ---
+        const canvas = document.getElementById('canvas-matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrixChars = '01<>/{}[]'.split('');
+        const fontSize = 18;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for (let x = 0; x < columns; x++) { drops[x] = 1; }
+        const colores = ['#38bdf8', '#f472b6', '#3b82f6'];
+        let matrixInterval;
+
+        function drawMatrix() {
+            const isDark = document.body.classList.contains('dark-mode');
+            ctx.fillStyle = isDark ? 'rgba(15, 23, 42, 0.15)' : 'rgba(240, 249, 255, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillStyle = colores[Math.floor(Math.random() * colores.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        matrixInterval = setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // --- MODO OSCURO / CLARO ---
+        const btn = document.getElementById('btnT');
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            btn.innerHTML = '🌙';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            btn.innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modo', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        // --- PORTADA ---
+        function entrar() {
+            const portada = document.getElementById('portada-5to');
+            const contenido = document.getElementById('contenido-clase');
+            portada.style.opacity = '0';
+            setTimeout(() => {
+                portada.style.display = 'none';
+                contenido.style.display = 'block';
+                contenido.classList.add('fade-up');
+                clearInterval(matrixInterval); // Ahorra recursos
+            }, 800);
+        }
+
+        // --- NAVEGACIÓN ---
+        function abrirClase(url) {
+            alert('¡Abriendo el módulo! Archivo destino: ' + url);
+        }
+    </script>
+</body>
+</html>

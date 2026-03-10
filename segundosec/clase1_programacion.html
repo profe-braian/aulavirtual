@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a la Programación - 2do Año</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg); border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo { transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; cursor: pointer; }
+        .btn-interactivo:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-interactivo:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); transform: none; }
+        
+        /* Drag and drop general */
+        .sortable-list { list-style-type: none; padding: 0; }
+        .sortable-item {
+            background: rgba(255, 255, 255, 0.5); margin-bottom: 10px; padding: 15px 20px;
+            border-radius: 12px; border-left: 6px solid #8b5cf6; cursor: grab; display: flex; align-items: center; gap: 15px;
+            font-weight: 700; font-size: 1.1rem; color: #0f172a;
+        }
+        .dark-mode .sortable-item { background: rgba(0, 0, 0, 0.5); color: white; }
+        .sortable-item:active { cursor: grabbing; transform: scale(1.02); }
+        .sortable-item.dragging { opacity: 0.5; }
+
+        #pizarra-container {
+            background-color: #ffffff; border-radius: 16px; overflow: hidden;
+            border: 4px solid var(--border-color); touch-action: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- ESTILOS BEBRAS (CORREGIDOS PARA ALINEACIÓN) --- */
+        .nivel-indicador { font-size: 0.8rem; font-weight: 900; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 12px; color: white; margin-bottom: 10px; display: inline-block; }
+        
+        /* Contenedor de instrucciones fijo para que no salte */
+        .instrucciones-bebras { min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        
+        .grid-bebras { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; max-width: 220px; margin: 0 auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 12px; aspect-ratio: 1; }
+        .celda-bebras { background: rgba(255,255,255,0.3); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+        .celda-bebras:hover { background: rgba(255,255,255,0.5); }
+        .celda-bebras.marcada { border-color: #ef4444; background: rgba(239,68,68,0.2); box-shadow: inset 0 0 10px rgba(239,68,68,0.5); }
+        
+        .letra-drag { width: 45px; height: 45px; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; border-radius: 10px; cursor: grab; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.2s; user-select: none; }
+        .letra-drag:active { cursor: grabbing; transform: scale(1.1); }
+        .letra-drag.seleccionada-bebras { box-shadow: 0 0 15px #facc15; border: 3px solid #facc15; transform: scale(1.1); }
+        .zona-letra { width: 50px; height: 50px; border: 3px dashed rgba(255,255,255,0.6); border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); transition: all 0.3s; }
+        .zona-letra.drag-over { background: rgba(255,255,255,0.3); border-color: #4ade80; transform: scale(1.05); }
+
+        .switch-container { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.2rem; }
+        .toggle-switch { width: 60px; height: 30px; background: #94a3b8; border-radius: 15px; position: relative; cursor: pointer; transition: background 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        .toggle-switch.activo { background: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
+        .toggle-knob { width: 24px; height: 24px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .toggle-switch.activo .toggle-knob { transform: translateX(30px); }
+        .puerta-marco { width: 100px; height: 140px; border: 8px solid #475569; border-bottom: none; border-radius: 12px 12px 0 0; background: #0f172a; position: relative; perspective: 1000px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        .puerta-hoja { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #854d0e; transform-origin: left; transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); border-right: 2px solid #713f12; display: flex; align-items: center; }
+        .puerta-picaporte { width: 12px; height: 12px; background: #fbbf24; border-radius: 50%; margin-left: 65px; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .puerta-abierta { transform: rotateY(-105deg); }
+        
+        /* 8 Desafios */
+        .nivel-btn { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; transition: all 0.3s; }
+        .nivel-locked { background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.5); }
+        .nivel-active { background: #38bdf8; color: white; box-shadow: 0 0 15px rgba(56, 189, 248, 0.8); border: 2px solid white; }
+        .nivel-solved { background: #4ade80; color: white; border: 2px solid white; }
+        .medalla { filter: grayscale(100%) opacity(0.4); transition: all 0.5s; transform: scale(0.9); }
+        .medalla.activa { filter: grayscale(0%) opacity(1); transform: scale(1.1); animation: bounce-medal 0.5s; }
+        .input-text { width: 100%; max-width: 300px; padding: 15px; border-radius: 12px; border: 4px solid var(--border-color); background: rgba(255,255,255,0.8); font-size: 1.2rem; font-weight: bold; text-align: center; color: #0f172a; outline: none; transition: all 0.3s; }
+        .input-text:focus { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+        .dark-mode .input-text { background: rgba(0,0,0,0.6); color: white; }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce-medal { 0% { transform: scale(0.5); } 50% { transform: scale(1.3); } 100% { transform: scale(1.1); } }
+        .confeti { position: fixed; width: 12px; height: 12px; z-index: 9999; pointer-events: none; border-radius: 50%; }
+
+        .hidden-section { display: none !important; }
+
+        /* Efecto Quemamentes */
+        .btn-quemamentes {
+            background: linear-gradient(45deg, #ef4444, #f97316);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+            animation: pulse-fire 2s infinite;
+        }
+        @keyframes pulse-fire { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(239, 68, 68, 0.9); } }
+
+    </style>
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">💻</span>
+                <div>
+                    <p class="font-black text-sm mb-2 opacity-80 uppercase tracking-widest">E.S.R.N DON BOSCO - PROF. BRAIAN STEPOWSKI</p>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Intro a la Programación</h1>
+                    <p class="text-xl md:text-2xl font-bold opacity-90">Pensar como una computadora.</p>
+                </div>
+            </div>
+            <a href="index_secundaria.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-10 fade-up" style="animation-delay: 0.1s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6 flex items-center gap-3"><span class="text-4xl">⚙️</span> ¿Qué es un programa?</h2>
+            <div class="bg-black/10 border border-white/20 p-6 rounded-2xl mb-8">
+                <p class="text-xl font-bold mb-4 leading-relaxed">
+                    Las computadoras están en todas partes: teléfonos, consolas, autos, televisores. Pero por sí solas, son solo plástico y circuitos. Todas funcionan gracias a <strong>programas</strong>.
+                </p>
+                <p class="text-2xl font-black text-white drop-shadow-sm text-center bg-blue-500/20 p-4 rounded-xl border border-blue-400">
+                    Un programa es una lista de instrucciones paso a paso que la compu ejecuta para resolver una tarea.
+                </p>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-blue-400" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">⚡</span>
+                <h2 class="text-3xl md:text-4xl font-black">Actividad: ¿Usa programas?</h2>
+            </div>
+            <div class="bg-black/20 p-8 rounded-3xl text-center relative">
+                <p class="text-2xl font-bold mb-4 opacity-90">Analizá el siguiente objeto y respondé:</p>
+                <div id="obj-juego1" class="text-4xl md:text-6xl mb-8 py-8 bg-white/10 rounded-2xl shadow-inner font-black text-white drop-shadow-md">🚗 Auto Moderno</div>
+                <div class="flex justify-center gap-6" id="botones-juego1">
+                    <button onclick="verificarUsoPrograma(true)" class="btn-interactivo bg-green-500 text-white px-10 py-4 text-2xl font-black rounded-2xl border-b-4 border-green-700">SÍ USA</button>
+                    <button onclick="verificarUsoPrograma(false)" class="btn-interactivo bg-red-500 text-white px-10 py-4 text-2xl font-black rounded-2xl border-b-4 border-red-700">NO USA</button>
+                </div>
+                <div id="feedback-juego1" class="mt-6 text-2xl font-black hidden p-4 rounded-2xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-pink-400" style="animation-delay: 0.3s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-4">Cómo piensa una PC (Algoritmos)</h2>
+            <p class="text-xl font-bold mb-8 opacity-90">Las computadoras no tienen sentido común. Necesitan que les demos el paso a paso exacto. A esto lo llamamos <strong>Algoritmo</strong>.</p>
+            
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="flex-1 bg-black/10 p-6 rounded-2xl border border-white/20 flex flex-col">
+                    <p class="text-xl font-black text-pink-300 mb-4">Arrastrá y ordená los pasos para preparar un mate:</p>
+                    <ul class="sortable-list flex-1" id="lista-algoritmo">
+                        <li class="sortable-item" draggable="true" data-id="4"><span class="text-2xl text-slate-400">🔃</span> Cebar el mate</li>
+                        <li class="sortable-item" draggable="true" data-id="2"><span class="text-2xl text-slate-400">🔃</span> Calentar el agua</li>
+                        <li class="sortable-item" draggable="true" data-id="1"><span class="text-2xl text-slate-400">🔃</span> Poner agua en la pava</li>
+                        <li class="sortable-item" draggable="true" data-id="3"><span class="text-2xl text-slate-400">🔃</span> Poner yerba en el mate</li>
+                    </ul>
+                    <button onclick="verificarAlgoritmo()" class="mt-6 w-full btn-interactivo bg-blue-600 text-white font-black py-3 rounded-xl text-xl border-b-4 border-blue-800">Verificar Lógica</button>
+                    <div id="feedback-algoritmo" class="mt-4 text-center font-black text-xl hidden p-3 rounded-xl"></div>
+                </div>
+
+                <div class="flex-1 bg-black/20 p-6 rounded-3xl border-2 border-white/30 flex flex-col">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-2xl font-black text-white drop-shadow"><span class="text-3xl">🖍️</span> Tu Anotador</h3>
+                        <button onclick="limpiarPizarra()" class="btn-interactivo bg-slate-700 text-white font-bold px-4 py-2 rounded-lg hover:bg-slate-600">🗑️ Borrar</button>
+                    </div>
+                    <div id="pizarra-container" class="w-full flex-1 min-h-[200px] cursor-crosshair relative">
+                        <canvas id="pizarraCanvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+                    </div>
+                    <p class="text-center font-bold mt-3 opacity-80 text-sm">Usalo libremente para los desafíos.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-purple-400 bg-purple-500/10" style="animation-delay: 0.4s;">
+            <div class="text-center mb-8 border-b-2 border-dashed border-white/30 pb-6">
+                <h2 class="text-3xl md:text-5xl font-black text-purple-600 dark:text-purple-300 drop-shadow-md mb-2">
+                    🧩 Laboratorio Visual
+                </h2>
+                <p class="text-xl font-bold opacity-90">Entrená tu cerebro. Superá los 4 niveles de cada minijuego para avanzar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+                
+                <div class="bg-black/20 p-6 rounded-2xl border border-white/20 flex flex-col h-full relative overflow-hidden" id="card-robot">
+                    <div class="text-center">
+                        <div class="nivel-indicador" id="ind-robot">Nivel 1/4</div>
+                        <h3 class="text-2xl font-black mb-2 text-white">1. El Robot</h3>
+                    </div>
+                    
+                    <div class="instrucciones-bebras">
+                        <p class="font-bold opacity-90 text-sm" id="inst-robot">Cargando...</p>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col justify-center items-center w-full mb-6">
+                        <div id="grilla-robot" class="grid-bebras"></div>
+                    </div>
+
+                    <div class="w-full mt-auto">
+                        <button onclick="verificarRobot()" id="btn-robot" class="w-full btn-interactivo bg-purple-600 text-white font-black py-3 rounded-xl border-b-4 border-purple-800">Comprobar 📍</button>
+                        <div id="feed-robot" class="mt-3 font-bold text-center w-full rounded p-2 hidden"></div>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 p-6 rounded-2xl border border-white/20 flex flex-col h-full relative overflow-hidden" id="card-codigo">
+                    <div class="text-center">
+                        <div class="nivel-indicador" id="ind-codigo">Nivel 1/4</div>
+                        <h3 class="text-2xl font-black mb-2 text-white">2. Código Secreto</h3>
+                    </div>
+
+                    <div class="instrucciones-bebras">
+                        <p class="font-bold opacity-90 text-xs mb-1">A=1, B=2, C=3, D=4... Z=26</p>
+                        <p class="text-xl font-black bg-white/20 px-3 py-1 rounded tracking-widest border border-white/30" id="inst-codigo">3 - 1 - 20</p>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col justify-center items-center w-full mb-6">
+                        <div class="flex flex-wrap gap-2 justify-center mb-6" id="zonas-drop-bebras"></div>
+                        <div class="flex flex-wrap gap-2 justify-center" id="banco-letras"></div>
+                    </div>
+
+                    <div class="w-full mt-auto">
+                        <button onclick="verificarCodigo()" id="btn-codigo" class="w-full btn-interactivo bg-purple-600 text-white font-black py-3 rounded-xl border-b-4 border-purple-800">Verificar 🔐</button>
+                        <div id="feed-codigo" class="mt-3 font-bold text-center w-full rounded p-2 hidden"></div>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 p-6 rounded-2xl border border-white/20 flex flex-col h-full relative overflow-hidden" id="card-puerta">
+                    <div class="text-center">
+                        <div class="nivel-indicador" id="ind-puerta">Nivel 1/4</div>
+                        <h3 class="text-2xl font-black mb-2 text-white">3. Puerta Lógica</h3>
+                    </div>
+
+                    <div class="instrucciones-bebras">
+                        <p class="font-bold opacity-90 text-sm" id="inst-puerta">Cargando...</p>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col justify-center items-center w-full mb-6">
+                        <div class="flex flex-wrap justify-center gap-4 w-full mb-6" id="switches-container"></div>
+                        <div class="puerta-marco">
+                            <div class="puerta-hoja" id="puerta-visual"><div class="puerta-picaporte"></div></div>
+                            <span class="absolute z-[-1] text-5xl">✨</span>
+                        </div>
+                    </div>
+
+                    <div class="w-full mt-auto">
+                        <button onclick="verificarPuerta()" id="btn-puerta" class="w-full btn-interactivo bg-purple-600 text-white font-black py-3 rounded-xl border-b-4 border-purple-800">Intentar Abrir 🚪</button>
+                        <div id="feed-puerta" class="mt-3 font-bold text-center w-full rounded p-2 hidden"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="quemamentes-container" class="mt-12 text-center hidden-section">
+                <button onclick="desbloquearQuemamentes()" class="btn-interactivo btn-quemamentes text-white font-black px-12 py-6 rounded-3xl text-3xl border-b-8 border-red-900">
+                    🔥 DESBLOQUEAR QUEMAMENTES 🔥
+                </button>
+            </div>
+        </section>
+
+        <section id="seccion-quemamentes" class="glass-panel p-8 md:p-12 border-4 border-red-500 bg-red-600/10 hidden-section">
+            
+            <div class="text-center mb-10 border-b-2 border-dashed border-red-400/50 pb-8">
+                <span class="text-6xl block mb-4">🤯</span>
+                <h2 class="text-4xl md:text-5xl font-black text-red-500 dark:text-red-400 drop-shadow-md mb-2">
+                    Niveles Quemamentes
+                </h2>
+                <p class="text-xl font-bold opacity-90 text-white">Escribí tu respuesta. ¡No hay opciones para adivinar!</p>
+            </div>
+
+            <div class="bg-black/40 p-6 rounded-3xl border border-red-500/30 mb-8 flex flex-col items-center">
+                <p class="text-lg font-black text-white mb-4 uppercase tracking-widest">Tus Logros</p>
+                <div class="flex flex-wrap justify-center gap-4 md:gap-12">
+                    <div class="text-center medalla" id="medalla-1">
+                        <span class="text-4xl md:text-6xl block mb-2 drop-shadow-lg">🥉</span>
+                        <p class="font-bold text-orange-300">Nivel 1</p>
+                    </div>
+                    <div class="text-center medalla" id="medalla-2">
+                        <span class="text-4xl md:text-6xl block mb-2 drop-shadow-lg">🥈</span>
+                        <p class="font-bold text-slate-300">Nivel 3</p>
+                    </div>
+                    <div class="text-center medalla" id="medalla-3">
+                        <span class="text-4xl md:text-6xl block mb-2 drop-shadow-lg">🥇</span>
+                        <p class="font-bold text-yellow-400">Nivel 6</p>
+                    </div>
+                    <div class="text-center medalla" id="medalla-4">
+                        <span class="text-4xl md:text-6xl block mb-2 drop-shadow-lg">🏆</span>
+                        <p class="font-bold text-sky-400">Dios</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center gap-1 md:gap-2 mb-8 bg-black/50 p-4 rounded-2xl border border-white/20 overflow-x-auto">
+                <div class="nivel-btn nivel-active" id="nav-1">1</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-2">2</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-3">3</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-4">4</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-5">5</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-6">6</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-7">7</div><div class="h-2 bg-white/20 flex-1 min-w-[5px] rounded"></div>
+                <div class="nivel-btn nivel-locked" id="nav-8">8</div>
+            </div>
+
+            <div class="bg-black/30 border-2 border-red-500/50 p-6 md:p-10 rounded-3xl relative min-h-[400px] flex flex-col" id="display-desafio">
+                <div class="text-center" id="mensaje-victoria-final" style="display: none;">
+                    <span class="text-[8rem] block mb-4 animate-bounce">🎓</span>
+                    <h3 class="text-4xl md:text-5xl font-black text-white mb-4 drop-shadow-md">¡HACKER SUPREMO!</h3>
+                    <p class="text-2xl font-bold text-green-400">Resolviste los 8 desafíos. Ya tenés la base lógica para aprender cualquier lenguaje de programación.</p>
+                </div>
+                
+                <div id="contenido-desafio" class="flex-1 flex flex-col">
+                    <div class="flex flex-col md:flex-row items-center gap-6 border-b border-white/20 pb-6 mb-6">
+                        <div id="desafio-dibujo" class="text-6xl md:text-7xl bg-white/10 p-4 rounded-3xl shadow-inner">🐺</div>
+                        <div>
+                            <h3 class="text-3xl font-black text-white drop-shadow mb-2" id="desafio-titulo">El Río</h3>
+                            <p class="text-xl font-bold opacity-90 text-red-300" id="desafio-pregunta">Pregunta</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-2xl mb-8 flex-1">
+                        <p class="text-xl font-bold leading-relaxed text-white" id="desafio-texto"></p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <input type="text" id="input-desafio" class="input-text border-red-400 focus:border-red-600" placeholder="Escribí acá..." autocomplete="off">
+                        <button onclick="checkRespuestaTexto()" class="btn-interactivo bg-red-600 text-white font-black text-xl px-8 py-4 rounded-xl border-b-4 border-red-800 w-full sm:w-auto">Verificar ✔️</button>
+                    </div>
+                </div>
+
+                <div id="desafio-feedback" class="absolute inset-0 bg-black/95 rounded-3xl hidden flex-col items-center justify-center p-8 text-center backdrop-blur-md z-10">
+                    <span id="feed-icono" class="text-7xl mb-6"></span>
+                    <p id="feed-mensaje" class="text-2xl md:text-3xl font-black text-white mb-8 leading-relaxed"></p>
+                    <button id="feed-btn" class="btn-interactivo px-10 py-4 text-2xl font-black rounded-xl"></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-sky-400 mt-12">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">📝</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Quiz Final</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-4 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span>/4</div>
+            </div>
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 25%"></div>
+            </div>
+            <div id="quiz-container" class="min-h-[250px]">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center text-white"></p>
+                <div id="quiz-options" class="grid grid-cols-1 gap-4"></div>
+            </div>
+            <div id="quiz-result" class="hidden text-center py-10">
+                <h3 class="text-4xl font-black mb-4 text-sky-300">¡Evaluación Completada!</h3>
+                <p id="quiz-score-text" class="text-3xl font-bold mb-8 text-white"></p>
+                <button onclick="reiniciarQuiz()" class="btn-interactivo bg-sky-500 text-white font-black px-8 py-4 rounded-xl border-b-4 border-sky-700 text-xl">Reintentar Quiz</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-8">
+            <h2 class="text-3xl font-black mb-6 text-pink-300 flex items-center gap-3"><span class="text-4xl">💭</span> Reflexión Final</h2>
+            <p class="text-xl text-white mb-8 font-bold">¿Por qué crees que aprender a resolver problemas paso a paso (algoritmos) te puede servir en la vida real, aunque no trabajes de programador?</p>
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <div class="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xl border-4 border-dashed border-gray-300 m-4 w-[calc(100%-32px)] rounded-xl">
+                    (Acá va tu iframe de Google Forms para Secundaria)
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- THEME ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema_sec_c1', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema_sec_c1') === 'oscuro') { document.body.classList.add('dark-mode'); document.getElementById('btnT').innerHTML = '🌙'; }
+
+        // --- JUEGO 1: ¿USA PROGRAMAS? ---
+        const objetosJ1 = [
+            { nombre: '🚗 Auto Moderno', usa: true, exp: "Tienen computadoras a bordo para frenos, GPS y motor." },
+            { nombre: '🧹 Escoba de paja', usa: false, exp: "Es 100% manual, ¡no tiene circuitos!" },
+            { nombre: '🕹️ Consola de Juegos', usa: true, exp: "Todo su sistema es software creado por programadores." },
+            { nombre: '🚪 Ascensor', usa: true, exp: "Un algoritmo decide a qué piso ir primero." }
+        ];
+        let indJ1 = 0;
+        function cargarJuego1() {
+            if(indJ1 >= objetosJ1.length) {
+                document.getElementById('obj-juego1').innerHTML = "¡Excelente! 👏";
+                document.getElementById('botones-juego1').style.display = 'none';
+                return;
+            }
+            document.getElementById('obj-juego1').innerHTML = objetosJ1[indJ1].nombre;
+        }
+        function verificarUsoPrograma(respuesta) {
+            const obj = objetosJ1[indJ1]; const feed = document.getElementById('feedback-juego1'); feed.style.display = 'block';
+            if(respuesta === obj.usa) {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-2xl bg-green-500/20 text-green-300 border-2 border-green-400";
+                feed.innerHTML = `✅ ¡Correcto! ${obj.exp}`; indJ1++;
+                setTimeout(() => { feed.style.display = 'none'; cargarJuego1(); }, 2000);
+            } else {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-2xl bg-red-500/20 text-red-300 border-2 border-red-400";
+                feed.innerHTML = `❌ Te equivocaste. Pensalo bien.`;
+                setTimeout(() => { feed.style.display = 'none'; }, 1500);
+            }
+        }
+        cargarJuego1();
+
+        // --- DRAG AND DROP MATE ---
+        const list = document.getElementById('lista-algoritmo');
+        let draggingItem = null;
+        list.addEventListener('dragstart', (e) => { draggingItem = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); });
+        list.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); draggingItem = null; });
+        list.addEventListener('dragover', (e) => {
+            e.preventDefault(); const afterElement = getDragAfterElement(list, e.clientY);
+            if (afterElement == null) list.appendChild(draggingItem); else list.insertBefore(draggingItem, afterElement);
+        });
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.sortable-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect(); const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) return { offset: offset, element: child }; else return closest;
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+        function verificarAlgoritmo() {
+            const items = [...list.querySelectorAll('.sortable-item')];
+            const orden = items.map(item => item.getAttribute('data-id')).join('');
+            const feed = document.getElementById('feedback-algoritmo'); feed.style.display = 'block';
+            if(orden === "1234" || orden === "1324" || orden === "3124") {
+                feed.innerHTML = "✅ ¡Algoritmo Perfecto!"; feed.className = "mt-4 text-center font-black text-xl text-green-300 bg-green-500/20 p-4 rounded-xl border border-green-400";
+            } else {
+                feed.innerHTML = "❌ Hay un error de lógica."; feed.className = "mt-4 text-center font-black text-xl text-red-300 bg-red-500/20 p-4 rounded-xl border border-red-400";
+            }
+        }
+
+        // --- PIZARRA ---
+        const canvas = document.getElementById('pizarraCanvas'); const ctx = canvas.getContext('2d'); let dibujando = false;
+        function resizeCanvas() {
+            const container = document.getElementById('pizarra-container');
+            canvas.width = container.clientWidth; canvas.height = container.clientHeight; limpiarPizarra();
+        }
+        window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 100);
+        function iniciarDibujo(e) { dibujando = true; dibujar(e); }
+        function terminarDibujo() { dibujando = false; ctx.beginPath(); }
+        function dibujar(e) {
+            if(!dibujando) return; e.preventDefault(); 
+            const rect = canvas.getBoundingClientRect();
+            let x = e.type.includes('touch') ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+            let y = e.type.includes('touch') ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+            ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.strokeStyle = '#0f172a';
+            ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+        }
+        canvas.addEventListener('mousedown', iniciarDibujo); canvas.addEventListener('mouseup', terminarDibujo); canvas.addEventListener('mousemove', dibujar);
+        canvas.addEventListener('touchstart', iniciarDibujo, {passive: false}); canvas.addEventListener('touchend', terminarDibujo); canvas.addEventListener('touchmove', dibujar, {passive: false});
+        function limpiarPizarra() { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+
+
+        // --- SISTEMA BEBRAS (4 NIVELES CADA UNO) ---
+        let completedGames = { robot: false, codigo: false, puerta: false };
+
+        function checkGlobalBebras() {
+            if(completedGames.robot && completedGames.codigo && completedGames.puerta) {
+                document.getElementById('quemamentes-container').classList.remove('hidden-section');
+            }
+        }
+
+        // 1. BEBRAS: ROBOT
+        const lvlsRobot = [
+            { inst: "↑ ↑ →", start: 12, target: 3 }, // Nivel 1
+            { inst: "← ↓ ↓", start: 12, target: 21 }, // Nivel 2
+            { inst: "Repetir 2 veces: [→ ↑]", start: 10, target: 2 }, // Nivel 3 
+            { inst: "↑ ← ↑ → → ↓", start: 12, target: 8 } // Nivel 4
+        ];
+        let cLvlRobot = 0; let celdaSelRobot = null;
+        
+        function loadRobot() {
+            if(cLvlRobot >= lvlsRobot.length) {
+                document.getElementById('card-robot').innerHTML = '<div class="flex-1 flex flex-col justify-center items-center text-center"><span class="text-[5rem] mb-4">🏆</span><h3 class="text-3xl font-black text-green-400 drop-shadow">Robot Dominado</h3></div>';
+                completedGames.robot = true; checkGlobalBebras(); return;
+            }
+            const lvl = lvlsRobot[cLvlRobot];
+            document.getElementById('ind-robot').innerText = `Nivel ${cLvlRobot+1}/4`;
+            document.getElementById('inst-robot').innerHTML = `Instrucciones:<br><strong class="text-yellow-300 text-lg">${lvl.inst}</strong><br>Tocá la celda final.`;
+            
+            const grid = document.getElementById('grilla-robot'); grid.innerHTML = ''; celdaSelRobot = null;
+            for(let i=0; i<25; i++) {
+                let div = document.createElement('div'); div.className = 'celda-bebras';
+                if(i === lvl.start) div.innerHTML = '🤖';
+                div.onclick = function() {
+                    grid.querySelectorAll('.celda-bebras').forEach(c => { c.classList.remove('marcada'); if(c.innerHTML==='📍') c.innerHTML=''; });
+                    this.classList.add('marcada'); if(this.innerHTML === '') this.innerHTML = '📍';
+                    celdaSelRobot = i;
+                };
+                grid.appendChild(div);
+            }
+            document.getElementById('feed-robot').classList.add('hidden');
+        }
+
+        function verificarRobot() {
+            if(celdaSelRobot === null) return;
+            const target = lvlsRobot[cLvlRobot].target;
+            const feed = document.getElementById('feed-robot'); feed.classList.remove('hidden');
+            if(celdaSelRobot === target) {
+                feed.className = "mt-3 font-bold text-center w-full rounded p-2 bg-green-500/20 text-green-300 border border-green-400";
+                feed.innerText = "✅ ¡Correcto!";
+                setTimeout(() => { cLvlRobot++; loadRobot(); }, 1000);
+            } else {
+                feed.className = "mt-3 font-bold text-center w-full rounded p-2 bg-red-500/20 text-red-300 border border-red-400";
+                feed.innerText = "❌ Error en el cálculo.";
+            }
+        }
+        loadRobot();
+
+        // 2. BEBRAS: CÓDIGO
+        const lvlsCodigo = [
+            { code: "3 - 1 - 20", word: "CAT", letters: ["C","A","T","M","B"] },
+            { code: "4 - 15 - 7", word: "DOG", letters: ["D","A","O","G","P"] },
+            { code: "23 - 5 - 2", word: "WEB", letters: ["W","E","B","V","F"] },
+            { code: "10 - 1 - 22 - 1", word: "JAVA", letters: ["J","A","V","A","Y"] }
+        ];
+        let cLvlCodigo = 0; let letraSelId = null;
+
+        function loadCodigo() {
+            if(cLvlCodigo >= lvlsCodigo.length) {
+                document.getElementById('card-codigo').innerHTML = '<div class="flex-1 flex flex-col justify-center items-center text-center"><span class="text-[5rem] mb-4">🏆</span><h3 class="text-3xl font-black text-green-400 drop-shadow">Hackeado</h3></div>';
+                completedGames.codigo = true; checkGlobalBebras(); return;
+            }
+            const lvl = lvlsCodigo[cLvlCodigo];
+            document.getElementById('ind-codigo').innerText = `Nivel ${cLvlCodigo+1}/4`;
+            document.getElementById('inst-codigo').innerText = lvl.code;
+            
+            const dropCont = document.getElementById('zonas-drop-bebras'); dropCont.innerHTML = '';
+            for(let i=0; i<lvl.word.length; i++){
+                let z = document.createElement('div'); z.className = 'zona-letra'; z.id = `drop-${i}`;
+                z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('drag-over'); });
+                z.addEventListener('dragleave', () => z.classList.remove('drag-over'));
+                z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('drag-over'); const id = e.dataTransfer.getData('text'); if(id){ z.innerHTML=''; z.appendChild(document.getElementById(id)); }});
+                z.addEventListener('click', function() { if(letraSelId){ this.innerHTML=''; const el=document.getElementById(letraSelId); el.classList.remove('seleccionada-bebras'); this.appendChild(el); letraSelId=null; }});
+                dropCont.appendChild(z);
+            }
+
+            const bank = document.getElementById('banco-letras'); bank.innerHTML = '';
+            lvl.letters.sort(()=>Math.random()-0.5).forEach((l, i) => {
+                let d = document.createElement('div'); d.className = 'letra-drag'; d.id = `ld-${cLvlCodigo}-${i}`; d.draggable = true; d.innerText = l;
+                d.addEventListener('dragstart', e => e.dataTransfer.setData('text', d.id));
+                d.onclick = () => { document.querySelectorAll('.letra-drag').forEach(el=>el.classList.remove('seleccionada-bebras')); letraSelId = d.id; d.classList.add('seleccionada-bebras'); };
+                bank.appendChild(d);
+            });
+            document.getElementById('feed-codigo').classList.add('hidden');
+        }
+
+        function verificarCodigo() {
+            const word = lvlsCodigo[cLvlCodigo].word;
+            let current = Array.from(document.getElementById('zonas-drop-bebras').children).map(z => z.innerText).join('');
+            const feed = document.getElementById('feed-codigo'); feed.classList.remove('hidden');
+            if(current === word) {
+                feed.className = "mt-3 font-bold text-center w-full rounded p-2 bg-green-500/20 text-green-300 border border-green-400";
+                feed.innerText = "✅ ¡Exacto!";
+                setTimeout(() => { cLvlCodigo++; loadCodigo(); }, 1000);
+            } else {
+                feed.className = "mt-3 font-bold text-center w-full rounded p-2 bg-red-500/20 text-red-300 border border-red-400";
+                feed.innerText = "❌ Incorrecto.";
+            }
+        }
+        loadCodigo();
+
+        // 3. BEBRAS: PUERTA
+        const lvlsPuerta = [
+            { inst: "Abrir si: A está ON <strong class='text-yellow-300'>Y</strong> B está ON.", keys: ['A','B'], eval: (s) => s.A && s.B },
+            { inst: "Abrir si: A está ON <strong class='text-yellow-300'>O</strong> B está ON.", keys: ['A','B'], eval: (s) => s.A || s.B },
+            { inst: "Abrir si: A ON <strong class='text-yellow-300'>Y</strong> (B ON <strong>O</strong> C ON)", keys: ['A','B','C'], eval: (s) => s.A && (s.B || s.C) },
+            { inst: "Abrir si: (A <strong class='text-yellow-300'>Y</strong> B) ON <strong class='text-yellow-300'>O</strong> (C <strong>Y</strong> D) ON", keys: ['A','B','C','D'], eval: (s) => (s.A && s.B) || (s.C && s.D) }
+        ];
+        let cLvlPuerta = 0; let stateSwitches = {};
+
+        function loadPuerta() {
+            if(cLvlPuerta >= lvlsPuerta.length) {
+                document.getElementById('card-puerta').innerHTML = '<div class="flex-1 flex flex-col justify-center items-center text-center"><span class="text-[5rem] mb-4">🏆</span><h3 class="text-3xl font-black text-green-400 drop-shadow">Maestro Lógico</h3></div>';
+                completedGames.puerta = true; checkGlobalBebras(); return;
+            }
+            const lvl = lvlsPuerta[cLvlPuerta]; stateSwitches = {};
+            document.getElementById('ind-puerta').innerText = `Nivel ${cLvlPuerta+1}/4`;
+            document.getElementById('inst-puerta').innerHTML = lvl.inst;
+            document.getElementById('puerta-visual').classList.remove('puerta-abierta');
+            
+            const cont = document.getElementById('switches-container'); cont.innerHTML = '';
+            lvl.keys.forEach(k => {
+                stateSwitches[k] = false;
+                let div = document.createElement('div'); div.className = "switch-container text-white";
+                div.innerHTML = `<span>${k}</span><div class="toggle-switch" id="sw-${k}" onclick="togglePuerta('${k}')"><div class="toggle-knob"></div></div>`;
+                cont.appendChild(div);
+            });
+            document.getElementById('feed-puerta').classList.add('hidden');
+        }
+
+        function togglePuerta(k) {
+            stateSwitches[k] = !stateSwitches[k];
+            document.getElementById('sw-'+k).classList.toggle('activo');
+        }
+
+        function verificarPuerta() {
+            const lvl = lvlsPuerta[cLvlPuerta];
+            const result = lvl.eval(stateSwitches);
+            const feed = document.getElementById('feed-puerta'); feed.classList.remove('hidden');
+            const puerta = document.getElementById('puerta-visual');
+
+            if(result) {
+                puerta.classList.add('puerta-abierta');
+                feed.className = "mt-3 font-bold text-center w-full rounded p-2 bg-green-500/20 text-green-300 border border-green-400";
+                feed.innerText = "✅ ¡Se abrió!";
+                setTimeout(() => { cLvlPuerta++; loadPuerta(); }, 1500);
+            } else {
+                puerta.classList.remove('puerta-abierta');
+                feed.className = "mt-3 font-bold text-center w-full rounded p-2 bg-red-500/20 text-red-300 border border-red-400";
+                feed.innerText = "❌ Las reglas no se cumplen.";
+            }
+        }
+        loadPuerta();
+
+
+        // --- SECCIÓN QUEMAMENTES ---
+        function desbloquearQuemamentes() {
+            document.getElementById('quemamentes-container').style.display = 'none';
+            document.getElementById('seccion-quemamentes').classList.remove('hidden-section');
+            document.getElementById('seccion-quemamentes').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        const desafiosTexto = [
+            { icono: "🐺", titulo: "El Río", pregunta: "¿Qué cruzás primero?", texto: "Un granjero cruza un río con un Lobo, una Cabra y una Lechuga. Solo puede llevar uno a la vez.<br>Regla: Si el granjero se va, el lobo come a la cabra. Y la cabra come a la lechuga.<br>Escribí el nombre del animal o verdura para el 1er viaje.", keywords: ["cabra", "chivo"], errMsj: "¡Se comieron a alguien!" },
+            { icono: "🏃", titulo: "Maratón", pregunta: "¿En qué puesto quedás?", texto: "Faltan 10m y pasás al corredor que va en 2do lugar. Escribí tu puesto actual (en número).", keywords: ["2", "dos", "segundo"], errMsj: "Vos tomaste su lugar." },
+            { icono: "🐌", titulo: "Caracol", pregunta: "¿En cuántos días llega?", texto: "Pared de 10m. De día sube 3m. De noche baja 2m. Escribí el número de días.", keywords: ["8", "ocho"], errMsj: "Día 7 empieza en 7m..." },
+            { icono: "📦", titulo: "Cajas", pregunta: "¿Dónde está? (A, B o C)", texto: "Caja A: 'Acá está'. Caja B: 'Acá NO está'. Caja C: 'En la A no está'. Solo UNA dice la verdad. Escribí la letra.", keywords: ["b"], errMsj: "Si C dice la verdad, A miente. B miente (así que SÍ está en B)." },
+            { icono: "🔢", titulo: "Patrones", pregunta: "¿Qué número sigue?", texto: "Secuencia: 2, 6, 12, 20, 30, ... Escribí el siguiente.", keywords: ["42"], errMsj: "+4, +6, +8, +10..." },
+            { icono: "⚖️", titulo: "Balanza", pregunta: "¿Mínimo de pesadas?", texto: "9 monedas. 1 es falsa (más liviana). Balanza de dos platillos. ¿Mínimo de pesadas seguras?", keywords: ["2", "dos"], errMsj: "Dividí 3 vs 3." },
+            { icono: "👨‍👦", titulo: "Variables", pregunta: "¿Edad del hijo?", texto: "Padre e hijo = 36 años en total. Padre tiene 30 años MÁS que el hijo. ¿Edad del hijo?", keywords: ["3", "tres"], errMsj: "Si el hijo tiene 6, el padre 36. Total 42. (x + x + 30 = 36)" },
+            { icono: "💻", titulo: "Binario", pregunta: "Número 9 en binario", texto: "Focos: [8] [4] [2] [1]. Escribí el código (unos y ceros) para formar el 9.", keywords: ["1001"], errMsj: "8 + 1 = 9." }
+        ];
+
+        let nivelQM = 0; 
+        document.getElementById("input-desafio").addEventListener("keypress", function(e) { if(e.key === "Enter") { e.preventDefault(); checkRespuestaTexto(); }});
+
+        function renderQuemamentes() {
+            if(nivelQM >= desafiosTexto.length) {
+                document.getElementById('contenido-desafio').style.display = 'none';
+                document.getElementById('mensaje-victoria-final').style.display = 'block';
+                lanzarConfeti(); return;
+            }
+            const d = desafiosTexto[nivelQM];
+            document.getElementById('desafio-dibujo').innerText = d.icono;
+            document.getElementById('desafio-titulo').innerText = d.titulo;
+            document.getElementById('desafio-pregunta').innerText = d.pregunta;
+            document.getElementById('desafio-texto').innerHTML = d.texto;
+            const inputField = document.getElementById('input-desafio'); inputField.value = ""; inputField.focus();
+
+            for(let i=1; i<=8; i++) {
+                const nav = document.getElementById(`nav-${i}`);
+                if(i-1 < nivelQM) nav.className = "nivel-btn nivel-solved";
+                else if(i-1 === nivelQM) nav.className = "nivel-btn nivel-active";
+                else nav.className = "nivel-btn nivel-locked";
+            }
+        }
+
+        function checkRespuestaTexto() {
+            const inputVal = document.getElementById('input-desafio').value.toLowerCase().trim();
+            const normalVal = inputVal.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if(normalVal === "") return;
+
+            const d = desafiosTexto[nivelQM];
+            let correcto = false;
+            for(let kw of d.keywords) { if(normalVal === kw || normalVal.includes(kw)) { correcto = true; break; } }
+
+            const feedback = document.getElementById('desafio-feedback');
+            const icono = document.getElementById('feed-icono'); const msj = document.getElementById('feed-mensaje'); const btn = document.getElementById('feed-btn');
+            feedback.style.display = 'flex';
+
+            if(correcto) {
+                icono.innerText = "✅"; msj.innerText = "¡Respuesta Correcta!";
+                btn.innerText = "Siguiente ➡️"; btn.className = "btn-interactivo px-10 py-4 text-xl font-black rounded-xl bg-green-500 text-white border-b-4 border-green-700 mt-4";
+                btn.onclick = () => { feedback.style.display = 'none'; nivelQM++; actMedallasQM(); renderQuemamentes(); };
+            } else {
+                icono.innerText = "❌"; msj.innerText = d.errMsj;
+                btn.innerText = "Reintentar 🔄"; btn.className = "btn-interactivo px-10 py-4 text-xl font-black rounded-xl bg-red-500 text-white border-b-4 border-red-700 mt-4";
+                btn.onclick = () => { feedback.style.display = 'none'; document.getElementById('input-desafio').focus(); };
+            }
+        }
+
+        function actMedallasQM() {
+            if(nivelQM === 1) document.getElementById('medalla-1').classList.add('activa');
+            if(nivelQM === 3) document.getElementById('medalla-2').classList.add('activa');
+            if(nivelQM === 6) document.getElementById('medalla-3').classList.add('activa');
+            if(nivelQM === 8) document.getElementById('medalla-4').classList.add('activa');
+        }
+        renderQuemamentes();
+
+
+        // --- QUIZ FINAL ---
+        const preguntasQuiz = [
+            { q: "¿Qué es un programa?", options: ["Una pieza de metal", "Una lista de instrucciones lógicas", "Un monitor táctil"], correct: 1 },
+            { q: "¿Qué es un algoritmo?", options: ["Una receta o secuencia de pasos", "Un virus", "Un juego"], correct: 0 },
+            { q: "El Pensamiento Computacional nos ayuda a:", options: ["Tipear rápido", "Armar la PC", "Analizar problemas y dividirlos"], correct: 2 },
+            { q: "Las computadoras...", options: ["Tienen sentido común", "Necesitan instrucciones exactas"], correct: 1 }
+        ];
+        let quizAct = 0; let quizPts = 0;
+
+        function cargarQuiz() {
+            if(quizAct >= preguntasQuiz.length) {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('quiz-score-text').innerText = `Lograste ${quizPts} de ${preguntasQuiz.length} puntos.`;
+                return;
+            }
+            const p = preguntasQuiz[quizAct];
+            document.getElementById('quiz-question').innerText = p.q;
+            document.getElementById('quiz-count').innerText = quizAct + 1;
+            document.getElementById('quiz-progress').style.width = ((quizAct) / preguntasQuiz.length) * 100 + "%";
+            const cont = document.getElementById('quiz-options'); cont.innerHTML = '';
+            p.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-black/20 text-left p-4 rounded-xl font-bold border border-white/30 hover:bg-white/20 transition text-white text-lg';
+                btn.innerText = opt; btn.onclick = () => { if(index === p.correct) quizPts++; quizAct++; cargarQuiz(); };
+                cont.appendChild(btn);
+            });
+        }
+        function reiniciarQuiz() {
+            quizAct = 0; quizPts = 0;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+        cargarQuiz();
+
+    </script>
+</body>
+</html>

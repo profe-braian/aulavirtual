@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disco Rígido - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .btn-interactivo:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-interactivo:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ESTILOS DEL SIMULADOR DE DISCO --- */
+        .simulador-container {
+            background-color: #1e293b;
+            border-radius: 20px;
+            border: 8px solid #475569;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .plato-disco {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #cbd5e1 10%, #64748b 40%, #94a3b8 70%, #475569 90%);
+            border: 2px solid #334155;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: transform 1s ease-in-out;
+        }
+        .plato-girando { animation: girarDisco 0.5s linear infinite; }
+        @keyframes girarDisco { 100% { transform: rotate(360deg); } }
+
+        .centro-plato {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #cbd5e1; border: 4px solid #334155;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 10;
+        }
+
+        .cabezal {
+            width: 120px; height: 20px;
+            background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+            position: absolute; right: -40px; top: 40%;
+            transform-origin: right center;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+            transform: rotate(-30deg); /* Reposo */
+            z-index: 20;
+        }
+        .cabezal-leyendo { transform: rotate(10deg); }
+
+        .luz-lectura {
+            width: 10px; height: 10px; background: red;
+            border-radius: 50%; position: absolute; left: 5px; top: 5px;
+            box-shadow: 0 0 10px red; opacity: 0;
+        }
+        .luz-activa { opacity: 1; animation: parpadeo 0.1s infinite; }
+        @keyframes parpadeo { 0% {opacity: 1} 50% {opacity: 0.2} 100% {opacity: 1} }
+
+        .archivo-icono {
+            position: absolute; font-size: 1.5rem;
+            transform: translate(-50%, -50%); z-index: 5;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+        }
+
+        /* --- ESTILOS JUEGO MATCH --- */
+        .match-btn { border: 4px solid transparent; transition: all 0.3s ease; }
+        .match-selected { border-color: #fde047; transform: scale(1.05); }
+        .match-correct { background-color: #4ade80 !important; border-color: #166534 !important; color: white; pointer-events: none; }
+        .match-wrong { animation: shake 0.5s; border-color: #ef4444; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+    </style>
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">🗄️</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Disco Rígido</h1>
+                    <h2 class="text-2xl md:text-3xl font-bold opacity-90">Donde vive la información</h2>
+                    <p class="text-lg md:text-xl font-bold mt-2 opacity-80">Descubrimos dónde se guardan nuestros archivos para siempre.</p>
+                </div>
+            </div>
+            <a href="index5to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-10 fade-up bg-white/10 border-l-8 border-sky-400" style="animation-delay: 0.1s;">
+            <h2 class="text-3xl font-black mb-4 flex items-center gap-3"><span class="text-4xl">⏪</span> Repaso rápido</h2>
+            <p class="text-xl font-bold mb-4 leading-relaxed">
+                En las clases anteriores aprendimos que dentro de la computadora hay tres partes muy importantes:
+            </p>
+            <div class="flex flex-wrap gap-4 font-black text-xl mb-6">
+                <span class="bg-pink-500/20 text-pink-700 dark:text-pink-300 px-4 py-2 rounded-xl border border-pink-400">🧠 CPU (Cerebro)</span>
+                <span class="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 px-4 py-2 rounded-xl border border-yellow-400">⚡ RAM (Mesa de trabajo temporal)</span>
+                <span class="bg-green-500/20 text-green-700 dark:text-green-300 px-4 py-2 rounded-xl border border-green-400">🗄️ Disco Rígido</span>
+            </div>
+            <p class="text-xl font-bold leading-relaxed bg-black/10 p-4 rounded-xl">
+                Hoy vamos a investigar la última pieza: <strong>El Disco Rígido</strong>. Vamos a descubrir qué hace y dónde se guardan realmente nuestros archivos.
+            </p>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-green-400 relative overflow-hidden" style="animation-delay: 0.2s;">
+            <span class="absolute -right-6 -bottom-6 text-[12rem] opacity-10">💾</span>
+            <div class="flex items-center gap-4 mb-6 relative z-10">
+                <span class="text-5xl">💾</span>
+                <h2 class="text-3xl md:text-5xl font-black text-green-600 dark:text-green-300">Disco Rígido (Almacenamiento)</h2>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 relative z-10">El lugar donde se guardan las cosas</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                <div class="bg-black/10 p-6 rounded-2xl">
+                    <p class="font-black text-xl mb-4">Acá es donde guardamos para siempre:</p>
+                    <div class="grid grid-cols-2 gap-4 text-lg font-bold">
+                        <div class="bg-white/20 p-3 rounded-lg flex items-center gap-2">📸 Fotos</div>
+                        <div class="bg-white/20 p-3 rounded-lg flex items-center gap-2">🎬 Videos</div>
+                        <div class="bg-white/20 p-3 rounded-lg flex items-center gap-2">📝 Documentos</div>
+                        <div class="bg-white/20 p-3 rounded-lg flex items-center gap-2">🎮 Juegos</div>
+                        <div class="bg-white/20 p-3 rounded-lg flex items-center gap-2 col-span-2">💻 Programas (Windows, Paint)</div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col justify-center">
+                    <div class="bg-red-500/20 border-l-8 border-red-500 p-6 rounded-xl">
+                        <h4 class="font-black text-xl text-red-700 dark:text-red-300 mb-2">La Gran Diferencia</h4>
+                        <p class="text-lg font-bold">A diferencia de la RAM (que se vacía al apagar la compu), <strong>el disco rígido NO se borra</strong>. ¡Mantiene todo guardado aunque desconectes la compu de la corriente!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up" style="animation-delay: 0.3s;">
+            <h2 class="text-3xl font-black mb-8 text-center text-white drop-shadow-md">La Comparación Definitiva</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-black/20 text-xl font-black">
+                            <th class="p-4 rounded-tl-2xl">Componente</th>
+                            <th class="p-4 text-center">En la vida real...</th>
+                            <th class="p-4 rounded-tr-2xl">¿Qué hace?</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-lg font-bold bg-black/10">
+                        <tr class="border-b border-white/20 hover:bg-white/20 transition">
+                            <td class="p-4 flex items-center gap-3"><span class="text-3xl">🧠</span> CPU</td>
+                            <td class="p-4 text-center text-pink-300 font-black">Tu Cerebro</td>
+                            <td class="p-4 opacity-90">Piensa, calcula y da las órdenes.</td>
+                        </tr>
+                        <tr class="border-b border-white/20 hover:bg-white/20 transition">
+                            <td class="p-4 flex items-center gap-3"><span class="text-3xl">⚡</span> RAM</td>
+                            <td class="p-4 text-center text-yellow-300 font-black">La Mesa de trabajo</td>
+                            <td class="p-4 opacity-90">Guarda lo que estás usando <strong>EN ESTE MOMENTO</strong> para trabajar rápido.</td>
+                        </tr>
+                        <tr class="hover:bg-white/20 transition">
+                            <td class="p-4 flex items-center gap-3"><span class="text-3xl">🗄️</span> Disco Rígido</td>
+                            <td class="p-4 text-center text-green-300 font-black">La Biblioteca / Armario</td>
+                            <td class="p-4 opacity-90">Guarda TODO permanentemente. Cuando necesitas algo, lo sacas de acá y lo pones en la mesa (RAM).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-yellow-300" style="animation-delay: 0.4s;">
+            <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">⚡</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Laboratorio: Simulador de Corte de Luz</h2>
+                </div>
+                <button onclick="reiniciarSimulador()" class="bg-slate-700 text-white font-bold px-4 py-2 rounded-xl hover:bg-slate-600">🔄 Reiniciar Lab</button>
+            </div>
+            
+            <p class="text-xl font-bold mb-8 opacity-90">Agregá archivos y fíjate dónde se guardan. Después... ¡Presioná el botón rojo para cortar la luz y mirá qué sobrevive!</p>
+
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex flex-col gap-4 w-full lg:w-1/3">
+                    <button onclick="accionSimulador('foto')" class="btn-interactivo bg-blue-500 text-white font-black text-xl p-4 rounded-xl shadow-lg border-b-4 border-blue-700 flex justify-between">
+                        <span>1. Guardar Foto</span> <span>📸</span>
+                    </button>
+                    <button onclick="accionSimulador('juego')" class="btn-interactivo bg-purple-500 text-white font-black text-xl p-4 rounded-xl shadow-lg border-b-4 border-purple-700 flex justify-between">
+                        <span>2. Instalar Juego</span> <span>🎮</span>
+                    </button>
+                    <button onclick="accionSimulador('escribir')" class="btn-interactivo bg-yellow-500 text-yellow-900 font-black text-xl p-4 rounded-xl shadow-lg border-b-4 border-yellow-700 flex justify-between">
+                        <span>3. Escribir texto (sin guardar)</span> <span>📝</span>
+                    </button>
+                    <div class="h-2 border-b-2 border-dashed border-white/30 my-2"></div>
+                    <button onclick="corteDeLuz()" class="btn-interactivo bg-red-600 text-white font-black text-2xl p-6 rounded-xl shadow-[0_0_20px_red] hover:shadow-[0_0_30px_red] border-b-4 border-red-800 flex justify-center items-center gap-3 animate-pulse">
+                        ¡CORTAR LA LUZ! 🔌
+                    </button>
+                </div>
+
+                <div class="simulador-container w-full lg:w-2/3 p-6 flex flex-col sm:flex-row items-center justify-around gap-8">
+                    
+                    <div class="flex flex-col items-center relative">
+                        <h3 class="text-white font-black mb-4 text-xl">Disco Rígido 🗄️</h3>
+                        <div class="relative w-[220px] h-[220px] bg-slate-800 rounded-xl p-2 border-4 border-slate-600 flex items-center justify-center">
+                            <div id="sim-plato" class="plato-disco">
+                                <div class="centro-plato"></div>
+                                <div id="disco-archivos" class="absolute inset-0 w-full h-full"></div>
+                            </div>
+                            <div id="sim-brazo" class="cabezal">
+                                <div id="sim-laser" class="luz-lectura"></div>
+                            </div>
+                        </div>
+                        <span class="mt-4 bg-green-500 text-white font-bold px-3 py-1 rounded-full text-sm">Almacenamiento Permanente</span>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <h3 class="text-white font-black mb-4 text-xl">Memoria RAM ⚡</h3>
+                        <div id="sim-ram-box" class="w-[150px] h-[220px] bg-green-600 border-4 border-yellow-400 rounded-md flex flex-col justify-end p-2 gap-2 relative overflow-hidden transition-colors">
+                            </div>
+                        <span class="mt-4 bg-yellow-500 text-yellow-900 font-bold px-3 py-1 rounded-full text-sm">Memoria Temporal</span>
+                    </div>
+
+                </div>
+            </div>
+            <div id="sim-mensaje" class="text-center mt-6 text-2xl font-black min-h-[40px] text-yellow-300 drop-shadow"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🤔</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 1: ¿Dónde se guarda permanentemente?</h2>
+            </div>
+            
+            <div class="bg-black/20 p-8 rounded-3xl text-center relative">
+                <p class="text-xl font-bold mb-2 opacity-80">Aparecerá un archivo. ¿En qué parte queda guardado para siempre?</p>
+                <div id="j1-archivo" class="text-6xl md:text-8xl font-black text-white drop-shadow-md mb-8 py-8 animate-bounce">
+                    📸 Foto
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-6" id="j1-botones">
+                    <button onclick="verificarJuego1('RAM')" class="btn-interactivo bg-yellow-500 text-yellow-900 font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-yellow-700 w-full sm:w-auto">
+                        En la RAM ⚡
+                    </button>
+                    <button onclick="verificarJuego1('Disco')" class="btn-interactivo bg-green-500 text-white font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-green-700 w-full sm:w-auto">
+                        En el Disco 🗄️
+                    </button>
+                </div>
+                
+                <div id="j1-feedback" class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-4xl md:text-5xl font-black rounded-3xl hidden backdrop-blur-md z-10 p-4 text-center"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-blue-400" style="animation-delay: 0.6s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🗂️</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 2: Repaso Hardware vs Software</h2>
+            </div>
+            <p class="text-xl font-bold mb-6 text-center">Recordemos: Hardware es lo que tocamos, Software son los programas.</p>
+            
+            <div class="bg-black/20 p-8 rounded-3xl text-center relative">
+                <div id="j2-item" class="text-5xl md:text-6xl font-black bg-white text-blue-900 py-8 px-4 rounded-2xl inline-block shadow-xl mb-8 w-[80%] max-w-[400px]">
+                    ⌨️ Teclado
+                </div>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-6" id="j2-botones">
+                    <button onclick="verificarJuego2('Hardware')" class="btn-interactivo bg-orange-500 text-white font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-orange-700 w-full sm:w-auto">
+                        Es Hardware 🖥️
+                    </button>
+                    <button onclick="verificarJuego2('Software')" class="btn-interactivo bg-purple-500 text-white font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-purple-700 w-full sm:w-auto">
+                        Es Software 💿
+                    </button>
+                </div>
+                <div id="j2-feedback" class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-4xl md:text-5xl font-black rounded-3xl hidden backdrop-blur-md z-10"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-l-8 border-pink-400" style="animation-delay: 0.7s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎮</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 3: ¿Qué parte trabaja?</h2>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 situation-box">
+                    <p class="text-2xl font-black mb-4">1. Terminaste un dibujo en Paint y tocás el botón "Guardar".</p>
+                    <div class="flex flex-wrap gap-4 mb-4 sit-options">
+                        <button class="flex-1 min-w-[120px] p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'La CPU hace el proceso, pero el archivo se va a otro lado.')">CPU</button>
+                        <button class="flex-1 min-w-[120px] p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'La RAM lo tenía mientras dibujabas, ¡pero ahora lo guardás para no perderlo!')">RAM</button>
+                        <button class="flex-1 min-w-[120px] p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, true, '¡Exacto! Al darle a guardar, viaja directo al Disco Rígido para quedarse ahí.')">Disco</button>
+                    </div>
+                    <div class="sit-feedback hidden p-4 rounded-xl text-lg font-bold"></div>
+                </div>
+                
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 situation-box">
+                    <p class="text-2xl font-black mb-4">2. Estás moviendo tu personaje en el Roblox súper rápido.</p>
+                    <div class="flex flex-wrap gap-4 mb-4 sit-options">
+                        <button class="flex-1 min-w-[120px] p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, true, '¡Sí! Es la CPU haciendo millones de cálculos para procesar tus movimientos.')">CPU</button>
+                        <button class="flex-1 min-w-[120px] p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'Casi, la RAM tiene el juego abierto, pero no calcula los movimientos.')">RAM</button>
+                        <button class="flex-1 min-w-[120px] p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'El disco solo guarda el juego instalado, no lo juega.')">Disco</button>
+                    </div>
+                    <div class="sit-feedback hidden p-4 rounded-xl text-lg font-bold"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up" style="animation-delay: 0.8s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎬</span>
+                <h2 class="text-3xl md:text-4xl font-black">Cómo trabaja la compu en equipo</h2>
+            </div>
+            <p class="text-xl font-bold mb-8 text-center">Así es el viaje cuando abrís un juego:</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-black/20 p-6 rounded-2xl border-t-4 border-white text-center flex flex-col items-center">
+                    <div class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center text-3xl font-black mb-4 shadow">1</div>
+                    <span class="text-5xl mb-3">🖱️</span>
+                    <p class="font-bold text-lg">Hacés doble clic para abrir el juego.</p>
+                </div>
+                <div class="bg-black/20 p-6 rounded-2xl border-t-4 border-green-400 text-center flex flex-col items-center relative">
+                    <span class="hidden lg:block absolute -left-6 top-1/2 text-3xl">➡️</span>
+                    <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl font-black mb-4 shadow">2</div>
+                    <span class="text-5xl mb-3">🗄️</span>
+                    <p class="font-bold text-lg">El <strong>Disco Rígido</strong> busca el juego guardado.</p>
+                </div>
+                <div class="bg-black/20 p-6 rounded-2xl border-t-4 border-yellow-400 text-center flex flex-col items-center relative">
+                    <span class="hidden lg:block absolute -left-6 top-1/2 text-3xl">➡️</span>
+                    <div class="w-16 h-16 bg-yellow-500 text-white rounded-full flex items-center justify-center text-3xl font-black mb-4 shadow">3</div>
+                    <span class="text-5xl mb-3">⚡</span>
+                    <p class="font-bold text-lg">Se carga en la <strong>RAM</strong> para tenerlo listo y rápido.</p>
+                </div>
+                <div class="bg-black/20 p-6 rounded-2xl border-t-4 border-pink-400 text-center flex flex-col items-center relative">
+                    <span class="hidden lg:block absolute -left-6 top-1/2 text-3xl">➡️</span>
+                    <div class="w-16 h-16 bg-pink-500 text-white rounded-full flex items-center justify-center text-3xl font-black mb-4 shadow">4</div>
+                    <span class="text-5xl mb-3">🧠</span>
+                    <p class="font-bold text-lg">La <strong>CPU</strong> procesa los gráficos para que juegues.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-sky-400 relative overflow-hidden" style="animation-delay: 0.9s;">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">📝</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Quiz de Repaso General</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-4 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span>/5</div>
+            </div>
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 20%"></div>
+            </div>
+            <div id="quiz-container" class="min-h-[250px]">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            <div id="quiz-result" class="hidden text-center py-10">
+                <h3 class="text-4xl font-black mb-4">¡Prueba Completada!</h3>
+                <div id="quiz-medal" class="text-8xl mb-6"></div>
+                <p id="quiz-score-text" class="text-3xl font-bold mb-2"></p>
+                <p class="text-xl font-bold text-sky-200 mb-8">¡Sos un maestro del Hardware!</p>
+                <button onclick="reiniciarQuiz()" class="bg-sky-500 text-white font-black px-8 py-4 rounded-xl hover:bg-sky-400 transition shadow-lg text-xl">Reintentar Quiz</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-red-400 bg-red-500/10" style="animation-delay: 1s;">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-6xl">🧠🚨</span>
+                <h2 class="text-3xl md:text-4xl font-black text-red-300">Desafío Experto</h2>
+            </div>
+            <p class="text-2xl font-bold mb-6">Si desarmo la computadora, le saco el <strong>Disco Rígido</strong> y la vuelvo a prender... ¿Qué pasa con mis archivos, fotos y juegos?</p>
+            
+            <div class="flex flex-col gap-4 mt-8" id="df-opciones">
+                <button onclick="checkDF(this, false)" class="btn-interactivo bg-black/30 p-4 rounded-xl font-black text-xl text-left border-2 border-transparent hover:bg-black/50">Siguen estando, porque se guardaron en la CPU.</button>
+                <button onclick="checkDF(this, false)" class="btn-interactivo bg-black/30 p-4 rounded-xl font-black text-xl text-left border-2 border-transparent hover:bg-black/50">Siguen estando, porque están en la RAM.</button>
+                <button onclick="checkDF(this, true)" class="btn-interactivo bg-black/30 p-4 rounded-xl font-black text-xl text-left border-2 border-transparent hover:bg-black/50">Se pierden en esa compu, porque todos estaban adentro de ese Disco que sacaste.</button>
+            </div>
+            <div id="df-mensaje" class="mt-6 text-xl font-bold hidden p-4 rounded-2xl border"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-12" style="animation-delay: 1.1s;">
+            <h2 class="text-3xl font-black mb-6 text-pink-300">💭 Reflexión final</h2>
+            <p class="text-xl mb-6 font-bold">¿Por qué creés que es súper importante guardar los archivos en el disco rígido y no dejarlos solo abiertos en la pantalla?</p>
+            
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="650" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- MODO OSCURO ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema5to_c3', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema5to_c3') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+
+        // --- SIMULADOR DE CORTE DE LUZ ---
+        const simPlato = document.getElementById('sim-plato');
+        const simBrazo = document.getElementById('sim-brazo');
+        const simLaser = document.getElementById('sim-laser');
+        const discoArchivos = document.getElementById('disco-archivos');
+        const ramBox = document.getElementById('sim-ram-box');
+        const simMensaje = document.getElementById('sim-mensaje');
+
+        let posicionArchivo = 0;
+
+        function animarDisco() {
+            simPlato.classList.add('plato-girando');
+            simBrazo.classList.add('cabezal-leyendo');
+            simLaser.classList.add('luz-activa');
+            setTimeout(() => {
+                simPlato.classList.remove('plato-girando');
+                simBrazo.classList.remove('cabezal-leyendo');
+                simLaser.classList.remove('luz-activa');
+            }, 1000);
+        }
+
+        function agregarARam(icono, color) {
+            const item = document.createElement('div');
+            item.className = `w-full h-12 ${color} rounded flex items-center justify-center text-2xl shadow ram-item transform transition-all`;
+            item.innerHTML = icono;
+            ramBox.appendChild(item);
+        }
+
+        function agregarADisco(icono) {
+            const item = document.createElement('div');
+            item.className = 'archivo-icono';
+            item.innerHTML = icono;
+            // Posicionar en círculo
+            const angulo = posicionArchivo * 45 * (Math.PI / 180);
+            const radio = 60;
+            const x = 100 + radio * Math.cos(angulo);
+            const y = 100 + radio * Math.sin(angulo);
+            item.style.left = `${x}px`;
+            item.style.top = `${y}px`;
+            
+            discoArchivos.appendChild(item);
+            posicionArchivo++;
+        }
+
+        function accionSimulador(tipo) {
+            ramBox.classList.remove('bg-red-900', 'border-red-600'); // Reset si hubo corte
+            ramBox.classList.add('bg-green-600', 'border-yellow-400');
+
+            if(tipo === 'foto') {
+                simMensaje.innerHTML = "Guardando foto en el Disco Rígido... 📸";
+                animarDisco();
+                setTimeout(() => { agregarADisco('📸'); simMensaje.innerHTML = "¡Foto guardada para siempre!"; }, 1000);
+            } 
+            else if(tipo === 'juego') {
+                simMensaje.innerHTML = "Instalando juego en el Disco Rígido... 🎮";
+                animarDisco();
+                setTimeout(() => { agregarADisco('🎮'); simMensaje.innerHTML = "¡Juego instalado!"; }, 1000);
+            }
+            else if(tipo === 'escribir') {
+                simMensaje.innerHTML = "Escribiendo texto en la RAM (¡Sin guardar!)... 📝";
+                agregarARam('📝', 'bg-white text-black');
+            }
+        }
+
+        function corteDeLuz() {
+            simMensaje.innerHTML = "¡CORTASTE LA LUZ! 🚨 La compu se apagó de golpe.";
+            
+            // Efecto visual de apagón
+            ramBox.classList.replace('bg-green-600', 'bg-slate-900');
+            ramBox.classList.replace('border-yellow-400', 'border-slate-700');
+            
+            // Vaciar RAM
+            const ramItems = document.querySelectorAll('.ram-item');
+            ramItems.forEach(item => {
+                item.style.transform = 'scale(0)';
+                setTimeout(() => item.remove(), 500);
+            });
+
+            setTimeout(() => {
+                const perdidos = ramItems.length;
+                if(perdidos > 0) {
+                    simMensaje.innerHTML = `🚨 La RAM se vació. ¡Perdiste ${perdidos} archivo(s) que no habías guardado! Pero lo del Disco sigue ahí.`;
+                } else {
+                    simMensaje.innerHTML = "🔌 La compu se apagó. La RAM se vació, pero tus cosas del Disco Rígido están a salvo.";
+                }
+            }, 1000);
+        }
+
+        function reiniciarSimulador() {
+            discoArchivos.innerHTML = '';
+            ramBox.innerHTML = '';
+            posicionArchivo = 0;
+            ramBox.classList.replace('bg-slate-900', 'bg-green-600');
+            ramBox.classList.replace('border-slate-700', 'border-yellow-400');
+            simMensaje.innerHTML = "Simulador reiniciado.";
+        }
+
+
+        // --- JUEGO 1 (DÓNDE SE GUARDA) ---
+        const archivosJ1 = [
+            { nombre: '📸 Foto', resp: 'Disco' },
+            { nombre: '🎬 Video', resp: 'Disco' },
+            { nombre: '🎮 Juego', resp: 'Disco' },
+            { nombre: '📝 Un texto que NO guardaste', resp: 'RAM' }
+        ];
+        let indiceJ1 = 0;
+
+        function cargarJuego1() {
+            if(indiceJ1 >= archivosJ1.length) {
+                document.getElementById('j1-archivo').innerHTML = '¡Genial! 🏆';
+                document.getElementById('j1-archivo').classList.remove('animate-bounce');
+                document.getElementById('j1-botones').style.display = 'none';
+                return;
+            }
+            document.getElementById('j1-archivo').innerHTML = archivosJ1[indiceJ1].nombre;
+        }
+
+        function verificarJuego1(respuesta) {
+            const archivo = archivosJ1[indiceJ1];
+            const feedback = document.getElementById('j1-feedback');
+            feedback.classList.remove('hidden');
+
+            if(respuesta === archivo.resp) {
+                feedback.innerHTML = `<span class="text-green-400 bg-black/90 px-8 py-4 rounded-3xl">✔ ¡Correcto! Va al ${archivo.resp}</span>`;
+                indiceJ1++;
+                setTimeout(() => { feedback.classList.add('hidden'); cargarJuego1(); }, 1500);
+            } else {
+                feedback.innerHTML = '<span class="text-red-400 bg-black/90 px-8 py-4 rounded-3xl">❌ Pensalo bien...</span>';
+                setTimeout(() => feedback.classList.add('hidden'), 1200);
+            }
+        }
+        cargarJuego1();
+
+        // --- JUEGO 2 (HARDWARE VS SOFTWARE) ---
+        const itemsJ2 = [
+            { nombre: '⌨️ Teclado', resp: 'Hardware' },
+            { nombre: '🎨 Paint', resp: 'Software' },
+            { nombre: '🧠 CPU', resp: 'Hardware' },
+            { nombre: '🌐 Google Chrome', resp: 'Software' },
+            { nombre: '🎮 Videojuego', resp: 'Software' },
+            { nombre: '🖥️ Monitor', resp: 'Hardware' }
+        ];
+        let indiceJ2 = 0;
+
+        function cargarJuego2() {
+            if(indiceJ2 >= itemsJ2.length) {
+                document.getElementById('j2-item').innerHTML = '¡Clasificación perfecta!';
+                document.getElementById('j2-botones').style.display = 'none';
+                return;
+            }
+            document.getElementById('j2-item').innerHTML = itemsJ2[indiceJ2].nombre;
+        }
+
+        function verificarJuego2(respuesta) {
+            const item = itemsJ2[indiceJ2];
+            const feedback = document.getElementById('j2-feedback');
+            feedback.classList.remove('hidden');
+
+            if(respuesta === item.resp) {
+                feedback.innerHTML = `<span class="text-green-400 bg-black/90 px-8 py-4 rounded-3xl">✔ ¡Sí! Es ${item.resp}</span>`;
+                indiceJ2++;
+                setTimeout(() => { feedback.classList.add('hidden'); cargarJuego2(); }, 1200);
+            } else {
+                feedback.innerHTML = '<span class="text-red-400 bg-black/90 px-8 py-4 rounded-3xl">❌ Error</span>';
+                setTimeout(() => feedback.classList.add('hidden'), 1200);
+            }
+        }
+        cargarJuego2();
+
+        // --- JUEGO 3 (SITUACIONES) ---
+        function checkSit(btn, isCorrect, mensaje) {
+            const container = btn.parentElement;
+            const msjDiv = container.nextElementSibling;
+            
+            Array.from(container.children).forEach(b => b.disabled = true);
+            msjDiv.classList.remove('hidden', 'bg-green-500/20', 'text-green-300', 'bg-red-500/20', 'text-red-300', 'border', 'border-green-400', 'border-red-400');
+            
+            if(isCorrect) {
+                btn.classList.add('bg-green-500', 'text-white', 'border-green-400');
+                btn.classList.remove('bg-black/30', 'hover:bg-black/50');
+                msjDiv.innerHTML = "✅ " + mensaje;
+                msjDiv.classList.add('bg-green-500/20', 'text-green-300', 'border', 'border-green-400');
+            } else {
+                btn.classList.add('bg-red-500', 'text-white', 'border-red-400');
+                btn.classList.remove('bg-black/30', 'hover:bg-black/50');
+                msjDiv.innerHTML = "❌ " + mensaje;
+                msjDiv.classList.add('bg-red-500/20', 'text-red-300', 'border', 'border-red-400');
+            }
+        }
+
+        // --- QUIZ FINAL ---
+        const preguntasQuiz = [
+            { q: "¿Qué parte de la computadora guarda los archivos para siempre?", options: ["La Memoria RAM", "El Disco Rígido", "La CPU"], correct: 1 },
+            { q: "¿Qué parte es el cerebro que piensa y calcula?", options: ["Monitor", "Disco Rígido", "CPU"], correct: 2 },
+            { q: "¿Qué parte guarda información de forma temporal (se borra al apagar)?", options: ["Disco Rígido", "Memoria RAM", "El mouse"], correct: 1 },
+            { q: "Si instalo un juego de autos gigante... ¿Dónde ocupa espacio físico?", options: ["En el Disco Rígido", "En la RAM", "En la CPU"], correct: 0 },
+            { q: "¿Qué es el 'Hardware'?", options: ["Los programas (Software)", "Las partes físicas que se pueden tocar", "El internet"], correct: 1 }
+        ];
+        
+        let quizActual = 0;
+        let quizPuntaje = 0;
+
+        function cargarQuiz() {
+            if(quizActual >= preguntasQuiz.length) {
+                mostrarResultadosQuiz();
+                return;
+            }
+            const pregunta = preguntasQuiz[quizActual];
+            document.getElementById('quiz-question').innerText = pregunta.q;
+            document.getElementById('quiz-count').innerText = quizActual + 1;
+            document.getElementById('quiz-progress').style.width = ((quizActual) / preguntasQuiz.length) * 100 + "%";
+
+            const contenedor = document.getElementById('quiz-options');
+            contenedor.innerHTML = '';
+
+            pregunta.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-5 bg-white/10 hover:bg-white/20 border-2 border-white/20 rounded-xl font-bold text-xl transition';
+                btn.innerText = opt;
+                btn.onclick = () => responderQuiz(index, pregunta.correct);
+                contenedor.appendChild(btn);
+            });
+        }
+
+        function responderQuiz(elegido, correcto) {
+            if(elegido === correcto) quizPuntaje++;
+            quizActual++;
+            cargarQuiz();
+        }
+
+        function mostrarResultadosQuiz() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-progress').style.width = "100%";
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const scoreText = document.getElementById('quiz-score-text');
+            const medalBox = document.getElementById('quiz-medal');
+
+            scoreText.innerText = `Puntaje: ${quizPuntaje} de ${preguntasQuiz.length}`;
+
+            if(quizPuntaje === 5) medalBox.innerHTML = '🥇';
+            else if(quizPuntaje >= 3) medalBox.innerHTML = '🥈';
+            else medalBox.innerHTML = '🥉';
+        }
+
+        function reiniciarQuiz() {
+            quizActual = 0;
+            quizPuntaje = 0;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+        cargarQuiz();
+
+        // --- DESAFÍO EXPERTO ---
+        function checkDF(btn, isCorrect) {
+            const container = btn.parentElement;
+            const msjDiv = document.getElementById('df-mensaje');
+            
+            Array.from(container.children).forEach(b => b.disabled = true);
+            msjDiv.classList.remove('hidden');
+            
+            if(isCorrect) {
+                btn.classList.add('bg-green-500', 'border-green-400');
+                btn.classList.remove('bg-black/30');
+                msjDiv.innerHTML = "✅ ¡Exacto! Los archivos viven dentro del Disco Rígido. Si sacás el disco y te lo llevás, ¡te llevás todos los archivos con vos!";
+                msjDiv.className = "mt-6 text-xl font-bold p-4 rounded-2xl border bg-green-500/20 text-green-300 border-green-400";
+            } else {
+                btn.classList.add('bg-red-500', 'border-red-400');
+                btn.classList.remove('bg-black/30');
+                msjDiv.innerHTML = "❌ No... Recordá que la CPU no guarda cosas y la RAM se vacía al apagarla. ¡Todo estaba en el Disco que sacaste!";
+                msjDiv.className = "mt-6 text-xl font-bold p-4 rounded-2xl border bg-red-500/20 text-red-300 border-red-400";
+            }
+        }
+
+    </script>
+</body>
+</html>

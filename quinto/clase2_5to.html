@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU y RAM - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            /* LA PALETA ORIGINAL: Degradado celeste, azul y rosa */
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+            --texto-secundario: #1e293b;
+        }
+
+        .dark-mode {
+            /* MODO OSCURO ORIGINAL */
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+            --texto-secundario: #cbd5e1;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo {
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .btn-interactivo:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-interactivo:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ANIMACIÓN FLUJO DE DATOS --- */
+        @keyframes flowData {
+            0% { transform: translateX(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(20px); opacity: 0; }
+        }
+        .data-flow { animation: flowData 2s infinite; }
+
+        /* --- ESTILOS DEL GABINETE Y PLACA MADRE (LABORATORIO) --- */
+        .gabinete-container {
+            position: relative; width: 100%; height: 450px; margin: 0 auto;
+            border-radius: 20px; overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.8);
+            border: 8px solid #334155; background-color: #064e3b;
+        }
+
+        .circuitos {
+            position: absolute; inset: 0; opacity: 0.3;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 30px, #34d399 30px, #34d399 32px), 
+                repeating-linear-gradient(90deg, transparent, transparent 30px, #34d399 30px, #34d399 32px);
+            z-index: 1;
+        }
+
+        .tapa-gabinete {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+            z-index: 50; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            border-left: 10px solid #94a3b8; box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .tapa-abierta { transform: translateY(-105%); }
+
+        .ventilador {
+            font-size: 6rem; animation: girar 3s linear infinite; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+        }
+        @keyframes girar { 100% { transform: rotate(360deg); } }
+
+        .componente {
+            position: absolute; z-index: 10; cursor: pointer; transition: all 0.3s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        }
+        .componente:hover { transform: scale(1.1); z-index: 20; }
+
+        .glow-cpu { box-shadow: 0 0 30px rgba(236, 72, 153, 0.8); }
+        .glow-ram { box-shadow: 0 0 30px rgba(234, 179, 8, 0.8); }
+        .glow-disco { box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
+
+        @keyframes latir { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .anim-latir { animation: latir 2s infinite; }
+
+    </style>
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">🧠⚡</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">CPU y RAM</h1>
+                    <h2 class="text-2xl md:text-3xl font-bold opacity-90">El cerebro y la memoria de la computadora</h2>
+                    <p class="text-lg md:text-xl font-bold mt-2 opacity-80">Descubrimos cómo piensa y trabaja la compu.</p>
+                </div>
+            </div>
+            <a href="index5to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-10 fade-up bg-white/10 border-l-8 border-sky-400" style="animation-delay: 0.1s;">
+            <h2 class="text-3xl font-black mb-4 flex items-center gap-3"><span class="text-4xl">⏪</span> Repaso rápido</h2>
+            <p class="text-xl font-bold mb-4 leading-relaxed">
+                En la clase anterior aprendimos que dentro de la computadora hay tres partes muy importantes:
+            </p>
+            <div class="flex flex-wrap gap-4 font-black text-xl">
+                <span class="bg-pink-500/20 text-pink-700 dark:text-pink-300 px-4 py-2 rounded-xl border border-pink-400">🧠 CPU</span>
+                <span class="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 px-4 py-2 rounded-xl border border-yellow-400">⚡ Memoria RAM</span>
+                <span class="bg-green-500/20 text-green-700 dark:text-green-300 px-4 py-2 rounded-xl border border-green-400">🗄️ Disco Rígido</span>
+            </div>
+            <p class="text-xl font-bold mt-6 leading-relaxed text-sky-800 dark:text-sky-200">
+                Hoy vamos a descubrir qué hacen la <strong>CPU</strong> y la <strong>RAM</strong> trabajando en equipo cuando usamos la computadora.
+            </p>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-slate-500 bg-slate-900/10" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🛠️</span>
+                <h2 class="text-3xl md:text-4xl font-black">Laboratorio Virtual</h2>
+            </div>
+            <p class="text-xl font-bold mb-8 opacity-90">Antes de ver cómo trabajan... ¡Vamos a abrir la compu para ver dónde están!</p>
+
+            <div class="gabinete-container relative">
+                <div class="circuitos"></div>
+
+                <div onclick="mostrarInfo('cpu')" class="componente anim-latir bg-slate-200 w-32 h-32 md:w-40 md:h-40 rounded-xl border-8 border-slate-400 glow-cpu" style="top: 15%; left: 15%;">
+                    <span class="text-5xl md:text-6xl">🧠</span>
+                    <span class="font-black mt-2 text-slate-800 text-lg md:text-xl">CPU</span>
+                </div>
+
+                <div onclick="mostrarInfo('ram')" class="componente anim-latir bg-black w-16 h-48 md:w-20 md:h-56 rounded-md border-4 border-slate-700 glow-ram" style="top: 10%; right: 20%;">
+                    <div class="w-full h-32 md:h-40 bg-green-500 border-x-4 border-yellow-400 flex items-center justify-center">
+                        <span class="text-3xl md:text-4xl -rotate-90">⚡</span>
+                    </div>
+                    <span class="font-black mt-2 text-white text-md md:text-lg">RAM</span>
+                </div>
+
+                <div onclick="mostrarInfo('disco')" class="componente anim-latir bg-slate-600 w-48 h-28 md:w-56 md:h-32 rounded-xl border-8 border-slate-500 glow-disco flex-row gap-4" style="bottom: 10%; left: 30%;">
+                    <span class="text-5xl md:text-6xl">🗄️</span>
+                    <div class="flex flex-col text-left">
+                        <span class="font-black text-white text-lg md:text-xl">DISCO</span>
+                        <span class="font-bold text-slate-300 text-xs md:text-sm">HDD / SSD</span>
+                    </div>
+                </div>
+
+                <div id="tapa" class="tapa-gabinete">
+                    <div class="ventilador">⚙️</div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white mt-8 drop-shadow-lg text-center">Gabinete Cerrado</h2>
+                    
+                    <button onclick="abrirGabinete()" class="mt-8 bg-blue-500 text-white text-xl md:text-2xl font-black px-8 py-4 rounded-2xl hover:bg-blue-400 hover:scale-110 transition shadow-2xl border-b-4 border-blue-700 flex items-center gap-3">
+                        🪛 ¡Quitar la tapa!
+                    </button>
+                </div>
+            </div>
+
+            <div id="panel-info" class="mt-8 bg-white/90 dark:bg-slate-800 p-8 rounded-3xl border-4 border-sky-300 shadow-xl hidden transition-all">
+                <div class="flex items-start gap-6">
+                    <div id="info-icono" class="text-6xl md:text-7xl bg-sky-100 dark:bg-sky-900 p-4 rounded-2xl">🤔</div>
+                    <div>
+                        <h3 id="info-titulo" class="text-2xl md:text-4xl font-black text-sky-600 dark:text-sky-300 mb-2">Tocá una pieza</h3>
+                        <p id="info-texto" class="text-lg md:text-xl font-bold text-slate-700 dark:text-slate-300 leading-relaxed">
+                            Haz clic en los componentes que brillan adentro de la placa madre.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-6 hidden" id="btn-cerrar">
+                <button onclick="cerrarGabinete()" class="bg-slate-700 text-white font-bold px-6 py-3 rounded-xl hover:bg-slate-600 transition">
+                    🔄 Volver a cerrar el gabinete
+                </button>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 fade-up" style="animation-delay: 0.3s;">
+            <section class="glass-panel p-8 md:p-10 border-t-8 border-pink-400 relative overflow-hidden">
+                <span class="absolute -right-6 -top-6 text-[10rem] opacity-10">🧠</span>
+                <h2 class="text-3xl md:text-4xl font-black mb-6 text-pink-600 dark:text-pink-300">🧠 CPU</h2>
+                <h3 class="text-2xl font-bold mb-4">El cerebro de la computadora</h3>
+                <p class="text-xl font-bold mb-6 opacity-90">La CPU (Procesador) es la parte que piensa y toma decisiones.</p>
+                <div class="bg-black/10 p-6 rounded-2xl">
+                    <p class="font-black text-lg mb-3">Se encarga de:</p>
+                    <ul class="space-y-3 text-lg font-bold opacity-90">
+                        <li class="flex items-center gap-3"><span class="text-2xl">➕</span> Hacer cálculos</li>
+                        <li class="flex items-center gap-3"><span class="text-2xl">⚙️</span> Ejecutar instrucciones</li>
+                        <li class="flex items-center gap-3"><span class="text-2xl">🎮</span> Controlar lo que hace la compu</li>
+                    </ul>
+                </div>
+                <div class="mt-6 bg-pink-500 text-white p-4 rounded-xl font-black text-center text-xl shadow-lg">
+                    Analogía: CPU = Tu Cerebro
+                </div>
+            </section>
+
+            <section class="glass-panel p-8 md:p-10 border-t-8 border-yellow-400 relative overflow-hidden">
+                <span class="absolute -right-6 -top-6 text-[10rem] opacity-10">⚡</span>
+                <h2 class="text-3xl md:text-4xl font-black mb-6 text-yellow-600 dark:text-yellow-300">⚡ Memoria RAM</h2>
+                <h3 class="text-2xl font-bold mb-4">La memoria de trabajo</h3>
+                <p class="text-xl font-bold mb-6 opacity-90">Guarda información <strong>solo mientras</strong> estamos usando la computadora.</p>
+                <div class="bg-black/10 p-6 rounded-2xl">
+                    <p class="font-black text-lg mb-3">Ejemplos de cuándo se usa:</p>
+                    <ul class="space-y-3 text-lg font-bold opacity-90">
+                        <li class="flex items-center gap-3"><span class="text-2xl">🕹️</span> Cuando abrimos un juego</li>
+                        <li class="flex items-center gap-3"><span class="text-2xl">📝</span> Cuando escribimos un documento</li>
+                        <li class="flex items-center gap-3"><span class="text-2xl">🌐</span> Cuando navegamos en internet</li>
+                    </ul>
+                </div>
+                <div class="mt-4 bg-red-500/20 border-2 border-red-500 text-red-900 dark:text-red-200 p-3 rounded-xl font-bold text-center">
+                    ⚠️ Importante: Cuando apagamos la compu, la RAM se borra.
+                </div>
+                <div class="mt-4 bg-yellow-500 text-yellow-900 p-4 rounded-xl font-black text-center text-xl shadow-lg">
+                    Analogía: RAM = Mesa de trabajo
+                </div>
+            </section>
+        </div>
+
+        <section class="glass-panel p-8 md:p-10 fade-up" style="animation-delay: 0.4s;">
+            <h2 class="text-3xl font-black mb-8 text-center text-white drop-shadow-md">Comparación Divertida</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-black/20 text-xl font-black">
+                            <th class="p-4 rounded-tl-2xl">Parte de la compu</th>
+                            <th class="p-4 text-center">Comparación</th>
+                            <th class="p-4 rounded-tr-2xl">Explicación</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-lg font-bold">
+                        <tr class="border-b border-white/20 hover:bg-white/10 transition">
+                            <td class="p-4 flex items-center gap-3"><span class="text-3xl">🧠</span> CPU</td>
+                            <td class="p-4 text-center text-pink-300 font-black">Cerebro</td>
+                            <td class="p-4 opacity-90">El cerebro piensa, calcula y da las órdenes.</td>
+                        </tr>
+                        <tr class="hover:bg-white/10 transition">
+                            <td class="p-4 flex items-center gap-3"><span class="text-3xl">⚡</span> RAM</td>
+                            <td class="p-4 text-center text-yellow-300 font-black">Mesa de trabajo</td>
+                            <td class="p-4 opacity-90">La mesa de trabajo guarda los materiales que estás usando en ese momento para tenerlos a mano.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-white/40" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎯</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 1: ¿Quién hace esto?</h2>
+            </div>
+            <div class="bg-black/20 p-8 rounded-3xl text-center mb-8 relative">
+                <p class="text-xl font-bold mb-2 opacity-80">Lee la acción y elegí al responsable:</p>
+                <div id="j1-accion" class="text-3xl md:text-4xl font-black text-white drop-shadow-md mb-8 py-6 px-4 bg-white/10 rounded-2xl min-h-[120px] flex items-center justify-center">
+                    "Hacer cálculos matemáticos"
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center gap-6" id="j1-botones">
+                    <button onclick="verificarJuego1('CPU')" class="btn-interactivo bg-pink-500 text-white font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-pink-700 flex items-center justify-center gap-3">
+                        <span class="text-4xl">🧠</span> CPU
+                    </button>
+                    <button onclick="verificarJuego1('RAM')" class="btn-interactivo bg-yellow-500 text-yellow-900 font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-yellow-700 flex items-center justify-center gap-3">
+                        <span class="text-4xl">⚡</span> RAM
+                    </button>
+                </div>
+                <div id="j1-feedback" class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-5xl font-black rounded-3xl hidden backdrop-blur-sm z-10"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-l-8 border-purple-400" style="animation-delay: 0.6s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎮</span>
+                <h2 class="text-3xl md:text-4xl font-black">¿Qué parte está trabajando?</h2>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 situation-box">
+                    <p class="text-2xl font-black mb-4">1. Estoy jugando un videojuego con muchos gráficos y movimientos.</p>
+                    <div class="flex gap-4 mb-4 sit-options">
+                        <button class="flex-1 p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, true, '¡Correcto! La CPU está a full calculando la posición de tu personaje, los enemigos y los puntos.')">CPU</button>
+                        <button class="flex-1 p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'La RAM tiene el mapa cargado, pero el que procesa los movimientos y calcula todo es la CPU.')">RAM</button>
+                    </div>
+                    <div class="sit-feedback hidden p-4 rounded-xl text-lg font-bold"></div>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 situation-box">
+                    <p class="text-2xl font-black mb-4">2. Estoy escribiendo un documento largo y todavía NO le di a 'Guardar'.</p>
+                    <div class="flex gap-4 mb-4 sit-options">
+                        <button class="flex-1 p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'La CPU reconoce las teclas que tocás, pero no es la que almacena las palabras sueltas.')">CPU</button>
+                        <button class="flex-1 p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, true, '¡Exacto! La RAM sostiene todo ese texto temporalmente. ¡Si se corta la luz, se borra!')">RAM</button>
+                    </div>
+                    <div class="sit-feedback hidden p-4 rounded-xl text-lg font-bold"></div>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 situation-box">
+                    <p class="text-2xl font-black mb-4">3. Abrí Google Chrome, un juego, Spotify y Paint al mismo tiempo.</p>
+                    <div class="flex gap-4 mb-4 sit-options">
+                        <button class="flex-1 p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, false, 'La CPU va a tener que trabajar mucho repartiendo tareas, pero el principal problema de espacio lo tiene otra parte...')">CPU</button>
+                        <button class="flex-1 p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl" onclick="checkSit(this, true, '¡Muy bien! Estás llenando tu mesa de trabajo (RAM). Si la llenás mucho, la compu se pone lenta.')">RAM</button>
+                    </div>
+                    <div class="sit-feedback hidden p-4 rounded-xl text-lg font-bold"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up" style="animation-delay: 0.7s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎬</span>
+                <h2 class="text-3xl md:text-4xl font-black">Mini Simulación: Trabajo en equipo</h2>
+            </div>
+            <p class="text-xl font-bold mb-8 text-center">Así funciona el equipo cuando abrís un programa:</p>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6 bg-black/20 p-8 rounded-3xl border border-white/20">
+                <div class="flex flex-col items-center text-center max-w-[250px]">
+                    <div class="w-24 h-24 bg-pink-500 rounded-full flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(236,72,153,0.5)] mb-4">🧠</div>
+                    <h3 class="font-black text-xl text-pink-300">1. CPU procesa</h3>
+                    <p class="font-bold opacity-80 mt-2">Recibe la orden de abrir el programa y la ejecuta.</p>
+                </div>
+                <div class="hidden md:flex flex-col items-center text-sky-300 text-4xl">
+                    <span class="data-flow">➡️</span>
+                    <span class="data-flow" style="animation-delay: 1s;">⬅️</span>
+                </div>
+                <div class="md:hidden flex items-center justify-center text-sky-300 text-4xl my-4 rotate-90">
+                    <span class="data-flow">➡️</span>
+                </div>
+                <div class="flex flex-col items-center text-center max-w-[250px]">
+                    <div class="w-24 h-24 bg-yellow-500 rounded-full flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(234,179,8,0.5)] mb-4">⚡</div>
+                    <h3 class="font-black text-xl text-yellow-300">2. RAM guarda temporal</h3>
+                    <p class="font-bold opacity-80 mt-2">Mantiene el programa abierto en la "mesa" para usarlo rápido.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-sky-400 relative overflow-hidden" style="animation-delay: 0.8s;">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">📝</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Quiz Final</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-4 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span>/5</div>
+            </div>
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 20%"></div>
+            </div>
+            <div id="quiz-container" class="min-h-[250px]">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            <div id="quiz-result" class="hidden text-center py-10">
+                <h3 class="text-4xl font-black mb-4">¡Quiz Completado!</h3>
+                <div id="quiz-medal" class="text-8xl mb-6"></div>
+                <p id="quiz-score-text" class="text-3xl font-bold mb-2"></p>
+                <p class="text-xl font-bold text-sky-200 mb-8">¡Sos un experto en cómo piensa la compu!</p>
+                <button onclick="reiniciarQuiz()" class="bg-sky-500 text-white font-black px-8 py-4 rounded-xl hover:bg-sky-400 transition shadow-lg text-xl">Reintentar Quiz</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-red-400 bg-red-500/10" style="animation-delay: 0.9s;">
+            <div class="flex flex-col md:flex-row items-center gap-6 mb-6">
+                <span class="text-6xl animate-pulse">🚨</span>
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black text-red-300">Desafío Final</h2>
+                    <p class="text-xl font-bold mt-2 opacity-90">Si abrimos muchos programas pesados al mismo tiempo en la compu...</p>
+                    <p class="text-2xl font-black mt-2">¿Qué parte de la computadora se está quedando sin espacio (memoria)?</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mt-8" id="df-opciones">
+                <button onclick="checkDF(this, false)" class="btn-interactivo bg-pink-500 text-white font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-pink-700 w-full sm:w-auto">
+                    La CPU 🧠
+                </button>
+                <button onclick="checkDF(this, true)" class="btn-interactivo bg-yellow-500 text-yellow-900 font-black text-2xl px-10 py-6 rounded-2xl border-b-4 border-yellow-700 w-full sm:w-auto">
+                    La RAM ⚡
+                </button>
+            </div>
+            <div id="df-mensaje" class="text-center text-2xl font-black text-white mt-8 hidden p-4 rounded-2xl bg-black/40 border border-white/30"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-12" style="animation-delay: 1s;">
+            <h2 class="text-3xl font-black mb-6 text-pink-300">💭 Reflexión final</h2>
+            <p class="text-xl mb-6 font-bold">Sabiendo que la RAM es como la "mesa de trabajo"... ¿Por qué creés que una computadora que tiene MÁS RAM funciona más rápido cuando abrís muchos programas?</p>
+            
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="650" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- MODO OSCURO ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema5to_c2', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema5to_c2') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+
+        // --- LABORATORIO VIRTUAL ---
+        const tapa = document.getElementById('tapa');
+        const panelInfo = document.getElementById('panel-info');
+        const btnCerrar = document.getElementById('btn-cerrar');
+        const infoTitulo = document.getElementById('info-titulo');
+        const infoTexto = document.getElementById('info-texto');
+        const infoIcono = document.getElementById('info-icono');
+
+        const datosPiezas = {
+            cpu: {
+                titulo: "Procesador (CPU)",
+                icono: "🧠",
+                color: "text-pink-600 dark:text-pink-400",
+                bg: "bg-pink-100 dark:bg-pink-900",
+                texto: "¡Encontraste el Cerebro! Es el chip más importante. Realiza miles de millones de cálculos por segundo y le da órdenes a todas las demás partes de la computadora."
+            },
+            ram: {
+                titulo: "Memoria RAM",
+                icono: "⚡",
+                color: "text-yellow-600 dark:text-yellow-400",
+                bg: "bg-yellow-100 dark:bg-yellow-900",
+                texto: "¡Esta es la Mesa de Trabajo! Son tarjetas rectangulares alargadas. Guardan temporalmente los juegos y programas que estás usando AHORA MISMO."
+            },
+            disco: {
+                titulo: "Disco Rígido / SSD",
+                icono: "🗄️",
+                color: "text-green-600 dark:text-green-400",
+                bg: "bg-green-100 dark:bg-green-900",
+                texto: "¡El Gran Almacén! Es una caja donde se guardan tus fotos, juegos instalados y archivos para siempre (incluso cuando apagás la compu)."
+            }
+        };
+
+        function abrirGabinete() {
+            tapa.classList.add('tapa-abierta');
+            panelInfo.classList.remove('hidden');
+            btnCerrar.classList.remove('hidden');
+            
+            infoIcono.innerHTML = "👇";
+            infoIcono.className = "text-6xl md:text-7xl bg-slate-100 dark:bg-slate-700 p-4 rounded-2xl animate-bounce";
+            infoTitulo.className = "text-2xl md:text-4xl font-black text-slate-800 dark:text-white mb-2";
+            infoTitulo.innerHTML = "¡Gabinete Abierto!";
+            infoTexto.innerHTML = "Ahora estás viendo la <strong>Placa Madre</strong> (Motherboard). Hacé clic en las piezas que brillan y laten para aprender sobre ellas.";
+        }
+
+        function cerrarGabinete() {
+            tapa.classList.remove('tapa-abierta');
+            panelInfo.classList.add('hidden');
+            btnCerrar.classList.add('hidden');
+        }
+
+        function mostrarInfo(pieza) {
+            panelInfo.classList.remove('animate-pulse');
+            void panelInfo.offsetWidth; 
+            panelInfo.classList.add('animate-pulse');
+
+            const data = datosPiezas[pieza];
+            infoIcono.innerHTML = data.icono;
+            infoIcono.className = `text-6xl md:text-7xl p-4 rounded-2xl ${data.bg}`;
+            infoTitulo.innerHTML = data.titulo;
+            infoTitulo.className = `text-2xl md:text-4xl font-black mb-2 ${data.color}`;
+            infoTexto.innerHTML = data.texto;
+
+            setTimeout(() => { panelInfo.classList.remove('animate-pulse'); }, 500);
+        }
+
+        // --- JUEGO 1 (QUIÉN HACE ESTO) ---
+        const accionesJ1 = [
+            { texto: 'Hacer cálculos matemáticos', resp: 'CPU' },
+            { texto: 'Guardar información mientras trabajamos', resp: 'RAM' },
+            { texto: 'Ejecutar instrucciones', resp: 'CPU' },
+            { texto: 'Guardar datos de un programa abierto', resp: 'RAM' }
+        ];
+        let indiceJ1 = 0;
+
+        function cargarJuego1() {
+            if(indiceJ1 >= accionesJ1.length) {
+                document.getElementById('j1-accion').innerHTML = '¡Excelente! Terminaste el juego. 🏆';
+                document.getElementById('j1-botones').style.display = 'none';
+                return;
+            }
+            document.getElementById('j1-accion').innerHTML = `"${accionesJ1[indiceJ1].texto}"`;
+        }
+
+        function verificarJuego1(respuesta) {
+            const accion = accionesJ1[indiceJ1];
+            const feedback = document.getElementById('j1-feedback');
+            feedback.classList.remove('hidden');
+
+            if(respuesta === accion.resp) {
+                feedback.innerHTML = '<span class="text-green-400 bg-black/80 px-8 py-4 rounded-3xl">✔ ¡Correcto!</span>';
+                indiceJ1++;
+                setTimeout(() => {
+                    feedback.classList.add('hidden');
+                    cargarJuego1();
+                }, 1200);
+            } else {
+                feedback.innerHTML = '<span class="text-red-400 bg-black/80 px-8 py-4 rounded-3xl">❌ Intenta otra vez</span>';
+                setTimeout(() => feedback.classList.add('hidden'), 1200);
+            }
+        }
+        cargarJuego1();
+
+        // --- JUEGO 2 (SITUACIONES) ---
+        function checkSit(btn, isCorrect, mensaje) {
+            const container = btn.parentElement;
+            const msjDiv = container.nextElementSibling;
+            
+            Array.from(container.children).forEach(b => b.disabled = true);
+            msjDiv.classList.remove('hidden', 'bg-green-500/20', 'text-green-300', 'bg-red-500/20', 'text-red-300', 'border', 'border-green-400', 'border-red-400');
+            
+            if(isCorrect) {
+                btn.classList.add('bg-green-500', 'text-white', 'border-green-400');
+                btn.classList.remove('bg-black/30', 'hover:bg-black/50');
+                msjDiv.innerHTML = "✅ " + mensaje;
+                msjDiv.classList.add('bg-green-500/20', 'text-green-300', 'border', 'border-green-400');
+            } else {
+                btn.classList.add('bg-red-500', 'text-white', 'border-red-400');
+                btn.classList.remove('bg-black/30', 'hover:bg-black/50');
+                msjDiv.innerHTML = "❌ " + mensaje;
+                msjDiv.classList.add('bg-red-500/20', 'text-red-300', 'border', 'border-red-400');
+            }
+        }
+
+        // --- QUIZ FINAL ---
+        const preguntasQuiz = [
+            { q: "¿Qué parte es el cerebro de la computadora?", options: ["Memoria RAM", "Disco Rígido", "CPU"], correct: 2 },
+            { q: "¿Qué parte guarda información de forma temporal?", options: ["Memoria RAM", "CPU", "Gabinete"], correct: 0 },
+            { q: "¿Qué parte ejecuta las instrucciones y da las órdenes?", options: ["El Teclado", "La CPU", "La RAM"], correct: 1 },
+            { q: "¿La RAM guarda los datos permanentemente (para siempre)?", options: ["Sí, guarda todo", "No, se borra al apagar", "Solo si apreto enter"], correct: 1 },
+            { q: "¿La CPU se encarga de hacer los cálculos?", options: ["Sí, es su trabajo principal", "No, de eso se encarga la RAM"], correct: 0 }
+        ];
+        
+        let quizActual = 0;
+        let quizPuntaje = 0;
+
+        function cargarQuiz() {
+            if(quizActual >= preguntasQuiz.length) {
+                mostrarResultadosQuiz();
+                return;
+            }
+            const pregunta = preguntasQuiz[quizActual];
+            document.getElementById('quiz-question').innerText = pregunta.q;
+            document.getElementById('quiz-count').innerText = quizActual + 1;
+            document.getElementById('quiz-progress').style.width = ((quizActual) / preguntasQuiz.length) * 100 + "%";
+
+            const contenedor = document.getElementById('quiz-options');
+            contenedor.innerHTML = '';
+
+            pregunta.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-5 bg-white/10 hover:bg-white/20 border-2 border-white/20 rounded-xl font-bold text-xl transition';
+                btn.innerText = opt;
+                btn.onclick = () => responderQuiz(index, pregunta.correct);
+                contenedor.appendChild(btn);
+            });
+        }
+
+        function responderQuiz(elegido, correcto) {
+            if(elegido === correcto) quizPuntaje++;
+            quizActual++;
+            cargarQuiz();
+        }
+
+        function mostrarResultadosQuiz() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-progress').style.width = "100%";
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const scoreText = document.getElementById('quiz-score-text');
+            const medalBox = document.getElementById('quiz-medal');
+
+            scoreText.innerText = `Puntaje: ${quizPuntaje} de ${preguntasQuiz.length}`;
+
+            if(quizPuntaje === 5) medalBox.innerHTML = '🥇';
+            else if(quizPuntaje >= 3) medalBox.innerHTML = '🥈';
+            else medalBox.innerHTML = '🥉';
+        }
+
+        function reiniciarQuiz() {
+            quizActual = 0;
+            quizPuntaje = 0;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+        cargarQuiz();
+
+        // --- DESAFÍO FINAL ---
+        function checkDF(btn, isCorrect) {
+            const container = document.getElementById('df-opciones');
+            const msjDiv = document.getElementById('df-mensaje');
+            
+            Array.from(container.children).forEach(b => b.disabled = true);
+            msjDiv.classList.remove('hidden');
+            
+            if(isCorrect) {
+                btn.classList.add('match-correct');
+                msjDiv.innerHTML = "✅ ¡Exacto! Al abrir muchos programas, llenás la 'mesa de trabajo' (RAM) y la compu se puede poner lenta.";
+            } else {
+                btn.classList.add('match-wrong');
+                btn.classList.replace('bg-pink-500', 'bg-red-500');
+                btn.classList.replace('border-pink-700', 'border-red-700');
+                msjDiv.innerHTML = "❌ ¡Casi! La CPU trabaja mucho, pero el ESPACIO (memoria) que se llena es la RAM.";
+            }
+        }
+
+    </script>
+</body>
+</html>

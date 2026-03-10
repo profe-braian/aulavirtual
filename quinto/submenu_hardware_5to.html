@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Compu por Dentro - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --texto-principal: #ffffff;
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --header-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --texto-principal: #e2e8f0;
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --tarjeta-hover: rgba(0, 0, 0, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(0, 0, 0, 0.4);
+        }
+
+        body, html { 
+            margin: 0; padding: 0; min-height: 100%; 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+            transition: background 0.5s ease;
+        }
+
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.2); border: none; 
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+
+        .tema-card {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .tema-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: var(--tarjeta-hover);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+        
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="w-full max-w-5xl mx-auto pt-16 md:pt-4 space-y-12">
+        
+        <header class="fade-up flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-8 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg">
+            <div class="flex items-center gap-6 text-center md:text-left">
+                <span class="text-7xl drop-shadow-lg">🎛️</span>
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black drop-shadow-lg mb-2">La Compu por Dentro</h1>
+                    <p class="text-xl font-bold opacity-80">Módulo 1 - Nivel 5to Grado</p>
+                </div>
+            </div>
+            <a href="index5to.html" class="mt-6 md:mt-0 bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                
+                <div onclick="window.location.href='clase1_5to.html'" class="tema-card rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6 border-l-8 border-sky-400">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        🔎
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-sky-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Clase 1</span>
+                        <h3 class="text-3xl font-black mb-2 text-white drop-shadow">Hardware Interno</h3>
+                        <p class="font-bold opacity-90 text-lg">Descubrimos las partes que trabajan adentro de la compu.</p>
+                    </div>
+                </div>
+
+                <div onclick="window.location.href='clase2_5to.html'" class="tema-card rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6 border-l-8 border-pink-400">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        🧠
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-pink-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Clase 2</span>
+                        <h3 class="text-3xl font-black mb-2 text-white drop-shadow">CPU y RAM</h3>
+                        <p class="font-bold opacity-90 text-lg">El cerebro y la mesa de trabajo de la computadora.</p>
+                    </div>
+                </div>
+
+                <div onclick="window.location.href='clase3_5to.html'" class="tema-card rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6 border-l-8 border-green-400">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        💾
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-green-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Clase 3</span>
+                        <h3 class="text-3xl font-black mb-2 text-white drop-shadow">Disco Rígido</h3>
+                        <p class="font-bold opacity-90 text-lg">Donde vive la información y se guardan nuestros archivos.</p>
+                    </div>
+                </div>
+<div class="mt-8 border-t-2 border-dashed border-white/20 pt-8 fade-up" style="animation-delay: 0.4s;">
+                    <div onclick="window.location.href='juego_experto_5to.html'" class="bg-gradient-to-r from-red-600 to-purple-600 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 cursor-pointer hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(220,38,38,0.4)] border-4 border-red-400">
+                        <div class="flex items-center gap-6 text-center sm:text-left">
+                            <span class="text-6xl animate-bounce">🔥</span>
+                            <div>
+                                <span class="bg-white text-red-700 font-black px-3 py-1 rounded-lg text-sm mb-2 inline-block">BONUS EXTRA</span>
+                                <h3 class="text-2xl md:text-3xl font-black text-white drop-shadow">Ensamblador Nivel Experto</h3>
+                                <p class="font-bold text-red-100 mt-1">Armá la compu completa sin pistas. ¡Solo para valientes!</p>
+                            </div>
+                        </div>
+                        <span class="bg-black/30 text-white font-black px-6 py-4 rounded-xl text-xl shrink-0">Jugar 🎮</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Sincronizar el modo oscuro
+        const btn = document.getElementById('btnT');
+        if (localStorage.getItem('tema5to') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            btn.innerHTML = '🌙';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            btn.innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('tema5to', esOscuro ? 'oscuro' : 'claro');
+        }
+    </script>
+</body>
+</html>

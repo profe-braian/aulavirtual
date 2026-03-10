@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arma la PC - Nivel Experto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0f172a 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- ESTILOS DRAG & DROP --- */
+        .pieza-drag {
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .pieza-drag:active { cursor: grabbing; transform: scale(1.05); }
+        .pieza-drag.seleccionada {
+            box-shadow: 0 0 20px 5px #38bdf8;
+            transform: scale(1.05);
+            border-color: #7dd3fc;
+            background: rgba(56, 189, 248, 0.2);
+        }
+        .pieza-drag:hover { background: rgba(255,255,255,0.25); }
+
+        .zona-drop {
+            border: 4px dashed rgba(255,255,255,0.4);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .zona-drop.drag-over {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #4ade80;
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.3);
+        }
+
+        /* --- ESCENARIOS VISUALES --- */
+        .escenario-nivel1 {
+            background: linear-gradient(to bottom, #1e293b 60%, #713f12 60%); /* Pared y escritorio de madera */
+            border: 8px solid #0f172a;
+        }
+        
+        .escenario-nivel2 {
+            background: #064e3b; /* Placa madre verde */
+            background-image: radial-gradient(#34d399 2px, transparent 2px);
+            background-size: 30px 30px;
+            border: 12px solid #334155;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        @keyframes dropExito {
+            0% { transform: scale(1.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .pieza-colocada {
+            animation: dropExito 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            background: rgba(0,0,0,0.6) !important;
+            border-color: #4ade80 !important;
+            box-shadow: inset 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .shake-error { animation: shake 0.5s; border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.4) !important; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-15px);} 75% {transform: translateX(15px);} }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        
+        .confeti { position: fixed; width: 15px; height: 15px; z-index: 9999; pointer-events: none; border-radius: 4px; }
+        
+        .vida-perdida { filter: grayscale(100%); opacity: 0.3; }
+    </style>
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <div class="max-w-6xl mx-auto pt-4 space-y-8">
+        
+        <header class="glass-panel p-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up">
+            <div class="flex items-center gap-4">
+                <span class="text-6xl drop-shadow-lg animate-pulse">🔥</span>
+                <div>
+                    <span class="bg-red-600 text-white font-black px-3 py-1 rounded-lg text-sm mb-2 inline-block shadow-[0_0_10px_red]">MODO EXPERTO</span>
+                    <h1 class="text-3xl md:text-5xl font-black text-white drop-shadow-md">Ensamblador de PC</h1>
+                </div>
+            </div>
+            <a href="submenu_hardware_5to.html" class="bg-white/10 text-white border border-white/30 font-black px-6 py-3 rounded-xl hover:bg-white hover:text-black transition shadow-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-6 fade-up flex flex-col md:flex-row justify-between items-center gap-6 border-l-8 border-sky-400" id="header-nivel">
+            <div class="flex-1">
+                <h2 class="text-2xl md:text-3xl font-black text-sky-300" id="titulo-nivel">Nivel 1: El Escritorio</h2>
+                <p class="font-bold opacity-90 text-lg mt-1" id="desc-nivel">Cargando...</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 items-center">
+                <div class="bg-red-900/40 border border-red-500/50 p-3 rounded-xl text-center">
+                    <p class="text-sm font-bold text-red-200 mb-1 uppercase tracking-widest">Estado del Sistema</p>
+                    <div id="vidas-container" class="text-3xl flex gap-2">
+                        <span id="vida-1">❤️</span><span id="vida-2">❤️</span><span id="vida-3">❤️</span>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-48 bg-black/40 p-4 rounded-xl text-center border border-white/20">
+                    <p class="font-black text-lg mb-2"><span id="contador">0</span> / <span id="total-piezas">0</span> piezas</p>
+                    <div class="w-full bg-black/50 rounded-full h-3">
+                        <div id="barra-progreso" class="bg-sky-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 fade-up" style="animation-delay: 0.2s;">
+            
+            <section class="glass-panel p-6 lg:col-span-5 flex flex-col gap-3 max-h-[600px] overflow-y-auto" id="zona-piezas">
+                </section>
+
+            <section class="glass-panel p-8 lg:col-span-7 flex flex-col items-center justify-center zona-drop escenario-nivel1 overflow-hidden" id="zona-drop" onclick="soltarPiezaMobile()">
+                <div class="w-full min-h-[500px] rounded-xl relative p-6 flex flex-wrap content-start justify-center gap-3 overflow-y-auto" id="interior-drop">
+                    <p class="text-white font-black text-2xl text-center absolute inset-0 flex items-center justify-center opacity-70 drop-shadow-md bg-black/20 rounded-xl m-4 border-2 border-dashed border-white/30" id="texto-arrastra">
+                        👇 Arrastrá o tocá las piezas CORRECTAS aquí 👇
+                    </p>
+                    </div>
+            </section>
+        </div>
+
+        <div id="mensaje-error" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-red-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10 z-50 text-xl md:text-2xl border-4 border-red-800 flex items-center gap-3 pointer-events-none">
+            ⚠️ ¡CORTOCIRCUITO! Esa pieza no va ahí.
+        </div>
+
+        <div id="pantalla-modal" class="fixed inset-0 bg-black/95 z-[9999] hidden flex-col items-center justify-center p-4 text-center">
+            <span id="modal-icono" class="text-[8rem] mb-4 drop-shadow-[0_0_30px_rgba(255,255,255,0.5)]"></span>
+            <h2 id="modal-titulo" class="text-5xl md:text-7xl font-black text-white mb-6 drop-shadow-lg"></h2>
+            <div id="modal-texto" class="text-xl md:text-2xl font-bold text-slate-300 max-w-3xl mb-10 leading-relaxed bg-white/10 p-8 rounded-3xl border border-white/20"></div>
+            <button id="modal-btn" class="bg-blue-600 text-white font-black px-10 py-5 rounded-2xl hover:bg-blue-500 hover:scale-105 transition shadow-[0_0_30px_rgba(37,99,235,0.5)] text-2xl border-b-4 border-blue-800"></button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DATOS DEL JUEGO EXPERTO ---
+        const niveles = {
+            1: {
+                titulo: "Nivel 1: El Escritorio",
+                desc: "Conectá SOLO el Hardware Externo (periféricos). ¡Si metés una pieza interna acá, quemás la PC!",
+                fondoClase: "escenario-nivel1",
+                piezas: [
+                    { id: "mon", nombre: "Monitor", icono: "🖥️", correcto: true },
+                    { id: "tec", nombre: "Teclado", icono: "⌨️", correcto: true },
+                    { id: "mou", nombre: "Mouse", icono: "🖱️", correcto: true },
+                    { id: "par", nombre: "Parlantes", icono: "🔊", correcto: true },
+                    { id: "trap1", nombre: "Microprocesador", icono: "🧠", correcto: false },
+                    { id: "trap2", nombre: "Memoria RAM", icono: "⚡", correcto: false },
+                    { id: "trap3", nombre: "Disco Rígido", icono: "🗄️", correcto: false }
+                ]
+            },
+            2: {
+                titulo: "Nivel 2: Ensamblaje Interno",
+                desc: "¡Modo Dios activado! Armá la CPU completa. Necesitás la placa, cerebro, memorias, video, ventilación y energía.",
+                fondoClase: "escenario-nivel2",
+                piezas: [
+                    { id: "mother", nombre: "Placa Madre", icono: "🟩", correcto: true },
+                    { id: "mic", nombre: "Microprocesador", icono: "🧠", correcto: true },
+                    { id: "ram", nombre: "Memoria RAM", icono: "⚡", correcto: true },
+                    { id: "ssd", nombre: "Disco Sólido", icono: "🗄️", correcto: true },
+                    { id: "gpu", nombre: "Placa de Video", icono: "🎞️", correcto: true },
+                    { id: "fuente", nombre: "Fuente de Poder", icono: "🔌", correcto: true },
+                    { id: "cooler", nombre: "Ventilador (Cooler)", icono: "❄️", correcto: true },
+                    { id: "trap4", nombre: "Pendrive USB", icono: "💾", correcto: false },
+                    { id: "trap5", nombre: "Mouse Inalámbrico", icono: "🖱️", correcto: false },
+                    { id: "trap6", nombre: "Impresora", icono: "🖨️", correcto: false }
+                ]
+            }
+        };
+
+        let nivelActual = 1;
+        let colocadasNivel = 0;
+        let totalNivel = 0;
+        let vidas = 3;
+        let piezaSeleccionadaId = null;
+
+        const zonaPiezas = document.getElementById('zona-piezas');
+        const zonaDrop = document.getElementById('zona-drop');
+        const interiorDrop = document.getElementById('interior-drop');
+        const modal = document.getElementById('pantalla-modal');
+
+        // --- INICIALIZAR NIVEL ---
+        function cargarNivel(num) {
+            nivelActual = num;
+            colocadasNivel = 0;
+            vidas = 3;
+            piezaSeleccionadaId = null;
+            
+            // Reiniciar corazones
+            document.getElementById('vida-1').className = "";
+            document.getElementById('vida-2').className = "";
+            document.getElementById('vida-3').className = "";
+
+            const data = niveles[num];
+            
+            document.getElementById('titulo-nivel').innerText = data.titulo;
+            document.getElementById('desc-nivel').innerText = data.desc;
+            
+            totalNivel = data.piezas.filter(p => p.correcto).length;
+            document.getElementById('total-piezas').innerText = totalNivel;
+            actualizarProgreso();
+
+            // Cambiar fondo y limpiar zona
+            zonaDrop.className = `glass-panel p-8 lg:col-span-7 flex flex-col items-center justify-center zona-drop ${data.fondoClase}`;
+            interiorDrop.innerHTML = `<p class="text-white font-black text-xl md:text-2xl text-center absolute inset-0 flex items-center justify-center opacity-70 drop-shadow-md bg-black/40 rounded-xl m-4 border-2 border-dashed border-white/30" id="texto-arrastra">👇 Arrastrá o tocá las piezas CORRECTAS aquí 👇</p>`;
+
+            // Desordenar piezas
+            const piezasMezcladas = [...data.piezas].sort(() => Math.random() - 0.5);
+
+            // Generar piezas
+            zonaPiezas.innerHTML = '';
+            piezasMezcladas.forEach(p => {
+                const div = document.createElement('div');
+                div.id = `pieza-${p.id}`;
+                div.className = 'pieza-drag p-3 md:p-4 rounded-xl flex items-center gap-4 shadow-lg';
+                div.draggable = true;
+                div.dataset.correcto = p.correcto;
+                div.onclick = () => seleccionarMobile(div.id);
+                
+                div.innerHTML = `
+                    <span class="text-4xl md:text-5xl shrink-0">${p.icono}</span>
+                    <h3 class="text-lg md:text-xl font-black leading-tight">${p.nombre}</h3>
+                `;
+                
+                div.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', div.id);
+                    setTimeout(() => div.style.opacity = '0.4', 0);
+                });
+                div.addEventListener('dragend', () => div.style.opacity = '1');
+
+                zonaPiezas.appendChild(div);
+            });
+        }
+
+        // --- EVENTOS DROPZONE ---
+        zonaDrop.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zonaDrop.classList.add('drag-over');
+        });
+        zonaDrop.addEventListener('dragleave', () => zonaDrop.classList.remove('drag-over'));
+        zonaDrop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zonaDrop.classList.remove('drag-over');
+            const id = e.dataTransfer.getData('text/plain');
+            if(id) procesarJugada(id);
+        });
+
+        function seleccionarMobile(id) {
+            document.querySelectorAll('.pieza-drag').forEach(p => p.classList.remove('seleccionada'));
+            const el = document.getElementById(id);
+            if(!el.classList.contains('colocada')) {
+                piezaSeleccionadaId = id;
+                el.classList.add('seleccionada');
+            }
+        }
+
+        function soltarPiezaMobile() {
+            if(piezaSeleccionadaId) {
+                procesarJugada(piezaSeleccionadaId);
+                piezaSeleccionadaId = null;
+            }
+        }
+
+        // --- LÓGICA DE VALIDACIÓN Y VIDAS ---
+        function procesarJugada(id) {
+            const el = document.getElementById(id);
+            if(!el || el.classList.contains('colocada')) return;
+
+            const esCorrecto = el.dataset.correcto === 'true';
+
+            if(esCorrecto) {
+                // ACIERTO
+                document.getElementById('texto-arrastra').style.display = 'none';
+                el.classList.remove('seleccionada', 'cursor-grab', 'pieza-drag');
+                
+                // Hacer la pieza más chica para que entren todas en el gabinete
+                el.classList.add('colocada', 'pieza-colocada', 'w-[45%]', 'sm:w-[30%]', 'flex-col', 'text-center', 'justify-center', 'p-2');
+                el.querySelector('h3').classList.replace('text-lg', 'text-xs');
+                el.querySelector('h3').classList.replace('md:text-xl', 'text-sm');
+                el.querySelector('span').classList.replace('text-4xl', 'text-3xl');
+                el.querySelector('span').classList.replace('md:text-5xl', 'text-4xl');
+
+                el.draggable = false;
+                el.onclick = null;
+                
+                interiorDrop.appendChild(el);
+                
+                colocadasNivel++;
+                actualizarProgreso();
+
+                if(colocadasNivel === totalNivel) setTimeout(nivelCompletado, 800);
+
+            } else {
+                // ERROR (PIERDE VIDA)
+                el.classList.remove('seleccionada');
+                el.classList.add('shake-error');
+                
+                vidas--;
+                document.getElementById(`vida-${vidas+1}`).classList.add('vida-perdida');
+                
+                mostrarError();
+                setTimeout(() => el.classList.remove('shake-error'), 500);
+
+                if(vidas <= 0) {
+                    setTimeout(() => {
+                        mostrarModal(
+                            "¡Sistema Quemado!", 
+                            "Metiste un componente donde no iba e hiciste un cortocircuito. ⚡🔥<br><br>Llamá al técnico y volvé a intentarlo.", 
+                            "🔄 Reintentar Nivel", 
+                            "💥", 
+                            () => cargarNivel(nivelActual)
+                        );
+                    }, 500);
+                }
+            }
+        }
+
+        function actualizarProgreso() {
+            document.getElementById('contador').innerText = colocadasNivel;
+            const ptj = (colocadasNivel / totalNivel) * 100;
+            document.getElementById('barra-progreso').style.width = ptj + "%";
+            if(ptj > 50) document.getElementById('barra-progreso').classList.replace('bg-sky-400', 'bg-green-400');
+            else document.getElementById('barra-progreso').classList.replace('bg-green-400', 'bg-sky-400');
+        }
+
+        function mostrarError() {
+            const msj = document.getElementById('mensaje-error');
+            msj.style.opacity = '1';
+            msj.style.transform = 'translate(-50%, 0)';
+            setTimeout(() => {
+                msj.style.opacity = '0';
+                msj.style.transform = 'translate(-50%, 40px)';
+            }, 1800);
+        }
+
+        // --- TRANSICIONES (BUG CORREGIDO) ---
+        function nivelCompletado() {
+            if(nivelActual === 1) {
+                mostrarModal(
+                    "¡Nivel 1 Superado!", 
+                    "Lograste conectar todo el hardware externo a la perfección. ¡Ahora viene la parte difícil adentro de la caja!", 
+                    "🚀 Armar Gabinete (Nivel 2)", 
+                    "🖥️", 
+                    () => cargarNivel(2)
+                );
+            } else {
+                lanzarConfeti();
+                mostrarModal(
+                    "¡SOS UN MASTER!", 
+                    "Armaste la computadora completa sin quemar nada. <br><br> <span class='text-sky-300'>¿Viste las piezas nuevas?</span> <br>Usaste la <strong>Placa Madre</strong> (conecta todo), la <strong>Fuente</strong> (da energía), el <strong>Cooler</strong> (enfría) y la <strong>Placa de Video</strong> (procesa los gráficos de los juegos pesados).", 
+                    "🔄 Jugar de nuevo", 
+                    "🏆", 
+                    () => location.reload()
+                );
+            }
+        }
+
+        function mostrarModal(tit, txt, btnTxt, icono, callback) {
+            document.getElementById('modal-titulo').innerHTML = tit;
+            document.getElementById('modal-texto').innerHTML = txt;
+            document.getElementById('modal-icono').innerHTML = icono;
+            
+            const btn = document.getElementById('modal-btn');
+            btn.innerHTML = btnTxt;
+            
+            // Limpiamos eventos anteriores y asignamos el nuevo
+            btn.onclick = () => {
+                // ESTA ES LA CLAVE DE LA CORRECCIÓN: usamos solo clases de Tailwind
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                callback();
+            };
+
+            // Mostramos el modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function lanzarConfeti() {
+            const colores = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7'];
+            for(let i=0; i<100; i++) {
+                let conf = document.createElement('div');
+                conf.className = 'confeti';
+                conf.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = '-20px';
+                document.body.appendChild(conf);
+                
+                let duracion = Math.random() * 3 + 2;
+                conf.animate([
+                    { transform: `translate3d(0,0,0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate3d(${Math.random()*400 - 200}px, ${window.innerHeight + 50}px, 0) rotate(${Math.random()*720}deg)`, opacity: 0 }
+                ], { duration: duracion * 1000, easing: 'cubic-bezier(.37,0,.63,1)' });
+                
+                setTimeout(() => conf.remove(), duracion * 1000);
+            }
+        }
+
+        // INICIAR EL JUEGO
+        cargarNivel(1);
+
+    </script>
+</body>
+</html>

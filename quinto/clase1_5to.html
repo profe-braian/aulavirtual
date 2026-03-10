@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Interno - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            /* LA PALETA ORIGINAL: Degradado celeste, azul y rosa */
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+            --texto-secundario: #1e293b;
+        }
+
+        .dark-mode {
+            /* MODO OSCURO ORIGINAL */
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+            --texto-secundario: #cbd5e1;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo {
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .btn-interactivo:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-interactivo:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Estilos del Juego Match */
+        .match-btn { border: 4px solid transparent; transition: all 0.3s ease; }
+        .match-selected { border-color: #fde047; transform: scale(1.05); }
+        .match-correct { background-color: #4ade80 !important; border-color: #166534 !important; color: white; pointer-events: none; }
+        .match-wrong { animation: shake 0.5s; border-color: #ef4444; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ESTILOS DEL LABORATORIO RAYOS X --- */
+        .xray-wrapper {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background-color: #e2e8f0;
+            border-radius: 20px;
+            border: 8px solid #94a3b8;
+            overflow: hidden;
+            transition: all 1s ease;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .xray-active .xray-wrapper {
+            background-color: #0f172a;
+            border-color: #06b6d4;
+            box-shadow: inset 0 0 50px rgba(6, 182, 212, 0.4), 0 0 30px rgba(6, 182, 212, 0.6);
+        }
+
+        /* Línea de escaneo láser */
+        .laser-line {
+            position: absolute; left: 0; top: 0; width: 10px; height: 100%;
+            background: #06b6d4; box-shadow: 0 0 20px #06b6d4, 0 0 40px #22d3ee;
+            opacity: 0; z-index: 50; transition: opacity 0.5s;
+        }
+        .xray-active .laser-line {
+            opacity: 1; animation: scan 3s infinite linear;
+        }
+        @keyframes scan {
+            0% { left: 0; } 50% { left: 100%; } 100% { left: 0; }
+        }
+
+        /* Gabinete Exterior / Interior */
+        .gabinete-box {
+            position: absolute; right: 10%; bottom: 10%; width: 140px; height: 260px;
+            background: linear-gradient(135deg, #64748b, #334155);
+            border-radius: 10px; border: 4px solid #1e293b;
+            transition: all 1s ease; z-index: 10;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .xray-active .gabinete-box {
+            background: rgba(6, 78, 59, 0.3); /* Placa madre translúcida */
+            border-color: #34d399; box-shadow: inset 0 0 20px #34d399;
+        }
+
+        /* Periféricos (no cambian con rayos x) */
+        .perifericos {
+            position: absolute; left: 15%; bottom: 10%;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            transition: all 1s ease;
+        }
+        .xray-active .perifericos { filter: brightness(0.5); }
+        
+        .monitor-stand { width: 40px; height: 30px; background: #475569; margin: 0 auto; }
+        .monitor-screen { width: 220px; height: 140px; background: #1e293b; border: 8px solid #0f172a; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .pantalla-azul { width: 90%; height: 85%; background: #38bdf8; border-radius: 4px; }
+        .teclado-mouse { display: flex; gap: 10px; align-items: center; }
+        .teclado { width: 180px; height: 25px; background: #334155; border-radius: 5px; border-bottom: 4px solid #1e293b; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;}
+        .mouse { width: 25px; height: 35px; background: #334155; border-radius: 12px; border-bottom: 4px solid #1e293b; }
+
+        /* Partes internas (ocultas al inicio) */
+        .partes-internas {
+            opacity: 0; position: absolute; transition: opacity 1s ease 0.5s;
+            display: flex; flex-direction: column; gap: 15px; align-items: center;
+        }
+        .xray-active .partes-internas { opacity: 1; }
+        .xray-part { font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); animation: latir-xray 2s infinite; }
+        @keyframes latir-xray { 0%, 100% {transform: scale(1);} 50% {transform: scale(1.1);} }
+
+    </style>
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">🎛️</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Hardware Interno</h1>
+                    <h2 class="text-2xl md:text-3xl font-bold opacity-90">¿Qué hay dentro de la computadora?</h2>
+                    <p class="text-lg md:text-xl font-bold mt-2 opacity-80">Descubrimos las partes que trabajan adentro de la compu.</p>
+                </div>
+            </div>
+            <a href="submenu_hardware_5to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-10 fade-up" style="animation-delay: 0.1s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6 flex items-center gap-3"><span class="text-4xl">🔎</span> Explorando el interior</h2>
+            <div class="bg-black/10 border border-white/20 p-6 rounded-2xl">
+                <p class="text-xl md:text-2xl font-bold mb-4 leading-relaxed">
+                    Las computadoras tienen partes que <strong>vemos y tocamos todos los días</strong> (como el teclado, el mouse y el monitor). ¡A eso le llamamos periféricos o hardware externo!
+                </p>
+                <p class="text-xl md:text-2xl font-bold leading-relaxed drop-shadow-sm text-yellow-100">
+                    Pero... ¿qué pasa adentro de la caja principal (el gabinete)? Ahí adentro hay piezas súper importantes trabajando juntas en secreto para que la compu funcione. 
+                </p>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-cyan-400 bg-cyan-500/10" style="animation-delay: 0.15s;" id="seccion-rayosx">
+            <div class="flex items-center gap-4 mb-6 flex-wrap">
+                <span class="text-5xl">🩻</span>
+                <h2 class="text-3xl md:text-4xl font-black text-cyan-800 dark:text-cyan-300">Laboratorio: Escáner de Rayos X</h2>
+            </div>
+            
+            <p class="text-xl font-bold mb-8 opacity-90">Activá el escáner para ver a través del metal del gabinete y descubrir qué piezas se esconden "Adentro" y cuáles se quedan "Afuera".</p>
+
+            <div class="flex flex-col items-center gap-6">
+                <div class="xray-wrapper" id="xray-box">
+                    <div class="laser-line"></div>
+                    
+                    <div class="perifericos">
+                        <div class="monitor-screen"><div class="pantalla-azul"></div></div>
+                        <div class="monitor-stand"></div>
+                        <div class="teclado-mouse">
+                            <div class="teclado">Q W E R T Y</div>
+                            <div class="mouse"></div>
+                        </div>
+                    </div>
+
+                    <div class="gabinete-box">
+                        <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-500" id="tapa-metal">
+                            <span class="text-slate-400 text-5xl">⚙️</span>
+                        </div>
+
+                        <div class="partes-internas">
+                            <div class="flex items-center gap-2 bg-pink-500/80 px-2 rounded-lg">
+                                <span class="xray-part">🧠</span> <span class="text-white font-black text-sm">CPU</span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-yellow-500/80 px-2 rounded-lg">
+                                <span class="xray-part">⚡</span> <span class="text-white font-black text-sm">RAM</span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-green-500/80 px-2 rounded-lg">
+                                <span class="xray-part">🗄️</span> <span class="text-white font-black text-sm">DISCO</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="toggleRayosX()" id="btn-xray" class="btn-interactivo bg-cyan-600 text-white font-black text-2xl px-10 py-5 rounded-2xl border-b-4 border-cyan-800 flex items-center gap-3 shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+                    🔦 ACTIVAR RAYOS X
+                </button>
+            </div>
+            
+            <div id="xray-mensaje" class="text-center text-xl font-bold mt-6 hidden bg-cyan-900/30 text-cyan-800 dark:text-cyan-200 p-4 rounded-xl border border-cyan-400">
+                ¡Increíble! A través del metal podemos ver que la <strong>CPU, la RAM y el Disco Rígido</strong> están protegidos adentro del gabinete. El teclado y el monitor se quedan afuera.
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl font-black mb-8 text-center text-white drop-shadow-md">Las 3 estrellas principales ⭐</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-panel p-8 flex flex-col items-center text-center border-t-8 border-pink-400">
+                    <span class="text-7xl mb-4">🧠</span>
+                    <h3 class="text-3xl font-black mb-3">Procesador (CPU)</h3>
+                    <p class="font-bold text-lg opacity-90">Es el <strong>cerebro</strong> de la computadora.</p>
+                    <p class="font-bold text-lg opacity-80 mt-2">Se encarga de pensar, calcular y controlar absolutamente todo lo que hace la compu.</p>
+                </div>
+                <div class="glass-panel p-8 flex flex-col items-center text-center border-t-8 border-yellow-400">
+                    <span class="text-7xl mb-4">⚡</span>
+                    <h3 class="text-3xl font-black mb-3">Memoria RAM</h3>
+                    <p class="font-bold text-lg opacity-90">Es la memoria de <strong>trabajo rápido</strong>.</p>
+                    <p class="font-bold text-lg opacity-80 mt-2">Guarda información temporalmente <i>mientras</i> usamos los programas. Si apagás la compu, ¡se vacía!</p>
+                </div>
+                <div class="glass-panel p-8 flex flex-col items-center text-center border-t-8 border-green-400">
+                    <span class="text-7xl mb-4">🗄️</span>
+                    <h3 class="text-3xl font-black mb-3">Disco Rígido</h3>
+                    <p class="font-bold text-lg opacity-90">Es el <strong>gran almacén</strong>.</p>
+                    <p class="font-bold text-lg opacity-80 mt-2">Acá se guardan tus fotos, juegos y archivos para siempre (¡incluso cuando la compu está apagada!).</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up bg-white/10" style="animation-delay: 0.3s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-8 text-center text-white drop-shadow">Analogía: ¡Imaginá que sos la compu!</h2>
+            <div class="flex flex-col md:flex-row justify-center items-stretch gap-6">
+                <div class="flex-1 bg-black/20 p-6 rounded-2xl flex items-center gap-4">
+                    <span class="text-5xl">👦</span>
+                    <div>
+                        <p class="font-black text-xl text-pink-300">Vos (Tu cerebro)</p>
+                        <p class="font-bold text-lg">= Procesador (CPU)</p>
+                    </div>
+                </div>
+                <div class="flex-1 bg-black/20 p-6 rounded-2xl flex items-center gap-4">
+                    <span class="text-5xl">📝</span>
+                    <div>
+                        <p class="font-black text-xl text-yellow-300">Tu mesa o pupitre</p>
+                        <p class="font-bold text-lg">= Memoria RAM</p>
+                    </div>
+                </div>
+                <div class="flex-1 bg-black/20 p-6 rounded-2xl flex items-center gap-4">
+                    <span class="text-5xl">📚</span>
+                    <div>
+                        <p class="font-black text-xl text-green-300">La biblioteca del aula</p>
+                        <p class="font-bold text-lg">= Disco Rígido</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center mt-6 text-xl font-bold opacity-90">
+                Vos (<strong>CPU</strong>) vas a la biblioteca (<strong>Disco</strong>) a buscar un libro, y lo apoyás en tu mesa (<strong>RAM</strong>) para poder leerlo rápido.
+            </p>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-blue-400" style="animation-delay: 0.4s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎮</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 1: ¿Está dentro o fuera?</h2>
+            </div>
+            
+            <div class="bg-black/20 p-8 rounded-3xl text-center mb-8 relative">
+                <p class="text-2xl font-bold mb-4 opacity-80">¿Dónde va esta parte?</p>
+                <div id="j1-icono" class="text-8xl mb-4 animate-bounce">🖱️</div>
+                <div id="j1-nombre" class="text-4xl font-black text-white drop-shadow-md mb-8">Mouse</div>
+                
+                <div class="flex justify-center gap-6">
+                    <button onclick="verificarJuego1('dentro')" class="btn-interactivo bg-purple-600 text-white font-black text-2xl px-8 py-4 rounded-2xl border-b-4 border-purple-800">
+                        Adentro 📦
+                    </button>
+                    <button onclick="verificarJuego1('fuera')" class="btn-interactivo bg-orange-500 text-white font-black text-2xl px-8 py-4 rounded-2xl border-b-4 border-orange-700">
+                        Afuera 🖥️
+                    </button>
+                </div>
+                
+                <div id="j1-feedback" class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-5xl font-black rounded-3xl hidden backdrop-blur-sm z-10"></div>
+            </div>
+            <div class="w-full bg-black/30 rounded-full h-3">
+                <div id="j1-progreso" class="bg-blue-400 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-purple-400" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🔗</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 2: ¿Qué hace cada parte?</h2>
+            </div>
+            <p class="text-xl font-bold mb-8 text-center">Toca una función de la izquierda y luego la pieza correcta a la derecha.</p>
+            
+            <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+                <div class="flex-1 space-y-4" id="match-left">
+                    <button class="w-full text-left p-5 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="cpu" onclick="selectMatch(this, 'left')">🤔 Pensar y calcular todo.</button>
+                    <button class="w-full text-left p-5 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="hdd" onclick="selectMatch(this, 'left')">📁 Guardar fotos y archivos para siempre.</button>
+                    <button class="w-full text-left p-5 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="ram" onclick="selectMatch(this, 'left')">⚡ Guardar datos rápido solo mientras trabajamos.</button>
+                </div>
+                
+                <div class="flex-1 space-y-4" id="match-right">
+                    <button class="w-full text-right p-5 bg-yellow-500 text-yellow-900 rounded-xl text-2xl font-black match-btn" data-match="ram" onclick="selectMatch(this, 'right')">Memoria RAM ⚡</button>
+                    <button class="w-full text-right p-5 bg-pink-500 text-pink-100 rounded-xl text-2xl font-black match-btn" data-match="cpu" onclick="selectMatch(this, 'right')">Procesador (CPU) 🧠</button>
+                    <button class="w-full text-right p-5 bg-green-500 text-green-100 rounded-xl text-2xl font-black match-btn" data-match="hdd" onclick="selectMatch(this, 'right')">Disco Rígido 🗄️</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-l-8 border-yellow-400" style="animation-delay: 0.6s;">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-5xl">🧠</span>
+                <h2 class="text-3xl md:text-4xl font-black">Piensa un momento...</h2>
+            </div>
+            
+            <div class="bg-white/10 p-8 rounded-2xl border border-white/20">
+                <p class="text-2xl font-black mb-6">"Estoy jugando a un videojuego con gráficos increíbles. ¿Qué parte de la compu está trabajando más rápido para procesar los movimientos y calcular los puntos?"</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="mini-opciones">
+                    <button class="p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl border-2 border-transparent" onclick="checkMini(this, true, '¡Exacto! El Procesador está calculando todo a la velocidad de la luz.')">CPU</button>
+                    <button class="p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl border-2 border-transparent" onclick="checkMini(this, false, 'La RAM ayuda a sostener el juego abierto, pero el que hace los cálculos pesados es otro.')">RAM</button>
+                    <button class="p-4 bg-black/30 rounded-xl hover:bg-black/50 transition font-black text-xl border-2 border-transparent" onclick="checkMini(this, false, 'El disco solo tiene el juego guardado, no procesa los movimientos rápidos.')">Disco Rígido</button>
+                </div>
+                <div id="mini-respuesta" class="mt-6 text-2xl font-bold hidden p-4 rounded-xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-sky-400 relative overflow-hidden" style="animation-delay: 0.7s;">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">📝</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Mega Quiz de Repaso</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-4 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span>/10</div>
+            </div>
+
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-sky-400 h-4 rounded-full transition-all duration-500" style="width: 10%"></div>
+            </div>
+
+            <div id="quiz-container" class="min-h-[250px]">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div id="quiz-result" class="hidden text-center py-10">
+                <h3 class="text-4xl font-black mb-4">¡Prueba Completada!</h3>
+                <div id="quiz-medal" class="text-8xl mb-6"></div>
+                <p id="quiz-score-text" class="text-3xl font-bold mb-2"></p>
+                <p class="text-xl font-bold text-sky-200 mb-8">¡Sos un experto en hardware interno!</p>
+                <button onclick="reiniciarQuiz()" class="bg-sky-500 text-white font-black px-8 py-4 rounded-xl hover:bg-sky-400 transition shadow-lg text-xl">Reintentar Quiz</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-green-400 bg-green-500/10" style="animation-delay: 0.8s;">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-5xl">🛠️</span>
+                <h2 class="text-3xl md:text-4xl font-black text-green-300">Desafío Final</h2>
+            </div>
+            
+            <p class="text-2xl font-bold mb-6">Imagina que desarmamos el gabinete de la compu del aula. Tocá las <strong class="text-green-300">3 partes IMPORTANTES</strong> que encontraríamos adentro:</p>
+            
+            <div class="flex flex-wrap gap-4 justify-center" id="df-opciones">
+                </div>
+            <div id="df-mensaje" class="text-center text-3xl font-black text-green-400 mt-8 hidden animate-bounce">¡Misión Cumplida! 🚀</div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-12" style="animation-delay: 0.9s;">
+            <h2 class="text-3xl font-black mb-6 text-pink-300">💭 Reflexión final</h2>
+            <p class="text-xl mb-6 font-bold">De las tres partes que aprendimos hoy (CPU, RAM y Disco), ¿cuál te parece la más importante y por qué?</p>
+            
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="650" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- MODO OSCURO ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema5to', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema5to') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+
+        // --- LABORATORIO RAYOS X ---
+        let rayosXActivo = false;
+        function toggleRayosX() {
+            const box = document.getElementById('seccion-rayosx');
+            const tapa = document.getElementById('tapa-metal');
+            const btn = document.getElementById('btn-xray');
+            const msj = document.getElementById('xray-mensaje');
+
+            rayosXActivo = !rayosXActivo;
+            if(rayosXActivo) {
+                box.classList.add('xray-active');
+                tapa.style.opacity = '0';
+                btn.innerHTML = '💡 APAGAR RAYOS X';
+                btn.classList.replace('bg-cyan-600', 'bg-slate-600');
+                btn.classList.replace('border-cyan-800', 'border-slate-800');
+                msj.classList.remove('hidden');
+            } else {
+                box.classList.remove('xray-active');
+                tapa.style.opacity = '1';
+                btn.innerHTML = '🔦 ACTIVAR RAYOS X';
+                btn.classList.replace('bg-slate-600', 'bg-cyan-600');
+                btn.classList.replace('border-slate-800', 'border-cyan-800');
+                msj.classList.add('hidden');
+            }
+        }
+
+        // --- JUEGO 1 (DENTRO O FUERA) ---
+        const elementosJ1 = [
+            { nombre: 'Teclado', icono: '⌨️', lugar: 'fuera' },
+            { nombre: 'Procesador (CPU)', icono: '🧠', lugar: 'dentro' },
+            { nombre: 'Monitor', icono: '🖥️', lugar: 'fuera' },
+            { nombre: 'Memoria RAM', icono: '⚡', lugar: 'dentro' },
+            { nombre: 'Mouse', icono: '🖱️', lugar: 'fuera' },
+            { nombre: 'Disco Rígido', icono: '🗄️', lugar: 'dentro' }
+        ];
+        let indiceJ1 = 0;
+
+        function cargarJuego1() {
+            if(indiceJ1 >= elementosJ1.length) {
+                document.getElementById('j1-icono').innerHTML = '🏆';
+                document.getElementById('j1-nombre').innerHTML = '¡Completaste todos!';
+                document.querySelector('#j1-nombre + div').style.display = 'none';
+                return;
+            }
+            const el = elementosJ1[indiceJ1];
+            document.getElementById('j1-icono').innerHTML = el.icono;
+            document.getElementById('j1-nombre').innerHTML = el.nombre;
+            document.getElementById('j1-progreso').style.width = ((indiceJ1 / elementosJ1.length) * 100) + '%';
+        }
+
+        function verificarJuego1(respuesta) {
+            const el = elementosJ1[indiceJ1];
+            const feedback = document.getElementById('j1-feedback');
+            feedback.classList.remove('hidden');
+
+            if(respuesta === el.lugar) {
+                feedback.innerHTML = '<span class="text-green-400 bg-black/80 px-8 py-4 rounded-3xl">✔ ¡Correcto!</span>';
+                indiceJ1++;
+                setTimeout(() => {
+                    feedback.classList.add('hidden');
+                    cargarJuego1();
+                }, 1200);
+            } else {
+                feedback.innerHTML = '<span class="text-red-400 bg-black/80 px-8 py-4 rounded-3xl">❌ Intenta otra vez</span>';
+                setTimeout(() => feedback.classList.add('hidden'), 1200);
+            }
+        }
+        cargarJuego1(); 
+
+        // --- JUEGO 2 (MATCH) ---
+        let selectedLeft = null;
+        let selectedRight = null;
+
+        function selectMatch(btn, side) {
+            document.querySelectorAll(`#match-${side} .match-btn`).forEach(b => {
+                if(!b.classList.contains('match-correct')) b.classList.remove('match-selected');
+            });
+
+            btn.classList.add('match-selected');
+            if(side === 'left') selectedLeft = btn;
+            if(side === 'right') selectedRight = btn;
+
+            if(selectedLeft && selectedRight) {
+                if(selectedLeft.dataset.match === selectedRight.dataset.match) {
+                    selectedLeft.classList.replace('match-selected', 'match-correct');
+                    selectedRight.classList.replace('match-selected', 'match-correct');
+                    selectedLeft = null; selectedRight = null;
+                } else {
+                    selectedLeft.classList.add('match-wrong');
+                    selectedRight.classList.add('match-wrong');
+                    setTimeout(() => {
+                        selectedLeft.classList.remove('match-wrong', 'match-selected');
+                        selectedRight.classList.remove('match-wrong', 'match-selected');
+                        selectedLeft = null; selectedRight = null;
+                    }, 500);
+                }
+            }
+        }
+
+        // --- MINI DESAFÍO ---
+        function checkMini(btn, isCorrect, mensaje) {
+            const container = document.getElementById('mini-opciones');
+            const msjDiv = document.getElementById('mini-respuesta');
+            
+            Array.from(container.children).forEach(b => b.disabled = true);
+            msjDiv.classList.remove('hidden', 'bg-green-500/20', 'text-green-300', 'bg-red-500/20', 'text-red-300', 'border', 'border-green-400', 'border-red-400');
+            
+            if(isCorrect) {
+                btn.classList.add('bg-green-500', 'text-white', 'border-green-400');
+                msjDiv.innerHTML = "✅ " + mensaje;
+                msjDiv.classList.add('bg-green-500/20', 'text-green-300', 'border', 'border-green-400');
+            } else {
+                btn.classList.add('bg-red-500', 'text-white', 'border-red-400');
+                msjDiv.innerHTML = "❌ " + mensaje;
+                msjDiv.classList.add('bg-red-500/20', 'text-red-300', 'border', 'border-red-400');
+            }
+        }
+
+        // --- QUIZ FINAL EXTENDIDO A 10 PREGUNTAS ---
+        const preguntasQuiz = [
+            { q: "¿Qué parte es el 'cerebro' de la computadora?", options: ["Memoria RAM", "Disco Rígido", "Procesador (CPU)"], correct: 2 },
+            { q: "¿Qué parte guarda los archivos para siempre?", options: ["Disco Rígido", "Memoria RAM", "Monitor"], correct: 0 },
+            { q: "¿Qué parte guarda información rápido SOLO mientras trabajamos?", options: ["CPU", "Memoria RAM", "Teclado"], correct: 1 },
+            { q: "¿El teclado está dentro o fuera del gabinete?", options: ["Dentro (Interno)", "Fuera (Externo)"], correct: 1 },
+            { q: "¿Qué le pasa a la Memoria RAM si apagamos la compu?", options: ["Guarda todo", "Se borra/vacía", "Se rompe"], correct: 1 },
+            { q: "Si la compu fuera una persona, ¿qué parte sería nuestra 'mesa de trabajo'?", options: ["El Disco", "La Memoria RAM", "El CPU"], correct: 1 },
+            { q: "¿Cuál de estos componentes es 'hardware externo'?", options: ["El Mouse", "El CPU", "La RAM"], correct: 0 },
+            { q: "Si descargo un juego para jugar la semana que viene, ¿dónde se guarda?", options: ["En la RAM", "En el Disco Rígido", "En el teclado"], correct: 1 },
+            { q: "¿Qué parte se encarga de calcular y hacer las sumas a gran velocidad?", options: ["Procesador (CPU)", "El Monitor", "El Disco Rígido"], correct: 0 },
+            { q: "¿Cuál de estas 3 partes NO está adentro del gabinete?", options: ["Memoria RAM", "Disco Rígido", "Monitor"], correct: 2 }
+        ];
+        
+        let quizActual = 0;
+        let quizPuntaje = 0;
+
+        function cargarQuiz() {
+            if(quizActual >= preguntasQuiz.length) {
+                mostrarResultadosQuiz();
+                return;
+            }
+            const pregunta = preguntasQuiz[quizActual];
+            document.getElementById('quiz-question').innerText = pregunta.q;
+            document.getElementById('quiz-count').innerText = quizActual + 1;
+            document.getElementById('quiz-progress').style.width = ((quizActual) / preguntasQuiz.length) * 100 + "%";
+
+            const contenedor = document.getElementById('quiz-options');
+            contenedor.innerHTML = '';
+
+            pregunta.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-5 bg-white/10 hover:bg-white/20 border-2 border-white/20 rounded-xl font-bold text-xl transition';
+                btn.innerText = opt;
+                btn.onclick = () => responderQuiz(index, pregunta.correct);
+                contenedor.appendChild(btn);
+            });
+        }
+
+        function responderQuiz(elegido, correcto) {
+            if(elegido === correcto) quizPuntaje++;
+            quizActual++;
+            cargarQuiz();
+        }
+
+        function mostrarResultadosQuiz() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-progress').style.width = "100%";
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const scoreText = document.getElementById('quiz-score-text');
+            const medalBox = document.getElementById('quiz-medal');
+
+            scoreText.innerText = `Puntaje: ${quizPuntaje} de ${preguntasQuiz.length}`;
+
+            if(quizPuntaje >= 9) medalBox.innerHTML = '🥇';
+            else if(quizPuntaje >= 6) medalBox.innerHTML = '🥈';
+            else medalBox.innerHTML = '🥉';
+        }
+
+        function reiniciarQuiz() {
+            quizActual = 0;
+            quizPuntaje = 0;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+        cargarQuiz();
+
+        // --- DESAFÍO FINAL ---
+        const partesDF = [
+            { nombre: 'CPU', interno: true },
+            { nombre: 'Monitor', interno: false },
+            { nombre: 'Memoria RAM', interno: true },
+            { nombre: 'Teclado', interno: false },
+            { nombre: 'Disco Rígido', interno: true }
+        ];
+        let dfSeleccionados = 0;
+
+        const dfContenedor = document.getElementById('df-opciones');
+        partesDF.forEach(parte => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-interactivo p-4 bg-black/20 text-white font-black text-xl rounded-xl border-2 border-transparent w-40';
+            btn.innerText = parte.nombre;
+            btn.onclick = function() {
+                if(parte.interno) {
+                    if(!this.classList.contains('bg-green-500')) {
+                        this.classList.replace('bg-black/20', 'bg-green-500');
+                        this.classList.add('border-green-300');
+                        dfSeleccionados++;
+                        if(dfSeleccionados === 3) {
+                            document.getElementById('df-mensaje').classList.remove('hidden');
+                        }
+                    }
+                } else {
+                    this.classList.add('match-wrong', 'bg-red-500/50', 'border-red-400');
+                    setTimeout(() => {
+                        this.classList.remove('match-wrong', 'bg-red-500/50', 'border-red-400');
+                    }, 500);
+                }
+            };
+            dfContenedor.appendChild(btn);
+        });
+
+    </script>
+</body>
+</html>
