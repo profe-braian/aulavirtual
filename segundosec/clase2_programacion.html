@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3 - Introducción a Python</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Variables por defecto (Modo Claro) */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #4db8ff 0%, #b8a4f5 50%, #f48fb1 100%);
+            --card-bg: rgba(255, 255, 255, 0.4);
+            --card-inner-bg: rgba(255, 255, 255, 0.3);
+            --text-main: #2c3e50;
+            --text-muted: #546e7a;
+            --btn-bg: #ffffff;
+            --btn-text: #1976d2;
+            --btn-action: #e91e63;
+        }
+
+        /* Variables para el MODO OSCURO */
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --card-bg: rgba(20, 30, 40, 0.6);
+            --card-inner-bg: rgba(40, 50, 60, 0.5);
+            --text-main: #f5f6fa;
+            --text-muted: #dcdde1;
+            --btn-bg: #2f3640;
+            --btn-text: #4db8ff;
+        }
+
+        body {
+            margin: 0; padding: 0; font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient); background-attachment: fixed;
+            color: var(--text-main); min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        .container { max-width: 800px; width: 90%; margin: 60px auto 40px auto; position: relative;}
+
+        /* BOTÓN MODO OSCURO */
+        .theme-toggle {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(255, 255, 255, 0.8); border: none; border-radius: 30px;
+            padding: 10px 20px; font-size: 1rem; font-weight: 700; font-family: 'Quicksand', sans-serif;
+            cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center; gap: 8px; color: #2c3e50;
+            transition: 0.3s; z-index: 1000;
+        }
+        .theme-toggle:hover { transform: scale(1.05); }
+
+        .glass-card {
+            background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 20px; padding: 30px;
+            margin-bottom: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            transition: background 0.5s ease;
+        }
+
+        .header-card { display: flex; align-items: center; justify-content: space-between; }
+        .header-content { display: flex; align-items: center; gap: 20px; }
+        .header-icon { font-size: 4rem; }
+        .header-text h3 { margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; }
+        .header-text h1 { margin: 5px 0; font-size: 2.5rem; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); font-weight: 700; }
+        .header-text p { margin: 0; font-size: 1.1rem; font-weight: 600; }
+
+        .btn-volver {
+            background: var(--btn-bg); color: var(--btn-text); text-decoration: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s, background 0.3s, color 0.3s;
+        }
+        .btn-volver:hover { transform: translateY(-2px); }
+
+        .section-title { display: flex; align-items: center; gap: 15px; font-size: 1.8rem; margin-top: 0; margin-bottom: 20px; color: var(--text-main); font-weight: 700; }
+
+        .grid-instalacion { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .box-grafica { background: var(--card-inner-bg); border-radius: 15px; padding: 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: inset 0 2px 5px rgba(255,255,255,0.1); transition: background 0.5s ease;}
+        .box-grafica span { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+        .box-grafica h4 { margin: 0 0 10px 0; font-size: 1.2rem; }
+        .box-grafica p { margin: 0; font-size: 0.95rem; }
+
+        .inner-box { background: var(--card-inner-bg); border-radius: 15px; padding: 20px; margin-top: 15px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: inset 0 2px 5px rgba(255,255,255,0.1); transition: background 0.5s ease;}
+        .inner-box-center { text-align: center; font-weight: 500; color: var(--text-main); }
+
+        .flujo-pasos { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.3); padding: 20px; border-radius: 15px; margin-top: 15px; flex-wrap: wrap; gap: 10px; }
+        body.dark-mode .flujo-pasos { background: rgba(0,0,0,0.3); }
+        
+        .paso { flex: 1; text-align: center; min-width: 100px; }
+        .paso-num { background: #1976d2; color: white; width: 35px; height: 35px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .paso p { margin: 0; font-weight: 600; font-size: 1rem; }
+        .flecha { font-size: 2rem; color: #1976d2; font-weight: bold; }
+
+        .code-block { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 1.3rem; margin: 15px 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); text-align: left; overflow-x: auto; }
+        .highlight { color: #ce9178; }
+        .var-color { color: #9cdcfe; }
+
+        /* SIMULADOR DE CONSOLA */
+        .terminal-simulator {
+            background: #000; color: #4af626; font-family: 'Courier New', Courier, monospace;
+            padding: 20px; border-radius: 10px; font-size: 1.1rem; box-shadow: inset 0 0 15px rgba(0,255,0,0.2);
+            min-height: 150px; display: flex; flex-direction: column; cursor: text; margin-top: 15px; position: relative;
+        }
+        .terminal-output { margin-bottom: 5px; white-space: pre-wrap; line-height: 1.5; }
+        .terminal-input-line { display: flex; align-items: center; }
+        .terminal-input { background: transparent; border: none; color: #fff; font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; outline: none; flex: 1; margin-left: 5px; }
+
+        /* CARRUSEL DE EJERCICIOS */
+        .paso-container { background: var(--card-inner-bg); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.2); min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: background 0.5s ease;}
+        .ejercicio-slide { display: none; width: 100%; animation: fadeIn 0.5s ease-in-out; }
+        .ejercicio-slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .ejercicio-slide h4 { margin-top: 0; font-size: 1.5rem; color: var(--text-main); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .etiqueta-ejemplo { background: #4CAF50; color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.9rem; font-weight: bold; }
+        
+        .ejercicio-slide input { width: 60%; padding: 15px; border: 2px solid transparent; border-radius: 12px; text-align: center; font-size: 1.2rem; font-family: 'Quicksand', sans-serif; font-weight: 700; text-transform: uppercase; margin-top: 20px; outline: none; transition: 0.3s; background: rgba(255,255,255,0.9); color: #333;}
+        .ejercicio-slide input:focus { border-color: #4db8ff; }
+        
+        .feedback { font-weight: bold; margin-top: 15px; min-height: 25px; font-size: 1.1rem; }
+        .explicacion-ejemplo { background: rgba(255,255,255,0.8); padding: 15px; border-radius: 12px; font-size: 1rem; color: #333; margin-top: 15px; max-width: 80%; margin-left: auto; margin-right: auto; border-left: 4px solid #4CAF50; text-align: left; }
+        .botones-accion { margin-top: 25px; display: flex; justify-content: center; gap: 15px; }
+        .btn-accion { border: none; padding: 12px 25px; border-radius: 30px; font-size: 1.1rem; font-weight: 700; font-family: 'Quicksand', sans-serif; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-comprobar { background: var(--btn-action); color: white; }
+        .btn-comprobar:hover { background: #c2185b; transform: scale(1.05); }
+        .btn-siguiente { background: #1976d2; color: white; display: none; }
+        .btn-siguiente.visible { display: inline-block; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+        /* LABERINTOS CSS */
+        .robot-commands { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+        .command-badge { background: var(--card-inner-bg); padding: 15px 20px; border-radius: 15px; text-align: center; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.05); min-width: 100px; border: 1px solid rgba(255,255,255,0.2);}
+        .command-badge span { display: block; font-size: 1.8rem; color: #e91e63; margin-bottom: 5px; }
+        
+        .maze-container { display: inline-grid; gap: 2px; background: #f39c12; border: 4px solid #f39c12; padding: 0; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .maze-cell { width: 45px; height: 45px; background: #ffffff; display: flex; align-items: center; justify-content: center; }
+        .maze-wall { background: #f39c12; }
+        .maze-start { background: #a8e6cf; position: relative; }
+        .maze-start::after { content: ''; width: 22px; height: 22px; background: #e74c3c; border-radius: 6px; }
+        .maze-end { background: repeating-conic-gradient(#333 0% 25%, #fff 0% 50%) 50% / 22px 22px; }
+        .progreso { margin-top: 20px; font-weight: bold; color: var(--text-muted); text-align: center;}
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle" id="btn-tema" aria-label="Cambiar tema">🌙 Modo Oscuro</button>
+
+    <div class="container">
+        
+        <header class="glass-card header-card">
+            <div class="header-content">
+                <div class="header-icon">💻</div>
+                <div class="header-text">
+                    <h3>E.S.R.N DON BOSCO - PROF. BRAIAN STEPOWSKI</h3>
+                    <h1>Introducción a Python</h1>
+                    <p>Lógica, algoritmos y código real.</p>
+                </div>
+            </div>
+            <a href="index2sec.html" class="btn-volver">⬅ Volver</a>
+        </header>
+
+        <section class="glass-card">
+            <h2 class="section-title">🚀 1. ¿Qué es programar?</h2>
+            <p style="font-size: 1.15rem; line-height: 1.6;">No es magia ni "hackear la Matrix". <strong>Es simplemente saber dar instrucciones precisas.</strong> Todo lo que hace una computadora funciona gracias a un algoritmo (una lista de pasos ordenados).</p>
+            
+            <div class="grid-instalacion" style="margin-top: 25px;">
+                <div class="box-grafica" style="border-top: 4px solid #f39c12;">
+                    <span style="color: #f39c12;">🥖</span>
+                    <h4>En la vida cotidiana</h4>
+                    <p style="text-align: left; padding: 0 10px;">Hacer pan casero usa un <strong>algoritmo</strong> (la receta). Si alterás el orden y horneás la harina antes de ponerle agua y amasar, ¡falla el programa y te queda una piedra! El orden lógico es fundamental.</p>
+                </div>
+                <div class="box-grafica" style="border-top: 4px solid #4CAF50;">
+                    <span style="color: #4CAF50;">🎮</span>
+                    <h4>En los videojuegos</h4>
+                    <p style="text-align: left; padding: 0 10px;">En juegos como <em>Uncharted</em> o <em>Pokémon</em>, todo es un algoritmo de decisiones: <em>"SI toco una pared con enredaderas, iniciar animación de escalar"</em> o <em>"SI la vida llega a 0, terminar el combate"</em>.</p>
+                </div>
+            </div>
+
+            <div class="inner-box inner-box-center" style="margin-top: 25px; font-size: 1.15rem; border-color: #4db8ff;">
+                Aprender Python hoy no es solo aprender a escribir código raro en una pantalla negra, es <strong>aprender a pensar, a dividir problemas grandes en pasos chiquitos</strong> y, sobre todo, a crear tus propias reglas. ¡Vamos a descubrirlo!
+            </div>
+        </section>
+
+        <section class="glass-card">
+            <h2 class="section-title">⚙️ 2. ¿Tenés Python?</h2>
+            <p style="font-size: 1.15rem; line-height: 1.6;">Para poder programar, primero tenemos que comprobar que tengamos el lenguaje instalado en nuestra computadora.</p>
+            
+            <div class="grid-instalacion">
+                <div class="box-grafica">
+                    <span>🔍</span>
+                    <h4>Opción A: Ya lo tenés</h4>
+                    <p>Buscá <strong>IDLE</strong> en Windows.</p>
+                </div>
+                <div class="box-grafica">
+                    <span>⬇️</span>
+                    <h4>Opción B: Descargarlo</h4>
+                    <p><a href="https://www.python.org/downloads/" target="_blank" style="color: #4db8ff; font-weight: bold;">Clic acá para ir a la web</a>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card">
+            <h2 class="section-title">📝 3. ¿Dónde escribimos el código?</h2>
+            <div class="grid-instalacion" style="margin-bottom: 25px;">
+                <div class="box-grafica"><span style="color: #e91e63;">&gt;_</span><h4>La Shell</h4><p>Pruebas rápidas. <strong>No se guarda.</strong></p></div>
+                <div class="box-grafica"><span style="color: #1976d2;">📄</span><h4>Ventana de Código</h4><p>Para programas. Acá podés <strong>guardar</strong>.</p></div>
+            </div>
+            <h4 style="text-align: center; margin-bottom: 5px;">Pasos Ventana de Código:</h4>
+            <div class="flujo-pasos">
+                <div class="paso"><div class="paso-num">1</div><p>Nuevo<br><span style="font-size:0.9rem;">File > New</span></p></div><div class="flecha">➡</div>
+                <div class="paso"><div class="paso-num">2</div><p>Escribir</p></div><div class="flecha">➡</div>
+                <div class="paso"><div class="paso-num">3</div><p>Guardar<br><span style="font-size:0.9rem;">File > Save</span></p></div><div class="flecha">➡</div>
+                <div class="paso"><div class="paso-num">4</div><p>Ejecutar<br><span style="font-size:0.9rem;">F5</span></p></div>
+            </div>
+        </section>
+
+        <section class="glass-card">
+            <h2 class="section-title">🤖 4. Entrenamiento: Pensar como máquina</h2>
+            <p>Antes de tocar el código, vamos a entrenar tu cerebro. Escribí la secuencia correcta de comandos (F, R, L) para llevar al robot (rojo) hasta la meta.</p>
+
+            <div class="robot-commands">
+                <div class="command-badge"><span>F</span> Avanzar</div>
+                <div class="command-badge"><span>R</span> Girar Der.</div>
+                <div class="command-badge"><span>L</span> Girar Izq.</div>
+            </div>
+
+            <div class="paso-container">
+                <div class="ejercicio-slide active" id="slide-1">
+                    <h4>Circuito 1 <span class="etiqueta-ejemplo">Ejemplo Guiado</span></h4>
+                    <div class="maze-container" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="maze-cell maze-start"></div><div class="maze-cell"></div><div class="maze-cell maze-end"></div>
+                    </div>
+                    <br><input type="text" value="F, F" readonly style="background: #e8f5e9; border-color: #4CAF50; color: #2e7d32;">
+                    <div class="explicacion-ejemplo">
+                        <strong>¿Por qué es F, F?</strong><br>
+                        El robot empieza mirando a la derecha. Como solo tiene que avanzar dos casilleros en línea recta, la instrucción es "Avanzar" (F) y "Avanzar" (F).
+                    </div>
+                    <div class="botones-accion"><button class="btn-accion btn-siguiente visible" onclick="siguienteSlide()">Entendido ➡</button></div>
+                </div>
+
+                <div class="ejercicio-slide" id="slide-2">
+                    <h4>Circuito 2</h4>
+                    <div class="maze-container" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="maze-cell maze-wall"></div><div class="maze-cell maze-end"></div>
+                        <div class="maze-cell maze-wall"></div><div class="maze-cell"></div>
+                        <div class="maze-cell maze-start"></div><div class="maze-cell"></div>
+                    </div>
+                    <br><input type="text" id="input-2" placeholder="Tu algoritmo..."><div class="feedback" id="feed-2"></div>
+                    <div class="botones-accion">
+                        <button class="btn-accion btn-comprobar" onclick="comprobarRespuesta(2, /^(FLFF|LFFRF|FRFF)$/)">🔍 Comprobar</button>
+                        <button class="btn-accion btn-siguiente" id="btn-sig-2" onclick="siguienteSlide()">Siguiente ➡</button>
+                    </div>
+                </div>
+
+                <div class="ejercicio-slide" id="slide-3">
+                    <h4>Circuito 3</h4>
+                    <div class="maze-container" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="maze-cell maze-start"></div><div class="maze-cell"></div><div class="maze-cell"></div>
+                        <div class="maze-cell maze-wall"></div><div class="maze-cell maze-wall"></div><div class="maze-cell maze-end"></div>
+                    </div>
+                    <br><input type="text" id="input-3" placeholder="Tu algoritmo..."><div class="feedback" id="feed-3"></div>
+                    <div class="botones-accion">
+                        <button class="btn-accion btn-comprobar" onclick="comprobarRespuesta(3, /^(FFRF|FFLF)$/)">🔍 Comprobar</button>
+                        <button class="btn-accion btn-siguiente" id="btn-sig-3" onclick="siguienteSlide()">Siguiente ➡</button>
+                    </div>
+                </div>
+
+                <div class="ejercicio-slide" id="slide-4">
+                    <h4>Circuito 4</h4>
+                    <div class="maze-container" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="maze-cell maze-wall"></div><div class="maze-cell maze-end"></div>
+                        <div class="maze-cell"></div><div class="maze-cell"></div>
+                        <div class="maze-cell maze-start"></div><div class="maze-cell maze-wall"></div>
+                    </div>
+                    <br><input type="text" id="input-4" placeholder="Tu algoritmo..."><div class="feedback" id="feed-4"></div>
+                    <div class="botones-accion">
+                        <button class="btn-accion btn-comprobar" onclick="comprobarRespuesta(4, /^(FRFLF|LFRFLF|FLFRF)$/)">🔍 Comprobar</button>
+                        <button class="btn-accion btn-siguiente" id="btn-sig-4" onclick="siguienteSlide()">Siguiente ➡</button>
+                    </div>
+                </div>
+
+                <div class="ejercicio-slide" id="slide-5">
+                    <h4>Circuito 5</h4>
+                    <div class="maze-container" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="maze-cell maze-start" style="border-bottom: 4px solid #f39c12;"></div><div class="maze-cell"></div><div class="maze-cell"></div>
+                        <div class="maze-cell maze-end"></div><div class="maze-cell"></div><div class="maze-cell"></div>
+                    </div>
+                    <br><input type="text" id="input-5" placeholder="Tu algoritmo..."><div class="feedback" id="feed-5"></div>
+                    <div class="botones-accion">
+                        <button class="btn-accion btn-comprobar" onclick="comprobarRespuesta(5, /^(FFRFRFF|FFLFLFF)$/)">🔍 Comprobar</button>
+                        <button class="btn-accion btn-siguiente" id="btn-sig-5" onclick="siguienteSlide()">Siguiente ➡</button>
+                    </div>
+                </div>
+
+                <div class="ejercicio-slide" id="slide-6">
+                    <h4>Circuito 6</h4>
+                    <div class="maze-container" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="maze-cell maze-start"></div><div class="maze-cell"></div><div class="maze-cell maze-wall"></div><div class="maze-cell maze-end"></div>
+                        <div class="maze-cell maze-wall"></div><div class="maze-cell"></div><div class="maze-cell maze-wall"></div><div class="maze-cell"></div>
+                        <div class="maze-cell maze-wall"></div><div class="maze-cell"></div><div class="maze-cell"></div><div class="maze-cell"></div>
+                    </div>
+                    <br><input type="text" id="input-6" placeholder="Tu algoritmo..."><div class="feedback" id="feed-6"></div>
+                    <div class="botones-accion">
+                        <button class="btn-accion btn-comprobar" onclick="comprobarRespuesta(6, /^(FRFFLFFLFF|FLFFRFFRFF)$/)">🔍 Comprobar</button>
+                        <button class="btn-accion btn-siguiente" id="btn-sig-6" onclick="siguienteSlide()">¡A Programar! 💻</button>
+                    </div>
+                </div>
+                <div class="progreso" id="texto-progreso">Paso 1 de 6</div>
+            </div>
+        </section>
+
+        <section class="glass-card">
+            <h2 class="section-title">✨ 5. Tu primer código en Python</h2>
+            
+            <div style="margin-top: 15px; text-align: center;">
+                <h4 style="margin-bottom: 10px;">Tu primer programa clásico:</h4>
+                <div class="code-block" style="text-align: center;">print(<span class="highlight">"¡Hola mundo!"</span>)</div>
+            </div>
+
+            <p style="margin-top: 30px;">El "Hola Mundo" está bien, pero nosotros podemos crear algo interactivo. Hacé clic en la caja negra de abajo, escribí tu respuesta y apretá <strong>Enter</strong>. ¡Vamos a crear tu personaje para un juego!</p>
+            
+            <div class="terminal-simulator" onclick="document.getElementById('term-input').focus()">
+                <div id="term-output">Cargando creador de personajes...<br>================================<br></div>
+                <div class="terminal-input-line" id="linea-input">
+                    <span id="term-prompt" style="color: #4CAF50;">¿Cómo se llama tu héroe?: </span>
+                    <input type="text" id="term-input" autocomplete="off">
+                </div>
+                <button id="btn-reiniciar-term" class="btn-accion btn-comprobar" style="display: none; margin-top: 15px; align-self: flex-start; padding: 8px 15px; font-size: 0.9rem;" onclick="reiniciarTerminal()">🔄 Volver a intentarlo</button>
+            </div>
+
+            <div class="inner-box" style="margin-top: 25px;">
+                <h4 style="margin-top:0;">¿Cómo lo hicimos? Los pasos para hacerlo en tu IDLE:</h4>
+                <p>Para que la computadora pause, te haga una pregunta y <strong>guarde tu respuesta</strong> usamos la instrucción <code>input()</code>. Esa respuesta se guarda en una "cajita" llamada <strong>variable</strong>. Copiá el siguiente código en tu Ventana de Código, guardalo y apretá F5:</p>
+                
+                <div class="code-block">
+                    <span class="var-color">heroe</span> = input(<span class="highlight">"¿Cómo se llama tu héroe?: "</span>)<br>
+                    <span class="var-color">poder</span> = input(<span class="highlight">"¿Qué poder elige? (Fuego, Hielo o Rayo): "</span>)<br>
+                    <br>
+                    print(<span class="highlight">"¡Atención! "</span> + <span class="var-color">heroe</span> + <span class="highlight">" ha entrado al servidor usando magia de "</span> + <span class="var-color">poder</span> + <span class="highlight">"."</span>)
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // LÓGICA DEL MODO OSCURO
+        const btnTema = document.getElementById('btn-tema');
+        
+        btnTema.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                btnTema.innerHTML = '☀️ Modo Claro';
+                btnTema.style.background = 'rgba(0, 0, 0, 0.5)';
+                btnTema.style.color = '#fff';
+            } else {
+                btnTema.innerHTML = '🌙 Modo Oscuro';
+                btnTema.style.background = 'rgba(255, 255, 255, 0.8)';
+                btnTema.style.color = '#2c3e50';
+            }
+        });
+
+        // LÓGICA DE LOS LABERINTOS
+        let slideActual = 1;
+        const totalSlides = 6;
+
+        function actualizarProgreso() { document.getElementById('texto-progreso').innerText = `Paso ${slideActual} de ${totalSlides}`; }
+
+        function siguienteSlide() {
+            if(slideActual < totalSlides) {
+                document.getElementById('slide-' + slideActual).classList.remove('active');
+                slideActual++;
+                document.getElementById('slide-' + slideActual).classList.add('active');
+                actualizarProgreso();
+            } else {
+                window.scrollBy({ top: 500, behavior: 'smooth' });
+            }
+        }
+
+        function comprobarRespuesta(id, regexCorrecta) {
+            const input = document.getElementById('input-' + id);
+            const feedback = document.getElementById('feed-' + id);
+            const btnSiguiente = document.getElementById('btn-sig-' + id);
+            const respuestaLimpia = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (respuestaLimpia === '') {
+                feedback.innerText = 'Escribí una instrucción primero.';
+                feedback.style.color = '#e91e63';
+                return;
+            }
+
+            if (regexCorrecta.test(respuestaLimpia)) {
+                input.style.borderColor = '#4CAF50'; input.style.backgroundColor = '#e8f5e9';
+                feedback.innerText = '✅ ¡Excelente lógica! Podés avanzar.'; feedback.style.color = '#4CAF50';
+                btnSiguiente.classList.add('visible');
+            } else {
+                input.style.borderColor = '#f44336'; input.style.backgroundColor = '#ffebee';
+                feedback.innerText = '❌ El robot chocó o se perdió. ¡Revisá los giros!'; feedback.style.color = '#f44336';
+                btnSiguiente.classList.remove('visible');
+            }
+        }
+
+        // LÓGICA DE LA TERMINAL DE SIMULACIÓN
+        const termInput = document.getElementById('term-input');
+        const termOutput = document.getElementById('term-output');
+        const termPrompt = document.getElementById('term-prompt');
+        const lineaInput = document.getElementById('linea-input');
+        const btnReiniciarTerm = document.getElementById('btn-reiniciar-term');
+        
+        let terminalPaso = 0;
+        let nombreHeroe = "";
+        let poderHeroe = "";
+
+        termInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const valor = termInput.value.trim();
+                
+                if (terminalPaso === 0) {
+                    if(valor === "") return;
+                    nombreHeroe = valor;
+                    termOutput.innerHTML += `<span style="color:#4CAF50;">¿Cómo se llama tu héroe?:</span> ${valor}<br>`;
+                    termInput.value = '';
+                    termPrompt.innerText = "¿Qué poder elige? (Fuego, Hielo o Rayo): ";
+                    terminalPaso++;
+                } 
+                else if (terminalPaso === 1) {
+                    if(valor === "") return;
+                    poderHeroe = valor;
+                    termOutput.innerHTML += `<span style="color:#4CAF50;">¿Qué poder elige? (Fuego, Hielo o Rayo):</span> ${valor}<br><br>`;
+                    termOutput.innerHTML += `<span style="color:#ffeb3b;">¡Atención! ${nombreHeroe} ha entrado al servidor usando magia de ${poderHeroe}.</span><br><br>PROGRAMA FINALIZADO.`;
+                    
+                    lineaInput.style.display = 'none';
+                    btnReiniciarTerm.style.display = 'block';
+                }
+            }
+        });
+
+        function reiniciarTerminal() {
+            terminalPaso = 0;
+            nombreHeroe = "";
+            poderHeroe = "";
+            termOutput.innerHTML = 'Cargando creador de personajes...<br>================================<br>';
+            termPrompt.innerText = "¿Cómo se llama tu héroe?: ";
+            termInput.value = '';
+            lineaInput.style.display = 'flex';
+            btnReiniciarTerm.style.display = 'none';
+            termInput.focus();
+        }
+    </script>
+</body>
+</html>
