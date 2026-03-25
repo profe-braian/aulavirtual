@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -35,7 +35,7 @@
             transition: background 0.5s ease;
         }
 
-        /* BOTÓN SOL/LUNA */
+        /* BOTï¿½"N SOL/LUNA */
         .theme-toggle {
             position: fixed; top: 20px; right: 20px;
             z-index: 3000; cursor: pointer; font-size: 28px;
@@ -98,30 +98,34 @@
         .borde-t3 { border-bottom: 4px solid #2563eb; }
 
     </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css?v=2">
 </head>
 <body class="p-4 md:p-8">
 
-    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">Modo claro</button>
 
     <div id="portada-5to">
         <canvas id="canvas-matrix"></canvas>
 
         <div class="cartel-bienvenida bg-white/20 p-8 rounded-3xl backdrop-blur-md border border-white/40 text-center" onclick="entrar()">
-            <span class="text-8xl block mb-4">🤖</span>
+            <span class="text-8xl block mb-4">&#9881;&#65039;</span>
             <h1 class="text-4xl md:text-5xl font-black text-white drop-shadow-lg mb-2">Entrar a 5to Grado</h1>
-            <p class="text-xl font-bold text-blue-200">¡Clic para empezar!</p>
+            <p class="text-xl font-bold text-blue-200">Clic para empezar!</p>
         </div>
     </div>
 
     <div id="contenido-clase" class="w-full max-w-6xl mx-auto pt-16 md:pt-4">
+        <div class="grado-banner fade-up">
+            <p class="grado-banner__title">5TO GRADO</p>
+        </div>
         
-        <header class="flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-6 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg mb-10">
+        <header class="flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-6 md:p-7 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg mb-10 gap-5">
             <div>
-                <h1 class="text-3xl md:text-4xl font-black drop-shadow-lg">⚙️ Aula Virtual - 5to Grado</h1>
-                <p class="text-lg font-bold opacity-80 mt-1">Exploradores Digitales</p>
+                <h1 class="text-3xl md:text-4xl font-black drop-shadow-lg">&#9881;&#65039; Aula Virtual - 5to Grado</h1>
+                <p class="text-lg font-bold opacity-80 mt-2 text-sky-100">Exploradores Digitales</p>
             </div>
-            <a href="index.html" class="mt-4 md:mt-0 bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-gray-200 transition shadow-md">
-                ⬅️ Volver
+            <a href="../index.html" class="mt-4 md:mt-0 bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-gray-200 transition shadow-md">
+                &larr; Volver
             </a>
         </header>
 
@@ -129,22 +133,22 @@
 
             <section class="fade-up" style="animation-delay: 0.1s;">
                 <div class="flex items-center gap-4 mb-6 borde-t1 pb-2">
-                    <span class="bg-sky-400 text-blue-900 font-black px-4 py-2 rounded-xl text-xl shadow">1º TRIMESTRE</span>
+                    <span class="bg-sky-400 text-blue-900 font-black px-4 py-2 rounded-xl text-xl shadow">1er TRIMESTRE</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div onclick="window.location.href='submenu_hardware_5to.html'" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">💻</span>
+                        <span class="text-5xl mb-3">&#128187;</span>
                         <h4 class="font-bold text-lg leading-tight">La computadora</h4>
                     </div>
                     
-                    <div onclick="abrirClase('tema2_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">🧠</span>
+                    <div onclick="abrirClase('submenu_hardware_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                        <span class="text-5xl mb-3">&#128421;&#65039;</span>
                         <h4 class="font-bold text-lg leading-tight">Hardware interno</h4>
                     </div>
                     
                     <div onclick="abrirClase('tema3_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">📱</span>
+                        <span class="text-5xl mb-3">&#128241;</span>
                         <h4 class="font-bold text-lg leading-tight">Dispositivos digitales</h4>
                     </div>
                     
@@ -159,64 +163,76 @@
 
             <section class="fade-up" style="animation-delay: 0.3s;">
                 <div class="flex items-center gap-4 mb-6 borde-t2 pb-2">
-                    <span class="bg-pink-500 text-white font-black px-4 py-2 rounded-xl text-xl shadow">2º TRIMESTRE</span>
+                    <span class="bg-pink-500 text-white font-black px-4 py-2 rounded-xl text-xl shadow">2do TRIMESTRE</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div onclick="abrirClase('tema5_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">📝</span>
+                        <span class="text-5xl mb-3">&#128196;</span>
                         <h4 class="font-bold text-lg leading-tight">Word avanzado</h4>
                     </div>
                     
                     <div onclick="abrirClase('tema6_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">📊</span>
+                        <span class="text-5xl mb-3">&#128202;</span>
                         <h4 class="font-bold text-lg leading-tight">PowerPoint</h4>
                     </div>
                     
                     <div onclick="abrirClase('tema7_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">🔍</span>
-                        <h4 class="font-bold text-lg leading-tight">Búsqueda en internet</h4>
+                        <span class="text-5xl mb-3">&#128269;</span>
+                        <h4 class="font-bold text-lg leading-tight">Busqueda en internet</h4>
                     </div>
                     
                     <div onclick="abrirClase('tema8_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">🕵️‍♂️</span>
-                        <h4 class="font-bold text-lg leading-tight">Validación de fuentes</h4>
+                        <span class="text-5xl mb-3">&#128270;</span>
+                        <h4 class="font-bold text-lg leading-tight">Validacion de fuentes</h4>
                     </div>
 
                     <div onclick="abrirClase('tema9_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">🦸‍♂️</span>
-                        <h4 class="font-bold text-lg leading-tight">Ciudadanía digital</h4>
+                        <span class="text-5xl mb-3">&#128101;</span>
+                        <h4 class="font-bold text-lg leading-tight">Ciudadania digital</h4>
                     </div>
                 </div>
             </section>
 
             <section class="fade-up" style="animation-delay: 0.5s;">
                 <div class="flex items-center gap-4 mb-6 borde-t3 pb-2">
-                    <span class="bg-blue-600 text-white font-black px-4 py-2 rounded-xl text-xl shadow">3º TRIMESTRE</span>
+                    <span class="bg-blue-600 text-white font-black px-4 py-2 rounded-xl text-xl shadow">3er TRIMESTRE</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div onclick="abrirClase('tema10_5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
-                        <span class="text-6xl mb-4">📋</span>
+                        <span class="text-6xl mb-4">&#129513;</span>
                         <h4 class="font-bold text-xl leading-tight">Algoritmos</h4>
                     </div>
                     
                     <div onclick="abrirClase('tema11_5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
-                        <span class="text-6xl mb-4">🧩</span>
-                        <h4 class="font-bold text-xl leading-tight">Programación por bloques</h4>
+                        <span class="text-6xl mb-4">&#129302;</span>
+                        <h4 class="font-bold text-xl leading-tight">Programacion por bloques</h4>
                     </div>
                     
                     <div onclick="abrirClase('tema12_5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
-                        <span class="text-6xl mb-4">🔄</span>
-                        <h4 class="font-bold text-xl leading-tight">Bucles en programación</h4>
+                        <span class="text-6xl mb-4">&#128260;</span>
+                        <h4 class="font-bold text-xl leading-tight">Bucles en programacion</h4>
                     </div>
                 </div>
             </section>
+            <section class="fade-up" style="animation-delay: 0.7s;">
+                <div class="flex items-center gap-4 mb-6 borde-t1 pb-2">
+                    <span class="bg-amber-300 text-slate-900 font-black px-4 py-2 rounded-xl text-xl shadow">JUEGOS</span>
+                </div>
 
+                <div class="grid grid-cols-1 gap-4">
+                    <div onclick="abrirClase('../juegos/menu_juegos.html?grado=5TO%20GRADO&volver=../quinto/index5to.html')" class="tema-card rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
+                        <span class="text-6xl mb-4">&#127918;</span>
+                        <h4 class="font-bold text-xl leading-tight">Arcade del Aula</h4>
+                        <p class="mt-3 text-sm font-bold opacity-80">Entrar al submenu de juegos</p>
+                    </div>
+                </div>
+            </section>
         </div>
-        
+
         <footer class="mt-12 text-center opacity-60 font-bold pb-6">
-            <p>Diseñado por Profe Braian - 2026</p>
+            <p>Disenado por Profe Braian - 2026</p>
         </footer>
     </div>
 
@@ -265,13 +281,13 @@
         const btn = document.getElementById('btnT');
         if (localStorage.getItem('modo') === 'oscuro') {
             document.body.classList.add('dark-mode');
-            btn.innerHTML = '🌙';
+            btn.innerHTML = 'Modo oscuro';
         }
 
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const esOscuro = document.body.classList.contains('dark-mode');
-            btn.innerHTML = esOscuro ? '🌙' : '☀️';
+            btn.innerHTML = esOscuro ? 'Modo oscuro' : 'Modo claro';
             localStorage.setItem('modo', esOscuro ? 'oscuro' : 'claro');
         }
 
@@ -288,10 +304,20 @@
             }, 800);
         }
 
-        // --- NAVEGACIÓN ---
+        // --- NAVEGACIï¿½"N ---
         function abrirClase(url) {
-            alert('¡Abriendo el módulo! Archivo destino: ' + url);
+            window.location.href = url;
         }
     </script>
+        <script src="../shared/ui-theme.js" defer></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
