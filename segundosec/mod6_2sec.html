@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Integrador - 2do Año</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #6366f1 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.18);
+            --border-color: rgba(255, 255, 255, 0.28);
+            --texto-principal: #ffffff;
+        }
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.35);
+            --border-color: rgba(255, 255, 255, 0.12);
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+        }
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+        }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto pt-10 md:pt-4">
+        <header class="glass-panel p-8 md:p-10 text-center mb-10">
+            <div class="text-7xl mb-4">📚</div>
+            <h1 class="text-4xl md:text-5xl font-black mb-3">Proyecto Integrador</h1>
+            <p class="text-xl font-bold text-sky-100">2do Año</p>
+        </header>
+        <section class="glass-panel p-8 md:p-10 text-center space-y-6">
+            <h2 class="text-2xl md:text-3xl font-black">Sección conectada</h2>
+            <p class="text-lg md:text-xl font-bold text-white/90">Sección conectada para el cierre del cuatrimestre.</p>
+            <p class="text-base md:text-lg font-bold text-white/75">Podés volver al menú del curso y seguir navegando sin enlaces vacíos.</p>
+            <div class="pt-2">
+                <a href="index2sec.html" class="inline-block bg-white text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">← Volver</a>
+            </div>
+        </section>
+    </div>
+    <script>
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
+

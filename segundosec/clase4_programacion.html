@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Clase 4 - 2do Año</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1d4ed8 45%, #7c3aed 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.18);
+            --panel-suave: rgba(255, 255, 255, 0.12);
+            --texto-principal: #f8fafc;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #020617 0%, #172554 45%, #581c87 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.35);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --panel-suave: rgba(255, 255, 255, 0.08);
+            --texto-principal: #f8fafc;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.28);
+        }
+
+        .soft-card {
+            background: var(--panel-suave);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 24px;
+        }
+
+        .terminal {
+            background: #020617;
+            border: 2px solid #334155;
+            border-radius: 24px;
+            padding: 1.25rem;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+        }
+
+        .code-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            font-weight: 900;
+        }
+
+        .code-box {
+            background: rgba(2, 6, 23, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 1rem;
+            font-family: Consolas, Monaco, monospace;
+            overflow-x: auto;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto pt-16 md:pt-6 pb-16 space-y-8">
+
+        <header class="glass-panel p-8 md:p-10 fade-up flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="text-7xl md:text-8xl drop-shadow-lg">🐍</div>
+                <div>
+                    <p class="code-chip mb-4">2do Año • Python • Clase 4</p>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white">Python desde cero</h1>
+                    <p class="text-lg md:text-2xl font-bold opacity-90">Print, input, consola y calculadora.</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <a href="submenu_fundamentos.html">⬅️ Volver a fundamentos</a>
+                <a href="index2sec.html">🏠 2do Año</a>
+            </div>
+        </header>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.1s;">
+            <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-6">
+                <div class="soft-card p-6">
+                    <h2 class="text-3xl md:text-4xl font-black mb-4">Lo esencial de hoy</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="soft-card p-4 text-center">
+                            <div class="text-3xl mb-2">🖨️</div>
+                            <p class="font-black">print()</p>
+                        </div>
+                        <div class="soft-card p-4 text-center">
+                            <div class="text-3xl mb-2">⌨️</div>
+                            <p class="font-black">input()</p>
+                        </div>
+                        <div class="soft-card p-4 text-center">
+                            <div class="text-3xl mb-2">🔢</div>
+                            <p class="font-black">float()</p>
+                        </div>
+                        <div class="soft-card p-4 text-center">
+                            <div class="text-3xl mb-2">➕</div>
+                            <p class="font-black">Operaciones</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="soft-card p-6">
+                    <h3 class="text-2xl font-black mb-4">Referencia rápida</h3>
+                    <div class="space-y-3 font-bold">
+                        <div class="soft-card p-4">🖨️ <code>print()</code> muestra datos en pantalla.</div>
+                        <div class="soft-card p-4">⌨️ <code>input()</code> pide datos al usuario.</div>
+                        <div class="soft-card p-4">🔢 <code>float()</code> convierte a número decimal.</div>
+                        <div class="soft-card p-4">⚠️ Python distingue mayúsculas y minúsculas.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <article class="glass-panel p-6">
+                    <div class="text-4xl mb-3">✅</div>
+                    <h3 class="text-2xl font-black mb-2">Correcto</h3>
+                    <div class="code-box text-green-300 text-lg">print("Hola mundo")</div>
+                </article>
+                <article class="glass-panel p-6">
+                    <div class="text-4xl mb-3">❌</div>
+                    <h3 class="text-2xl font-black mb-2">Error común</h3>
+                    <div class="code-box text-red-300 text-lg">Print("Hola")</div>
+                </article>
+                <article class="glass-panel p-6">
+                    <div class="text-4xl mb-3">💡</div>
+                    <h3 class="text-2xl font-black mb-2">Recordá</h3>
+                    <p class="font-bold">Sin comillas o sin paréntesis, Python da error.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.3s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-5">Primer programa</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="soft-card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">🖨️</span>
+                        <h3 class="text-2xl font-black">print()</h3>
+                    </div>
+                    <p class="font-bold mb-4">Sirve para mostrar mensajes y números en pantalla.</p>
+                    <div class="code-box text-sky-300 text-lg">print("¡Hola mundo!")</div>
+                </div>
+                <div class="soft-card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-3xl">⚠️</span>
+                        <h3 class="text-2xl font-black">Tres cuidados</h3>
+                    </div>
+                    <div class="space-y-3 font-bold">
+                        <div class="soft-card p-4">🔤 <strong>Case sensitive:</strong> <code>print</code> no es igual a <code>Print</code>.</div>
+                        <div class="soft-card p-4">💬 Los textos van entre comillas.</div>
+                        <div class="soft-card p-4">() Los paréntesis son obligatorios.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.4s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-5">¿Cómo nos escucha Python?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="soft-card p-6">
+                    <div class="text-3xl mb-3">⌨️</div>
+                    <h3 class="text-2xl font-black mb-3">Texto</h3>
+                    <div class="code-box text-amber-200">nombre = input("¿Cómo te llamás?")</div>
+                </div>
+                <div class="soft-card p-6">
+                    <div class="text-3xl mb-3">🔢</div>
+                    <h3 class="text-2xl font-black mb-3">Número</h3>
+                    <div class="code-box text-emerald-200">nro = float(input("Ingresá un número: "))</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.5s;">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+                <h2 class="text-3xl md:text-4xl font-black">Consola de práctica</h2>
+                <span class="code-chip">Probá: 2+3, 10/4, 2**3, 16%7</span>
+            </div>
+
+            <div class="terminal">
+                <div id="output" class="min-h-[190px] font-mono text-lg text-green-400 space-y-2 overflow-auto">
+                    <div>>> Python 3.10 READY</div>
+                </div>
+                <div class="flex items-center gap-3 mt-4 border-t border-white/10 pt-4">
+                    <span class="text-yellow-400 text-2xl font-black">>>></span>
+                    <input type="text" id="terminal-in" class="bg-transparent border-none outline-none text-white w-full text-xl font-mono" placeholder="Escribí código acá..." autofocus>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.6s;">
+            <div class="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-6">
+                <article class="glass-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Símbolos clave</h3>
+                    <div class="space-y-3 font-bold text-lg">
+                        <div class="soft-card p-4 flex justify-between"><span>Multiplicación</span><span class="text-yellow-300">*</span></div>
+                        <div class="soft-card p-4 flex justify-between"><span>División</span><span class="text-yellow-300">/</span></div>
+                        <div class="soft-card p-4 flex justify-between"><span>Potencia</span><span class="text-yellow-300">**</span></div>
+                        <div class="soft-card p-4 flex justify-between"><span>Resto</span><span class="text-yellow-300">%</span></div>
+                    </div>
+                </article>
+
+                <article class="glass-panel p-6 md:p-8 border-t-8 border-yellow-400">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-4xl">🔥</span>
+                        <h3 class="text-3xl font-black">Ejercicio: la calculadora</h3>
+                    </div>
+                    <p class="font-bold text-lg mb-4">Copiá este código, probalo y después cambiá la suma por una multiplicación.</p>
+                    <div class="code-box text-[1rem] leading-8 text-slate-100">
+                        <span class="text-slate-500"># Pedir datos</span><br>
+                        n1 = <span class="text-sky-300">float</span>(<span class="text-yellow-300">input</span>("Primer nro: "))<br>
+                        n2 = <span class="text-sky-300">float</span>(<span class="text-yellow-300">input</span>("Segundo nro: "))<br>
+                        <span class="text-slate-500"># Calcular suma</span><br>
+                        suma = n1 + n2<br>
+                        <span class="text-slate-500"># Mostrar</span><br>
+                        <span class="text-yellow-300">print</span>("El resultado es:", suma)
+                    </div>
+                    <div class="soft-card p-4 mt-5 font-black text-center">✍️ Desafío: cambiá <code>+</code> por <code>*</code>.</div>
+                </article>
+            </div>
+        </section>
+
+        <footer class="glass-panel p-6 md:p-8 fade-up text-center" style="animation-delay: 0.7s;">
+            <p class="text-lg font-bold opacity-80">Entregá tu captura o archivo a:</p>
+            <p class="text-2xl md:text-3xl font-black text-sky-300 mt-2">stepowskib@donboscobariloche.edu.ar</p>
+        </footer>
+    </div>
+
+    <script>
+        const input = document.getElementById('terminal-in');
+        const output = document.getElementById('output');
+
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const val = this.value;
+                const newLog = document.createElement('div');
+                newLog.innerHTML = `<span class="text-white opacity-60">>>> ${val}</span>`;
+                output.appendChild(newLog);
+
+                const result = document.createElement('div');
+                try {
+                    if (val.startsWith('print(')) {
+                        const content = val.match(/\((.*)\)/)[1];
+                        result.innerText = content.replace(/['"]/g, '');
+                    } else if (val.includes('Print')) {
+                        result.innerHTML = `<span class="text-red-400">NameError: name 'Print' is not defined</span>`;
+                    } else {
+                        result.innerText = eval(val);
+                    }
+                } catch (err) {
+                    result.innerHTML = `<span class="text-red-400">SyntaxError: revisá comillas o paréntesis</span>`;
+                }
+
+                output.appendChild(result);
+                this.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        });
+    </script>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
