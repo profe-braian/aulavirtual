@@ -55,23 +55,23 @@
             border-radius: 0 0 24px 24px;
             backdrop-filter: blur(12px);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 100%; max-width: 32rem;
+            width: 100%; max-width: 36rem;
             z-index: 10;
         }
 
         .glass-header {
             background: var(--header-light-bg);
             border-radius: 24px 24px 0 0;
-            padding: 30px; 
+            padding: 24px 30px; 
             display: flex; justify-content: center; align-items: center;
-            gap: 40px; 
-            width: 100%; max-width: 32rem;
+            gap: 28px; 
+            width: 100%; max-width: 36rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             z-index: 11;
         }
 
         .glass-header img {
-            height: 120px; 
+            height: 112px; 
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
@@ -90,6 +90,7 @@
             transform: translateY(-2px);
         }
     </style>
+        <link rel="stylesheet" href="./shared/ui-theme.css">
 </head>
 <body class="p-6">
 
@@ -97,7 +98,7 @@
 
     <button class="theme-toggle" onclick="toggleTheme()" id="btnT">☀️</button>
 
-    <div class="animate-fade-in flex flex-col items-center w-full relative z-10">
+    <div class="animate-fade-in flex flex-col items-center w-full max-w-xl relative z-10">
         
         <div class="glass-header">
             <img src="donbosco.png" alt="Logo Don Bosco" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x120?text=DonBosco';">
@@ -106,9 +107,9 @@
 
         <div class="glass-card p-8 md:p-10 text-center">
             
-            <div class="mb-8">
-                <h1 class="text-4xl font-black drop-shadow-md mb-1">Aula Virtual</h1>
-                <p class="text-xl font-bold opacity-80">Informática Educativa</p>
+            <div class="mb-8 md:mb-10">
+                <h1 class="text-4xl md:text-5xl font-black drop-shadow-md mb-2">Aula Virtual</h1>
+                <p class="text-lg md:text-xl font-bold opacity-80 text-sky-100">Informática Educativa</p>
             </div>
             
             <div class="space-y-6">
@@ -225,6 +226,23 @@
                 document.getElementById('clave').focus(); 
             }
         }
+
+        document.getElementById('grado').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                intentarIngreso();
+            }
+        });
+
+        document.getElementById('clave').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                intentarIngreso();
+            }
+        });
     </script>
+        <script src="./shared/ui-theme.js" defer></script>
 </body>
 </html>
+
+
