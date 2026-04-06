@@ -1,0 +1,542 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas Operativos - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #1e293b 0%, #334155 50%, #0f172a 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --texto-principal: #f8fafc;
+        }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            margin: 0;
+            padding: 0;
+        }
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+        }
+        .fade-up { animation: fadeUp 0.8s forwards; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .sim-shell {
+            background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+            border: 10px solid #334155;
+            border-radius: 28px;
+            box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+        .sim-screen {
+            min-height: 380px;
+            position: relative;
+            overflow: hidden;
+        }
+        .sim-fit {
+            position: absolute;
+            inset: 0;
+            transform-origin: top left;
+        }
+        .sim-desktop {
+            background:
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.28), transparent 24%),
+                linear-gradient(135deg, #0f172a 0%, #1d4ed8 45%, #0ea5e9 100%);
+        }
+        .sim-phone {
+            max-width: 240px;
+            margin: 0 auto;
+            border-radius: 36px;
+            border: 10px solid #111827;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        }
+        .desktop-icon {
+            width: 88px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+        .taskbar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            background: rgba(15, 23, 42, 0.76);
+            backdrop-filter: blur(10px);
+        }
+        .boot-ring {
+            width: 58px;
+            height: 58px;
+            border-radius: 999px;
+            border: 5px solid rgba(255, 255, 255, 0.18);
+            border-top-color: #38bdf8;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .drop-zone {
+            min-height: 160px;
+            border: 2px dashed rgba(255, 255, 255, 0.25);
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+        .drop-zone.over {
+            transform: scale(1.02);
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.14);
+        }
+        .request-card { cursor: grab; user-select: none; }
+        .request-card:active { cursor: grabbing; }
+        .request-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .request-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.18);
+        }
+        .request-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            background: rgba(255,255,255,0.18);
+            flex: 0 0 auto;
+        }
+        .request-text {
+            font-size: 1rem;
+            line-height: 1.25;
+        }
+        .app-btn.active {
+            outline: 3px solid rgba(56, 189, 248, 0.45);
+            transform: translateY(-2px);
+        }
+        .meter-bar {
+            height: 12px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .meter-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.25s ease;
+        }
+        .answer-btn.correct {
+            background: #16a34a !important;
+            color: #fff !important;
+        }
+        .answer-btn.wrong {
+            background: #dc2626 !important;
+            color: #fff !important;
+        }
+        .zone-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.15rem;
+        }
+        .zone-hint {
+            opacity: 0.72;
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-20">
+    <div class="max-w-7xl mx-auto space-y-10">
+        <header class="glass-panel p-8 md:p-10 fade-up">
+            <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+                <div>
+                    <p class="text-sm md:text-base font-black uppercase tracking-widest text-sky-200 mb-2">5to Grado • Dispositivos digitales • Clase 1</p>
+                    <h1 class="text-4xl md:text-5xl font-black mb-3">El Cerebro Digital: Sistemas Operativos</h1>
+                    <p class="text-lg md:text-xl font-bold opacity-80 text-sky-100">Quién organiza el hardware, las aplicaciones y lo que hace cada dispositivo.</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <a href="tema3_5to.html" class="bg-white text-blue-900 font-black px-7 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">← Volver al tema</a>
+                    <a href="index5to.html" class="bg-white/10 text-white border border-white/25 font-black px-7 py-4 rounded-2xl hover:bg-white/20 transition shadow-xl">Ir a 5to</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 fade-up" style="animation-delay: 0.1s;">
+            <article class="glass-panel p-7">
+                <div class="text-5xl mb-3">⏱️</div>
+                <h2 class="text-2xl font-black mb-4">Hoy vamos a</h2>
+                <p class="font-bold opacity-90">Explorar cómo funciona un sistema operativo usando simulaciones, juegos de clasificación y actividades interactivas.</p>
+            </article>
+            <article class="glass-panel p-7">
+                <div class="text-5xl mb-3">❓</div>
+                <h2 class="text-2xl font-black mb-4">Pregunta guía</h2>
+                <p class="font-bold opacity-90">¿Qué pasaría si encendemos un dispositivo y no tiene sistema operativo?</p>
+            </article>
+        </section>
+
+        <section class="glass-panel p-8 fade-up" style="animation-delay: 0.15s;">
+            <h2 class="text-3xl font-black mb-6">Mapa visual de dispositivos y sistemas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                <div class="bg-white/5 rounded-3xl p-6 border border-white/10 text-center">
+                    <div class="text-6xl mb-3">💻</div>
+                    <p class="text-xl font-black mb-2">Computadora</p>
+                    <p class="font-bold text-sky-300 mb-2">Windows / Linux / macOS</p>
+                    <p class="font-bold opacity-80">Ideal para estudiar, escribir, programar y trabajar con muchas ventanas.</p>
+                </div>
+                <div class="bg-white/5 rounded-3xl p-6 border border-white/10 text-center">
+                    <div class="text-6xl mb-3">📱</div>
+                    <p class="text-xl font-black mb-2">Celular</p>
+                    <p class="font-bold text-emerald-300 mb-2">Android / iOS</p>
+                    <p class="font-bold opacity-80">Pensado para tocar la pantalla, sacar fotos, chatear y usar apps rápidas.</p>
+                </div>
+                <div class="bg-white/5 rounded-3xl p-6 border border-white/10 text-center">
+                    <div class="text-6xl mb-3">📟</div>
+                    <p class="text-xl font-black mb-2">Tablet</p>
+                    <p class="font-bold text-pink-300 mb-2">Android / iPadOS</p>
+                    <p class="font-bold opacity-80">Combina apps táctiles, juegos, lectura y actividades escolares multimedia.</p>
+                </div>
+                <div class="bg-white/5 rounded-3xl p-6 border border-white/10 text-center">
+                    <div class="text-6xl mb-3">🖥️</div>
+                    <p class="text-xl font-black mb-2">Servidor</p>
+                    <p class="font-bold text-amber-300 mb-2">Linux</p>
+                    <p class="font-bold opacity-80">Trabaja detrás de internet organizando páginas, datos, usuarios y servicios.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 fade-up" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl font-black mb-6">1. ¿Qué hace un sistema operativo?</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-lg font-bold">
+                <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><div class="text-5xl mb-3">🧠</div><p class="text-sky-300 mb-2">Administra el hardware</p><p>Organiza qué hace el procesador, cuándo se guarda un archivo, cómo se usa la memoria RAM y qué periféricos responden.</p></div>
+                <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><div class="text-5xl mb-3">🪟</div><p class="text-emerald-300 mb-2">Muestra una interfaz</p><p>Nos permite usar íconos, ventanas, botones, menús y toques en pantalla en lugar de escribir puro código.</p></div>
+                <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><div class="text-5xl mb-3">🚀</div><p class="text-pink-300 mb-2">Ejecuta aplicaciones</p><p>Hace posible abrir juegos, programas de dibujo, navegadores, cámaras, calculadoras y muchas otras apps.</p></div>
+                <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><div class="text-5xl mb-3">🗂️</div><p class="text-amber-300 mb-2">Organiza archivos y usuarios</p><p>Decide dónde se guardan los trabajos, qué permisos tiene cada persona y cómo se recupera la información.</p></div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-8 fade-up" style="animation-delay: 0.3s;">
+            <article class="glass-panel p-8">
+                <div class="mb-6">
+                    <div>
+                        <h2 class="text-3xl font-black">2. Simulador de arranque</h2>
+                        <p class="font-bold opacity-80">Elegí un sistema y mirá cómo cambia el dispositivo, el logo, el escritorio y la secuencia de inicio.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        <button onclick="boot('windows')" class="bg-blue-600 px-4 py-2 rounded-xl font-black hover:bg-blue-500 transition">Windows</button>
+                        <button onclick="boot('android')" class="bg-green-600 px-4 py-2 rounded-xl font-black hover:bg-green-500 transition">Android</button>
+                        <button onclick="boot('mac')" class="bg-slate-200 text-slate-900 px-4 py-2 rounded-xl font-black hover:bg-white transition">macOS</button>
+                        <button onclick="boot('linux')" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black hover:bg-yellow-300 transition">Linux</button>
+                    </div>
+                </div>
+                <div id="boot-monitor" class="sim-shell">
+                    <div id="boot-screen" class="sim-screen flex items-center justify-center bg-black text-center p-6">
+                        <div class="space-y-5">
+                            <div id="boot-logo" class="boot-ring mx-auto"></div>
+                            <div id="boot-title" class="text-3xl font-black">Iniciando sistema...</div>
+                            <p id="boot-subtitle" class="text-sky-300 font-bold">Esperando instrucciones del sistema operativo.</p>
+                            <div id="boot-progress-wrap" class="w-72 mx-auto"><div class="meter-bar"><div id="boot-progress" class="meter-fill bg-sky-400" style="width: 8%;"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-base font-bold">
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><p class="text-sky-300 mb-2">Qué observar</p><p>El sistema operativo no solo muestra un logo: prepara memoria, detecta hardware y carga la interfaz que usaremos.</p></div>
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><p class="text-pink-300 mb-2">Desafío oral</p><p>¿Qué sistema te parece más pensado para una PC y cuál para un celular? Explicá por qué.</p></div>
+                </div>
+            </article>
+
+            <article class="glass-panel p-8">
+                <h2 class="text-3xl font-black mb-4">3. El sistema operativo como organizador</h2>
+                <p class="font-bold opacity-80 mb-4">Arrastrá cada tarjeta al lugar correcto. El objetivo es distinguir qué tareas resuelve el sistema operativo y cuáles dependen directamente del hardware.</p>
+                <div class="bg-sky-500/10 border border-sky-300/20 rounded-2xl p-4 mb-5">
+                    <p class="font-black text-sky-300">Instrucción</p>
+                    <p class="font-bold opacity-90">Tocá y arrastrá cada tarjeta. Si una tarea habla de ventanas, archivos o apps, suele ir con el sistema operativo. Si habla de calcular, mostrar o guardar físicamente datos, pensá en el hardware.</p>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 mb-6" id="request-pool">
+                    <div draggable="true" data-target="os-zone" class="request-card font-black"><span class="request-icon">🪟</span><span class="request-text">Abrir una app y mostrarla en pantalla</span></div>
+                    <div draggable="true" data-target="os-zone" class="request-card font-black"><span class="request-icon">📁</span><span class="request-text">Guardar un archivo con nombre y carpeta</span></div>
+                    <div draggable="true" data-target="hw-zone" class="request-card font-black"><span class="request-icon">🧠</span><span class="request-text">Hacer cálculos con el procesador</span></div>
+                    <div draggable="true" data-target="hw-zone" class="request-card font-black"><span class="request-icon">🖥️</span><span class="request-text">Mostrar la imagen en el monitor</span></div>
+                    <div draggable="true" data-target="os-zone" class="request-card font-black"><span class="request-icon">📋</span><span class="request-text">Organizar ventanas y menú de inicio</span></div>
+                    <div draggable="true" data-target="hw-zone" class="request-card font-black"><span class="request-icon">💾</span><span class="request-text">Escribir datos en la memoria RAM o disco</span></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="os-zone" class="drop-zone rounded-2xl p-4 bg-sky-500/10">
+                        <p class="font-black text-sky-300 mb-3 zone-title"><span>⚙️</span><span>Zona del sistema operativo</span></p>
+                        <p class="zone-hint">Soltá acá tareas de ventanas, apps, menús y archivos.</p>
+                        <div class="drop-list space-y-2"></div>
+                    </div>
+                    <div id="hw-zone" class="drop-zone rounded-2xl p-4 bg-pink-500/10">
+                        <p class="font-black text-pink-300 mb-3 zone-title"><span>🔩</span><span>Zona del hardware</span></p>
+                        <p class="zone-hint">Soltá acá tareas de cálculo, pantalla, memoria y disco.</p>
+                        <div class="drop-list space-y-2"></div>
+                    </div>
+                </div>
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <button onclick="checkDrops()" class="bg-emerald-600 px-5 py-3 rounded-xl font-black hover:bg-emerald-500 transition">Corregir clasificación</button>
+                    <button onclick="resetDrops()" class="bg-white/10 px-5 py-3 rounded-xl font-black hover:bg-white/20 transition border border-white/15">Reiniciar</button>
+                </div>
+                <p id="drop-feedback" class="mt-4 font-black"></p>
+            </article>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-8 fade-up" style="animation-delay: 0.4s;">
+            <article class="glass-panel p-8">
+                <h2 class="text-3xl font-black mb-4">4. Gestor de tareas</h2>
+                <p class="font-bold opacity-80 mb-6">Activá programas y mirá cómo cambian CPU, memoria y batería. Así trabaja el sistema operativo administrando recursos.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <button class="app-btn bg-blue-600 px-4 py-3 rounded-xl font-black hover:bg-blue-500 transition" data-app="chrome" onclick="toggleApp('chrome')">Navegador</button>
+                    <button class="app-btn bg-pink-600 px-4 py-3 rounded-xl font-black hover:bg-pink-500 transition" data-app="video" onclick="toggleApp('video')">Video</button>
+                    <button class="app-btn bg-emerald-600 px-4 py-3 rounded-xl font-black hover:bg-emerald-500 transition" data-app="paint" onclick="toggleApp('paint')">Dibujo</button>
+                    <button class="app-btn bg-amber-500 text-slate-900 px-4 py-3 rounded-xl font-black hover:bg-amber-400 transition" data-app="game" onclick="toggleApp('game')">Juego</button>
+                </div>
+                <div class="space-y-4">
+                    <div><div class="flex justify-between font-black mb-1"><span>CPU</span><span id="cpu-label">12%</span></div><div class="meter-bar"><div id="cpu-fill" class="meter-fill bg-sky-400" style="width: 12%;"></div></div></div>
+                    <div><div class="flex justify-between font-black mb-1"><span>Memoria RAM</span><span id="ram-label">28%</span></div><div class="meter-bar"><div id="ram-fill" class="meter-fill bg-pink-400" style="width: 28%;"></div></div></div>
+                    <div><div class="flex justify-between font-black mb-1"><span>Batería / energía</span><span id="battery-label">91%</span></div><div class="meter-bar"><div id="battery-fill" class="meter-fill bg-emerald-400" style="width: 91%;"></div></div></div>
+                </div>
+                <div class="mt-6 bg-white/5 rounded-2xl p-5 border border-white/10"><p class="font-black text-sky-300 mb-2">Lectura del profe</p><p id="task-feedback" class="font-bold opacity-90">Con pocos programas abiertos, el sistema operativo administra bien los recursos y todo responde rápido.</p></div>
+                <div class="mt-6 grid grid-cols-2 gap-4 text-center font-black">
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                        <div class="text-5xl mb-2">⚡</div>
+                        <p>Más apps = más trabajo</p>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                        <div class="text-5xl mb-2">🔋</div>
+                        <p>Más consumo = menos batería</p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="glass-panel p-8">
+                <h2 class="text-3xl font-black mb-4">5. ¿Qué sistema operativo usa cada dispositivo?</h2>
+                <p class="font-bold opacity-80 mb-6">Tocá cada dispositivo y elegí el sistema operativo que mejor lo representa.</p>
+                <div class="space-y-4" id="device-quiz">
+                    <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><p class="text-xl font-black mb-3">📱 Celular Samsung</p><div class="flex flex-wrap gap-2"><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'android', 'android')">Android</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'android', 'windows')">Windows</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'android', 'linux')">Linux</button></div></div>
+                    <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><p class="text-xl font-black mb-3">💻 Notebook escolar</p><div class="flex flex-wrap gap-2"><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'windows', 'windows')">Windows</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'windows', 'android')">Android</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'windows', 'ios')">iOS</button></div></div>
+                    <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><p class="text-xl font-black mb-3">🍎 MacBook</p><div class="flex flex-wrap gap-2"><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'macos', 'windows')">Windows</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'macos', 'macos')">macOS</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'macos', 'android')">Android</button></div></div>
+                    <div class="bg-white/5 rounded-2xl p-5 border border-white/10"><p class="text-xl font-black mb-3">🐧 Servidor de internet</p><div class="flex flex-wrap gap-2"><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'linux', 'linux')">Linux</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'linux', 'macos')">macOS</button><button class="answer-btn bg-white/10 px-4 py-2 rounded-xl font-black" onclick="checkDeviceAnswer(this, 'linux', 'android')">Android</button></div></div>
+                </div>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-4xl mb-2">🪟</div><p class="font-black">Windows</p></div>
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-4xl mb-2">🤖</div><p class="font-black">Android</p></div>
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-4xl mb-2">🍎</div><p class="font-black">macOS</p></div>
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/10"><div class="text-4xl mb-2">🐧</div><p class="font-black">Linux</p></div>
+                </div>
+            </article>
+        </section>
+
+        <section class="glass-panel p-8 fade-up border-4 border-dashed border-sky-400" style="animation-delay: 0.5s;">
+            <h2 class="text-3xl font-black mb-6">6. Cierre rápido</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black/20 p-6 rounded-2xl"><p class="text-xl font-bold mb-4">¿Qué hace el sistema operativo antes de que podamos usar el dispositivo?</p><button onclick="reveal(this, 'Carga el sistema, reconoce hardware y prepara la interfaz.')" class="bg-sky-500 px-4 py-2 rounded-lg font-black">Ver respuesta</button></div>
+                <div class="bg-black/20 p-6 rounded-2xl"><p class="text-xl font-bold mb-4">¿Por qué una compu se pone lenta si abrimos demasiadas cosas al mismo tiempo?</p><button onclick="reveal(this, 'Porque el sistema operativo tiene que repartir CPU, RAM y energía entre muchas tareas.')" class="bg-sky-500 px-4 py-2 rounded-lg font-black">Ver respuesta</button></div>
+            </div>
+            <div class="mt-6 flex flex-wrap justify-center gap-5 text-center">
+                <div class="bg-white/5 rounded-2xl px-6 py-4 border border-white/10">
+                    <div class="text-4xl mb-2">💻</div>
+                    <p class="font-black">PC</p>
+                </div>
+                <div class="bg-white/5 rounded-2xl px-6 py-4 border border-white/10">
+                    <div class="text-4xl mb-2">📱</div>
+                    <p class="font-black">Celular</p>
+                </div>
+                <div class="bg-white/5 rounded-2xl px-6 py-4 border border-white/10">
+                    <div class="text-4xl mb-2">📂</div>
+                    <p class="font-black">Archivos</p>
+                </div>
+                <div class="bg-white/5 rounded-2xl px-6 py-4 border border-white/10">
+                    <div class="text-4xl mb-2">⚙️</div>
+                    <p class="font-black">Configuración</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const bootMonitor = document.getElementById('boot-monitor');
+        const bootScreen = document.getElementById('boot-screen');
+        let bootTimer = null;
+        const systems = {
+            windows: {
+                title: 'Windows',
+                subtitle: 'Cargando escritorio, barra de tareas y programas.',
+                progressColor: 'bg-sky-400',
+                phone: false,
+                logoHtml: '<div class="grid grid-cols-2 gap-[4px] w-16 mx-auto"><div class="w-7 h-7 bg-sky-400"></div><div class="w-7 h-7 bg-sky-400"></div><div class="w-7 h-7 bg-sky-400"></div><div class="w-7 h-7 bg-sky-400"></div></div>',
+                finalHtml: '<div class="w-full h-full p-4 text-white relative" style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 38%,#38bdf8 100%);"><div class="sim-fit"><div class="absolute inset-0 opacity-20" style="background:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 22%), radial-gradient(circle at 82% 18%, rgba(255,255,255,0.18), transparent 18%), linear-gradient(120deg, rgba(255,255,255,0.14), transparent 35%);"></div><div class="relative grid grid-cols-1 gap-y-4 max-w-[120px] pt-2"><div class="desktop-icon"><div class="text-4xl mb-1">🗂️</div>Archivos</div><div class="desktop-icon"><div class="text-4xl mb-1">🌐</div>Edge</div><div class="desktop-icon"><div class="text-4xl mb-1">🧮</div>Calculadora</div><div class="desktop-icon"><div class="text-4xl mb-1">🗑️</div>Papelera</div></div><div class="absolute top-4 right-4 bg-sky-200/25 rounded-lg px-3 py-2 text-xs font-black backdrop-blur-sm border border-white/20">Alumno 5to</div><div class="absolute left-1/2 top-[88px] -translate-x-1/2 bg-white/12 rounded-2xl border border-white/15 shadow-xl w-[210px]"><div class="bg-slate-100/90 text-slate-900 text-xs font-black px-3 py-2 rounded-t-2xl flex items-center justify-between"><span>Calculadora</span><span>— □ ✕</span></div><div class="p-2 text-right text-xl font-black bg-slate-900 text-white">24 + 18</div><div class="grid grid-cols-4 gap-2 p-2 bg-slate-200 text-slate-900 text-sm font-black rounded-b-2xl"><div class="bg-white rounded p-2">7</div><div class="bg-white rounded p-2">8</div><div class="bg-white rounded p-2">9</div><div class="bg-pink-200 rounded p-2">+</div><div class="bg-white rounded p-2">4</div><div class="bg-white rounded p-2">5</div><div class="bg-white rounded p-2">6</div><div class="bg-pink-200 rounded p-2">-</div><div class="bg-white rounded p-2">1</div><div class="bg-white rounded p-2">2</div><div class="bg-white rounded p-2">3</div><div class="bg-pink-200 rounded p-2">=</div></div></div><div class="taskbar"><div class="flex items-center gap-3"><div class="w-7 h-7 bg-sky-400 rounded-sm grid grid-cols-2 gap-[2px] p-[3px]"><span class="bg-white/90"></span><span class="bg-white/90"></span><span class="bg-white/90"></span><span class="bg-white/90"></span></div><div class="w-7 h-7 bg-white/20 rounded-md"></div><div class="w-7 h-7 bg-white/20 rounded-md"></div><div class="w-7 h-7 bg-white/20 rounded-md"></div></div><div class="text-sm font-black">10:30</div></div></div></div>'
+            },
+            android: {
+                title: 'Android',
+                subtitle: 'Preparando pantalla de inicio y aplicaciones móviles.',
+                progressColor: 'bg-emerald-400',
+                phone: true,
+                logoHtml: '<div class="text-7xl">🤖</div>',
+                finalHtml: '<div class="w-full h-full sim-phone bg-gradient-to-b from-emerald-500 via-teal-500 to-cyan-600 p-4 text-white flex flex-col justify-between"><div class="text-center font-black text-sm">10:30</div><div class="grid grid-cols-3 gap-3 text-center"><div><div class="text-3xl">📷</div><div class="text-xs font-black">Cámara</div></div><div><div class="text-3xl">💬</div><div class="text-xs font-black">Mensajes</div></div><div><div class="text-3xl">▶️</div><div class="text-xs font-black">Videos</div></div><div><div class="text-3xl">🗺️</div><div class="text-xs font-black">Mapas</div></div><div><div class="text-3xl">🎮</div><div class="text-xs font-black">Juegos</div></div><div><div class="text-3xl">⚙️</div><div class="text-xs font-black">Ajustes</div></div></div><div class="h-2 w-20 bg-white/60 rounded-full mx-auto"></div></div>'
+            },
+            mac: {
+                title: 'macOS',
+                subtitle: 'Cargando escritorio, dock y accesos rápidos.',
+                progressColor: 'bg-slate-400',
+                phone: false,
+                logoHtml: '<div class="text-7xl text-white">🍎</div>',
+                finalHtml: '<div class="w-full h-full bg-gradient-to-br from-indigo-300 via-sky-200 to-pink-200 p-5 text-slate-900 relative"><div class="absolute top-0 left-0 right-0 h-8 bg-white/50 backdrop-blur flex items-center justify-between px-4 text-xs font-black"><span>🍎 Finder Archivo Editar</span><span>Vie 10:30</span></div><div class="pt-10 grid grid-cols-2 gap-y-6 gap-x-3 max-w-[230px]"><div class="desktop-icon"><div class="text-5xl mb-1">📝</div>Notas</div><div class="desktop-icon"><div class="text-5xl mb-1">🖼️</div>Fotos</div><div class="desktop-icon"><div class="text-5xl mb-1">🎵</div>Música</div><div class="desktop-icon"><div class="text-5xl mb-1">🧭</div>Safari</div></div><div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/72 backdrop-blur-md rounded-2xl px-5 py-2 flex gap-4 text-2xl shadow-lg"><span>🧭</span><span>📁</span><span>🎬</span><span>⚙️</span></div></div>'
+            },
+            linux: {
+                title: 'Linux',
+                subtitle: 'Cargando kernel, servicios y escritorio liviano.',
+                progressColor: 'bg-amber-300',
+                phone: false,
+                logoHtml: '<div class="text-7xl">🐧</div>',
+                finalHtml: '<div class="w-full h-full bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-white relative"><div class="absolute top-0 left-0 right-0 h-8 bg-black/35 flex items-center justify-between px-4 text-xs font-black"><span>Aplicaciones</span><span>Linux Mint</span><span>10:30</span></div><div class="pt-12 bg-black/40 rounded-2xl p-4 font-mono text-sm leading-7"><div>$ sudo iniciar-escritorio</div><div class="text-emerald-300">[ok] Servicios cargados</div><div class="text-emerald-300">[ok] Red conectada</div><div class="text-emerald-300">[ok] Usuario listo</div></div><div class="mt-5 flex gap-5 text-center"><div class="desktop-icon"><div class="text-5xl mb-1">📁</div>Home</div><div class="desktop-icon"><div class="text-5xl mb-1">🧠</div>Código</div><div class="desktop-icon"><div class="text-5xl mb-1">🌐</div>Web</div></div></div>'
+            }
+        };
+        function boot(systemKey) {
+            const system = systems[systemKey];
+            clearTimeout(bootTimer);
+            bootMonitor.classList.toggle('max-w-[260px]', system.phone);
+            bootScreen.className = 'sim-screen flex items-center justify-center bg-black text-center p-6';
+            bootScreen.innerHTML = `<div class="space-y-5"><div class="mx-auto">${system.logoHtml}</div><div class="text-3xl font-black">${system.title}</div><p class="font-bold ${systemKey === 'linux' ? 'text-amber-300' : 'text-sky-300'}">${system.subtitle}</p><div class="w-72 mx-auto"><div class="meter-bar"><div id="boot-progress" class="meter-fill ${system.progressColor}" style="width: 8%;"></div></div></div></div>`;
+            const progressEl = document.getElementById('boot-progress');
+            let progress = 8;
+            const interval = setInterval(() => {
+                progress += 18;
+                progressEl.style.width = `${Math.min(progress, 100)}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    bootTimer = setTimeout(() => {
+                        bootScreen.className = 'sim-screen';
+                        bootScreen.innerHTML = system.finalHtml;
+                    }, 300);
+                }
+            }, 240);
+        }
+        const appLoads = {
+            chrome: { cpu: 10, ram: 16, battery: -4, note: 'El navegador necesita memoria para pestañas, imágenes y videos.' },
+            video: { cpu: 15, ram: 18, battery: -8, note: 'Reproducir video usa procesador, memoria y bastante energía.' },
+            paint: { cpu: 6, ram: 10, battery: -3, note: 'Dibujar usa pocos recursos, salvo si el archivo es muy grande.' },
+            game: { cpu: 28, ram: 24, battery: -12, note: 'Los juegos suelen pedir muchos recursos al sistema operativo.' }
+        };
+        const activeApps = new Set();
+        function updateTaskManager() {
+            let cpu = 12;
+            let ram = 28;
+            let battery = 91;
+            let notes = [];
+            activeApps.forEach((app) => {
+                cpu += appLoads[app].cpu;
+                ram += appLoads[app].ram;
+                battery += appLoads[app].battery;
+                notes.push(appLoads[app].note);
+            });
+            cpu = Math.min(cpu, 100);
+            ram = Math.min(ram, 100);
+            battery = Math.max(battery, 15);
+            document.getElementById('cpu-fill').style.width = `${cpu}%`;
+            document.getElementById('ram-fill').style.width = `${ram}%`;
+            document.getElementById('battery-fill').style.width = `${battery}%`;
+            document.getElementById('cpu-label').textContent = `${cpu}%`;
+            document.getElementById('ram-label').textContent = `${ram}%`;
+            document.getElementById('battery-label').textContent = `${battery}%`;
+            document.getElementById('task-feedback').textContent = notes.length ? notes[notes.length - 1] : 'Con pocos programas abiertos, el sistema operativo administra bien los recursos y todo responde rápido.';
+        }
+        function toggleApp(app) {
+            const btn = document.querySelector(`[data-app="${app}"]`);
+            if (activeApps.has(app)) {
+                activeApps.delete(app);
+                btn.classList.remove('active');
+            } else {
+                activeApps.add(app);
+                btn.classList.add('active');
+            }
+            updateTaskManager();
+        }
+        let draggedCard = null;
+        document.querySelectorAll('.request-card').forEach((card) => {
+            card.addEventListener('dragstart', () => { draggedCard = card; });
+        });
+        document.querySelectorAll('.drop-zone').forEach((zone) => {
+            zone.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                zone.classList.add('over');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+            zone.addEventListener('drop', (event) => {
+                event.preventDefault();
+                zone.classList.remove('over');
+                if (!draggedCard) return;
+                zone.querySelector('.drop-list').appendChild(draggedCard);
+                draggedCard = null;
+            });
+        });
+        function resetDrops() {
+            const pool = document.getElementById('request-pool');
+            document.querySelectorAll('.drop-zone .request-card').forEach((card) => pool.appendChild(card));
+            document.getElementById('drop-feedback').textContent = '';
+        }
+        function checkDrops() {
+            const cards = document.querySelectorAll('.drop-zone .request-card');
+            let correct = 0;
+            cards.forEach((card) => {
+                const parentZone = card.closest('.drop-zone').id;
+                if (card.dataset.target === parentZone) correct += 1;
+            });
+            const total = document.querySelectorAll('.request-card').length;
+            const feedback = document.getElementById('drop-feedback');
+            if (correct === total) {
+                feedback.textContent = '¡Excelente! Diferenciaste bien qué organiza el sistema operativo y qué realiza el hardware.';
+                feedback.className = 'mt-4 font-black text-emerald-300';
+            } else {
+                feedback.textContent = `Llevás ${correct} de ${total} correctas. Revisá especialmente las tareas de guardar, mostrar y calcular.`;
+                feedback.className = 'mt-4 font-black text-amber-300';
+            }
+        }
+        function checkDeviceAnswer(button, expected, chosen) {
+            const group = button.parentElement.querySelectorAll('.answer-btn');
+            group.forEach((btn) => {
+                btn.disabled = true;
+                if (btn === button) {
+                    btn.classList.add(expected === chosen ? 'correct' : 'wrong');
+                } else if (btn.textContent.trim().toLowerCase() === expected) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+        function reveal(btn, answerText) {
+            btn.textContent = answerText;
+            btn.classList.remove('bg-sky-500');
+            btn.classList.add('bg-emerald-600');
+        }
+        boot('windows');
+        updateTaskManager();
+    </script>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>

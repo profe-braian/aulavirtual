@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispositivos Digitales - 5to Grado</title>
+    <meta http-equiv="refresh" content="0; url=clase1_SO.html">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
         :root {
             --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #6366f1 50%, #f472b6 100%);
             --tarjeta-bg: rgba(255, 255, 255, 0.18);
             --border-color: rgba(255, 255, 255, 0.28);
             --texto-principal: #ffffff;
         }
+
         .dark-mode {
             --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
             --tarjeta-bg: rgba(0, 0, 0, 0.35);
             --border-color: rgba(255, 255, 255, 0.12);
         }
+
         body {
             margin: 0;
             min-height: 100vh;
@@ -26,6 +30,7 @@
             background-attachment: fixed;
             color: var(--texto-principal);
         }
+
         .glass-panel {
             background: var(--tarjeta-bg);
             border: 1px solid var(--border-color);
@@ -33,33 +38,62 @@
             border-radius: 24px;
             box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
         }
+
+        .tema-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .tema-card:hover {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.28);
+        }
     </style>
-        <link rel="stylesheet" href="../shared/ui-theme.css">
+    <link rel="stylesheet" href="../shared/ui-theme.css">
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto pt-10 md:pt-4">
-        <header class="glass-panel p-8 md:p-10 text-center mb-10">
-            <div class="text-7xl mb-4">📚</div>
-            <h1 class="text-4xl md:text-5xl font-black mb-3">Dispositivos Digitales</h1>
-            <p class="text-xl font-bold text-sky-100">5to Grado</p>
+    <script>
+        window.location.replace('clase1_SO.html');
+    </script>
+    <div class="max-w-6xl mx-auto pt-10 md:pt-4">
+        <header class="glass-panel p-8 md:p-10 mb-10 flex flex-col lg:flex-row justify-between items-center gap-6">
+            <div>
+                <p class="text-sm md:text-base font-black uppercase tracking-wider text-sky-200 mb-2">Tema 3</p>
+                <h1 class="text-4xl md:text-5xl font-black mb-3">Dispositivos Digitales</h1>
+                <p class="text-lg md:text-xl font-bold opacity-80 text-sky-100">5to Grado • Sistemas operativos, interfaces y uso inteligente de equipos</p>
+            </div>
+            <a href="index5to.html" class="bg-white text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">← Volver a 5to</a>
         </header>
-        <section class="glass-panel p-8 md:p-10 text-center space-y-6">
-            <h2 class="text-2xl md:text-3xl font-black">Sección conectada</h2>
-            <p class="text-lg md:text-xl font-bold text-white/90">Sección creada para continuar armando el trayecto completo de 5to.</p>
-            <p class="text-base md:text-lg font-bold text-white/75">Podés volver al menú del curso y seguir navegando sin enlaces vacíos.</p>
-            <div class="pt-2">
-                <a href="index5to.html" class="inline-block bg-white text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">← Volver</a>
+
+        <section class="glass-panel p-8 md:p-10 mb-10">
+            <h2 class="text-2xl md:text-3xl font-black mb-4">Recorrido del tema</h2>
+            <p class="text-lg font-bold opacity-90 mb-6">En este bloque vamos a estudiar qué tipos de dispositivos usamos, qué sistema operativo los hace funcionar y cómo cambia la experiencia según el equipo.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <article onclick="window.location.href='clase1_SO.html'" class="tema-card rounded-3xl p-7 cursor-pointer">
+                    <div class="text-6xl mb-4">💻</div>
+                    <p class="text-sm font-black uppercase tracking-widest text-sky-200 mb-2">Clase 1</p>
+                    <h3 class="text-2xl font-black mb-3">Sistemas Operativos</h3>
+                    <p class="font-bold opacity-90 mb-4">Clase completa con simulador de arranque, gestor de tareas, clasificación de dispositivos y actividades extendidas.</p>
+                    <div class="inline-flex items-center gap-2 bg-sky-500 text-white font-black px-4 py-2 rounded-full">Entrar a la clase</div>
+                </article>
+
+                <article class="tema-card rounded-3xl p-7">
+                    <div class="text-6xl mb-4">📱</div>
+                    <p class="text-sm font-black uppercase tracking-widest text-pink-200 mb-2">Próxima clase</p>
+                    <h3 class="text-2xl font-black mb-3">Aplicaciones y usos</h3>
+                    <p class="font-bold opacity-90 mb-4">Espacio reservado para continuar el tema con programas, apps y funciones según cada dispositivo.</p>
+                    <div class="inline-flex items-center gap-2 bg-white/20 text-white font-black px-4 py-2 rounded-full border border-white/20">Se completa después</div>
+                </article>
             </div>
         </section>
+
+        <section class="glass-panel p-8 md:p-10">
+            <h2 class="text-2xl md:text-3xl font-black mb-4">Objetivo de aprendizaje</h2>
+            <p class="text-lg font-bold opacity-90">Reconocer qué es un sistema operativo, para qué sirve, en qué dispositivos aparece y cómo organiza el trabajo entre el hardware, las aplicaciones y las personas usuarias.</p>
+        </section>
     </div>
-    <script>
-        if (localStorage.getItem('modo') === 'oscuro') {
-            document.body.classList.add('dark-mode');
-        }
-    </script>
-        <script src="../shared/ui-theme.js" defer></script>
+    <script src="../shared/ui-theme.js" defer></script>
 </body>
 </html>
-
-
-

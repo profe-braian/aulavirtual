@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Dash - 5 Niveles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+        }
+        
+        #gameContainer {
+            position: relative;
+        }
+
+        canvas {
+            background-color: #0a0a0a;
+            border-bottom: 2px solid;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+            transition: box-shadow 0.5s, background-color 0.5s;
+        }
+
+        #ui {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px currentColor;
+            transition: color 0.5s;
+        }
+
+        /* Barra de Velocidad */
+        #speedBarContainer {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #speedBar {
+            height: 100%;
+            width: 0%;
+            background: #00ffff;
+            box-shadow: 0 0 15px #00ffff;
+            transition: width 0.2s linear, background 0.5s, box-shadow 0.5s;
+        }
+
+        /* Anuncio de Nivel */
+        #levelAnnouncement {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-weight: bold;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 0 0 20px currentColor;
+            transition: opacity 0.3s;
+        }
+
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            border: 2px solid;
+            box-shadow: 0 0 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        #gameOver h1 {
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            background: transparent;
+            color: inherit;
+            border: 2px solid currentColor;
+            border-radius: 5px;
+            font-weight: bold;
+            font-family: inherit;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            box-shadow: 0 0 10px inset currentColor;
+        }
+
+        button:hover {
+            background: currentColor;
+            color: black;
+            box-shadow: 0 0 20px currentColor;
+        }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body>
+
+    <div id="gameContainer">
+        <div id="ui">
+            <div class="stats" id="statsText">
+                <span>Nivel: <span id="levelDisplay">1</span></span>
+                <span>Puntos: <span id="score">0</span></span>
+                <span>Velocidad: <span id="speedDisplay">1.0</span>x</span>
+            </div>
+            <div id="speedBarContainer">
+                <div id="speedBar"></div>
+            </div>
+        </div>
+        
+        <div id="levelAnnouncement">¡NIVEL 2!</div>
+
+        <div id="gameOver">
+            <h1>SISTEMA CAÍDO</h1>
+            <p style="font-size: 20px;">Nivel alcanzado: <span id="finalLevel">1</span></p>
+            <p style="font-size: 20px;">Puntuación Final: <span id="finalScore">0</span></p>
+            <button onclick="resetGame()">Reiniciar</button>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const speedElement = document.getElementById('speedDisplay');
+        const levelElement = document.getElementById('levelDisplay');
+        const speedBar = document.getElementById('speedBar');
+        const statsText = document.getElementById('statsText');
+        const gameOverScreen = document.getElementById('gameOver');
+        const announcement = document.getElementById('levelAnnouncement');
+
+        // Configuración de los 5 Niveles Neón
+        const levels = [
+            { id: 1, player: '#00ffff', obs: '#ff00ff', bg: '#050510' }, // Cyan y Rosa
+            { id: 2, player: '#39ff14', obs: '#9400d3', bg: '#051005' }, // Verde Neón y Violeta
+            { id: 3, player: '#ffff00', obs: '#ff0000', bg: '#101005' }, // Amarillo y Rojo
+            { id: 4, player: '#ff8c00', obs: '#00bfff', bg: '#100505' }, // Naranja y Celeste
+            { id: 5, player: '#ffffff', obs: '#ff1493', bg: '#1a001a' }  // Blanco y Magenta Intenso
+        ];
+
+        let gameActive = true;
+        let score = 0;
+        let frames = 0;
+        let currentLevel = 1;
+        
+        // Físicas y Velocidad
+        let basePhysicalSpeed = 6;
+        let physicalSpeed = basePhysicalSpeed;
+        let displayMultiplier = 1.0; 
+        const pointsPerLevel = 20; // Puntos necesarios para subir de nivel
+        
+        const groundHeight = 50;
+
+        const player = {
+            x: 100,
+            y: 0,
+            size: 35,
+            dy: 0,
+            gravity: 0.85,
+            jumpPower: -13.5,
+            isJumping: false,
+            rotation: 0
+        };
+
+        let obstacles = [];
+
+        function updatePalette() {
+            const pal = levels[currentLevel - 1];
+            
+            // Actualizar interfaz HTML
+            statsText.style.color = pal.player;
+            speedBar.style.background = pal.player;
+            speedBar.style.boxShadow = `0 0 15px ${pal.player}`;
+            canvas.style.boxShadow = `0 0 50px ${pal.player}40`; // 40 es hex para transparencia
+            canvas.style.borderBottomColor = pal.player;
+            canvas.style.backgroundColor = pal.bg;
+            
+            gameOverScreen.style.color = pal.player;
+            gameOverScreen.style.borderColor = pal.player;
+            gameOverScreen.style.boxShadow = `0 0 30px ${pal.player}80`;
+
+            announcement.style.color = pal.player;
+        }
+
+        function showAnnouncement(level) {
+            if(level > 5) return;
+            announcement.innerText = `¡NIVEL ${level}!`;
+            announcement.style.opacity = 1;
+            setTimeout(() => {
+                announcement.style.opacity = 0;
+            }, 2000);
+        }
+
+        function jump() {
+            if (!player.isJumping && gameActive) {
+                player.dy = player.jumpPower;
+                player.isJumping = true;
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); jump(); }
+        });
+        window.addEventListener('mousedown', jump);
+        window.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
+
+        function spawnObstacle() {
+            const minGap = physicalSpeed * 35; 
+            const maxGap = physicalSpeed * 60;
+            const distance = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
+            
+            let lastX = canvas.width;
+            if (obstacles.length > 0) lastX = obstacles[obstacles.length - 1].x;
+
+            const type = Math.random();
+            let w = 35, h = 35; // Tamaño base del pincho/caja
+
+            if (type > 0.8) h = 55;
+            else if (type > 0.6) w = 70;
+
+            obstacles.push({
+                x: Math.max(canvas.width, lastX + distance),
+                y: canvas.height - groundHeight - h,
+                w: w, h: h, passed: false
+            });
+        }
+
+        function drawNeonRect(x, y, w, h, color, rotation = 0) {
+            ctx.save();
+            ctx.translate(x + w / 2, y + h / 2);
+            ctx.rotate(rotation);
+            
+            // Efecto Neón
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = color;
+            ctx.fillStyle = color;
+            
+            // Dibujar relleno y borde para intensificar
+            ctx.fillRect(-w / 2, -h / 2, w, h);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-w / 2, -h / 2, w, h);
+            
+            ctx.restore();
+        }
+
+        function drawPlayer() {
+            if (player.isJumping) {
+                player.rotation += 0.1 * (physicalSpeed / 5);
+            } else {
+                player.rotation = Math.round(player.rotation / (Math.PI / 2)) * (Math.PI / 2);
+            }
+            const color = levels[Math.min(currentLevel, 5) - 1].player;
+            drawNeonRect(player.x, player.y, player.size, player.size, color, player.rotation);
+        }
+
+        function handleObstacles() {
+            const obsColor = levels[Math.min(currentLevel, 5) - 1].obs;
+
+            for (let i = 0; i < obstacles.length; i++) {
+                let obs = obstacles[i];
+                obs.x -= physicalSpeed;
+
+                drawNeonRect(obs.x, obs.y, obs.w, obs.h, obsColor, 0);
+                
+                // Colisión AABB ajustada
+                const margin = 5;
+                if (
+                    player.x + margin < obs.x + obs.w &&
+                    player.x + player.size - margin > obs.x &&
+                    player.y + margin < obs.y + obs.h &&
+                    player.y + player.size - margin > obs.y
+                ) {
+                    gameOver();
+                }
+
+                if (obs.x + obs.w < player.x && !obs.passed) {
+                    score++;
+                    scoreElement.innerText = score;
+                    obs.passed = true;
+                    updateProgress();
+                }
+            }
+
+            obstacles = obstacles.filter(obs => obs.x + obs.w > 0);
+
+            if (frames % 60 === 0 || obstacles.length === 0) {
+                let shouldSpawn = true;
+                if (obstacles.length > 0) {
+                    let lastObs = obstacles[obstacles.length - 1];
+                    if (canvas.width - lastObs.x < 350) shouldSpawn = false;
+                }
+                if (shouldSpawn) spawnObstacle();
+            }
+        }
+
+        function updateProgress() {
+            // Lógica de Niveles y Barra
+            // Cada nivel requiere 'pointsPerLevel' puntos. Multiplicador sube +3.0x por nivel.
+            
+            let previousLevel = currentLevel;
+            currentLevel = Math.floor(score / pointsPerLevel) + 1;
+            
+            // Limitar a Nivel 5 visualmente, pero la velocidad interna puede seguir
+            let displayLevel = Math.min(currentLevel, 5); 
+            levelElement.innerText = displayLevel;
+
+            if (currentLevel > previousLevel && currentLevel <= 5) {
+                showAnnouncement(currentLevel);
+                updatePalette();
+            }
+
+            // Calcular multiplicador visual (Ej: Nivel 1 va de 1.0 a 4.0)
+            let pointsInCurrentLevel = score % pointsPerLevel;
+            let levelBaseMultiplier = 1.0 + ((currentLevel - 1) * 3.0); 
+            displayMultiplier = levelBaseMultiplier + (pointsInCurrentLevel * (3.0 / pointsPerLevel));
+            
+            speedElement.innerText = displayMultiplier.toFixed(1);
+
+            // Actualizar barra de progreso (porcentaje dentro del nivel actual)
+            let progressPercent = (pointsInCurrentLevel / pointsPerLevel) * 100;
+            if (currentLevel > 5) progressPercent = 100; // Barra llena al ganar
+            speedBar.style.width = `${progressPercent}%`;
+
+            // Aumentar velocidad física real gradualmente para no romper el juego
+            physicalSpeed = basePhysicalSpeed + (score * 0.12);
+        }
+
+        function drawGround() {
+            const color = levels[Math.min(currentLevel, 5) - 1].player;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = color;
+            ctx.fillStyle = color;
+            // Línea del suelo
+            ctx.fillRect(0, canvas.height - groundHeight, canvas.width, 4);
+            ctx.shadowBlur = 0; // Reset
+        }
+
+        function updatePlayer() {
+            player.dy += player.gravity;
+            player.y += player.dy;
+
+            if (player.y + player.size >= canvas.height - groundHeight) {
+                player.y = canvas.height - groundHeight - player.size;
+                player.dy = 0;
+                player.isJumping = false;
+            }
+        }
+
+        function gameOver() {
+            gameActive = false;
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalLevel').innerText = Math.min(currentLevel, 5);
+            gameOverScreen.style.display = 'block';
+        }
+
+        function resetGame() {
+            gameActive = true;
+            score = 0;
+            currentLevel = 1;
+            physicalSpeed = basePhysicalSpeed;
+            displayMultiplier = 1.0;
+            frames = 0;
+            obstacles = [];
+            
+            player.y = canvas.height - groundHeight - player.size;
+            player.dy = 0;
+            player.rotation = 0;
+            
+            scoreElement.innerText = '0';
+            speedElement.innerText = '1.0';
+            levelElement.innerText = '1';
+            speedBar.style.width = '0%';
+            gameOverScreen.style.display = 'none';
+            
+            updatePalette();
+            gameLoop();
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+
+            // Limpiar fondo sin dejar rastro de sombras
+            ctx.shadowBlur = 0; 
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawGround();
+            updatePlayer();
+            handleObstacles();
+            drawPlayer(); // Dibujar jugador al final para que quede por encima
+
+            frames++;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Iniciar
+        player.y = canvas.height - groundHeight - player.size;
+        updatePalette();
+        spawnObstacle();
+        gameLoop();
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

@@ -68,6 +68,7 @@
         .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
     </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
 </head>
 <body class="p-4 md:p-8">
 
@@ -75,12 +76,12 @@
 
     <div class="max-w-5xl mx-auto pt-10 md:pt-4">
         
-        <header class="glass-panel p-8 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up bg-[var(--header-bg)]">
+        <header class="glass-panel p-8 md:p-9 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up bg-[var(--header-bg)]">
             <div class="flex items-center gap-5">
                 <span class="text-7xl drop-shadow-md">💻</span>
                 <div>
                     <h1 class="text-4xl md:text-5xl font-black">Unidad 1: La Computadora</h1>
-                    <p class="text-xl font-bold text-sky-300 mt-2">Elige la clase que vas a repasar hoy</p>
+                    <p class="text-lg md:text-xl font-bold text-sky-200 mt-2">Elige la clase que vas a repasar hoy</p>
                 </div>
             </div>
             <a href="index4to.html" class="bg-white text-blue-900 font-black px-8 py-4 rounded-xl hover:bg-gray-200 transition shadow-lg flex items-center gap-2 text-lg">
@@ -88,7 +89,7 @@
             </a>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             
             <a href="tema1_compu.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-sky-400 fade-up" style="animation-delay: 0.2s;">
                 <span class="text-8xl block mb-6 drop-shadow-lg">🤖</span>
@@ -126,5 +127,8 @@
             document.getElementById('btnT').innerHTML = '🌙';
         }
     </script>
+        <script src="../shared/ui-theme.js" defer></script>
 </body>
 </html>
+
+

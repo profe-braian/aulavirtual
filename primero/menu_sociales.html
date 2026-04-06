@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sociales - 1er Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --texto-principal: #ffffff;
+            --header-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #14532d 0%, #164e63 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.35);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --header-bg: rgba(0, 0, 0, 0.35);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-hover {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            cursor: pointer;
+            font-size: 28px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10 md:pt-4">
+        <header class="glass-panel p-8 md:p-9 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up bg-[var(--header-bg)]">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl drop-shadow-md">🌍</span>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black">Sociales</h1>
+                    <p class="text-lg md:text-xl font-bold text-emerald-100 mt-2">Menú de actividades para 1er grado</p>
+                </div>
+            </div>
+            <a href="index1ro.html" class="bg-white text-emerald-700 font-black px-8 py-4 rounded-xl hover:bg-gray-200 transition shadow-lg">⬅️ Volver al menú</a>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-emerald-300 fade-up" style="animation-delay: 0.2s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">🏡</span>
+                <h2 class="text-3xl font-black mb-2">Actividad inicial</h2>
+                <p class="text-emerald-100 font-bold text-xl">Título a definir juntos</p>
+                <p class="mt-4 text-base opacity-90">Espacio listo para crear la primera propuesta de Sociales.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modo', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+    </script>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>

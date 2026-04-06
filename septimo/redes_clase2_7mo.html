@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 2 - Las Piezas de una Red - 7mo Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        :root{--hero:linear-gradient(135deg,#7c3aed 0%,#ec4899 52%,#f97316 100%);--bg:linear-gradient(180deg,#fff8fb 0%,#f8f1ff 100%);--card:rgba(255,255,255,.95);--border:rgba(236,72,153,.12);--text:#3b0764;--soft:#6b4d78}
+        .dark-mode{--hero:linear-gradient(135deg,#312e81 0%,#831843 52%,#7c2d12 100%);--bg:linear-gradient(180deg,#111827 0%,#1f2937 100%);--card:rgba(17,24,39,.84);--border:rgba(255,255,255,.08);--text:#f5d0fe;--soft:#e9d5ff}
+        html,body{margin:0;min-height:100%;font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text)}
+        .hero{background:var(--hero);color:#fff}.card{background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:0 20px 40px rgba(236,72,153,.12)}
+        .pill,.tool-btn{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;font-weight:900}
+        .pill{padding:.65rem 1rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.18)}
+        .tool-btn{padding:.8rem 1rem;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.14);color:#fff}
+        .ghost-btn{border-radius:999px;background:rgba(255,255,255,.94);color:#7c2d12;padding:.9rem 1.2rem;font-weight:900}
+        .icon{width:78px;height:78px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff}
+        .diagram{min-height:340px;position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,rgba(244,114,182,.1),rgba(249,115,22,.08));border:1px solid var(--border)}
+        .piece{position:absolute;width:124px;height:92px;border-radius:22px;background:rgba(255,255,255,.9);color:#6b21a8;border:2px solid rgba(236,72,153,.14);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;box-shadow:0 12px 24px rgba(236,72,153,.14)}
+        .dark-mode .piece{background:rgba(31,41,55,.92);color:#f5d0fe;border-color:rgba(255,255,255,.09)}
+        .beam{position:absolute;height:4px;border-radius:999px;background:linear-gradient(90deg,#f97316,#ec4899,#8b5cf6)}
+        .packet{position:absolute;width:18px;height:18px;border-radius:50%;background:#fde047;box-shadow:0 0 0 8px rgba(253,224,71,.18);transition:all .35s ease}
+        .select-box{width:100%;border-radius:14px;border:2px solid rgba(236,72,153,.18);background:#fff;color:#7c2d12;padding:.8rem 1rem;font-weight:800}
+        .good{border-color:#22c55e!important}.bad{border-color:#f59e0b!important}
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="max-w-6xl mx-auto px-4 py-6 md:py-8">
+            <div class="flex flex-wrap justify-between gap-3 mb-10">
+                <a href="tema1_7mo.html" class="ghost-btn no-underline">← Volver a Redes</a>
+                <div class="flex gap-3 flex-wrap"><button id="themeToggle" class="tool-btn">Modo claro</button><button id="fontToggle" class="tool-btn">Texto normal</button></div>
+            </div>
+            <div class="max-w-4xl mx-auto text-center pb-16">
+                <div class="pill mb-5">🧩 Clase 2 · Las Piezas de una Red</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Armar la red paso a paso</h1>
+                <p class="text-lg md:text-xl font-bold text-white/85 max-w-3xl mx-auto mb-8">En esta clase conocemos los componentes que hacen posible una red: tarjeta de red, cables, hub, switch, router y wifi.</p>
+                <div class="flex flex-wrap justify-center gap-5 text-sm md:text-base font-bold text-white/80"><span>💳 NIC</span><span>🔌 Cables y fibra</span><span>🧷 Hub/Switch/Router</span><span>📶 Wifi</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
+        <section class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">💳</div><h2 class="text-2xl font-extrabold mb-2">Tarjeta de red</h2><p class="font-bold" style="color:var(--soft)">Permite que un equipo pueda conectarse y enviar o recibir datos.</p></article>
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#f97316,#ef4444)">🔌</div><h2 class="text-2xl font-extrabold mb-2">Cable</h2><p class="font-bold" style="color:var(--soft)">Transporta la señal por un camino fisico. Puede ser cobre o fibra optica.</p></article>
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#06b6d4,#2563eb)">🧷</div><h2 class="text-2xl font-extrabold mb-2">Switch</h2><p class="font-bold" style="color:var(--soft)">Ordena mejor el trafico y envia la informacion al destino correcto.</p></article>
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">📶</div><h2 class="text-2xl font-extrabold mb-2">Wifi</h2><p class="font-bold" style="color:var(--soft)">Conecta sin cables usando señal inalambrica. Depende de la distancia y las paredes.</p></article>
+        </section>
+
+        <section class="card p-6 md:p-8">
+            <div class="grid lg:grid-cols-[1.08fr_.92fr] gap-6 items-start">
+                <div>
+                    <h2 class="text-3xl font-extrabold mb-3">Grafico interactivo de componentes</h2>
+                    <p class="font-bold mb-4" style="color:var(--soft)">Cambia la pieza para ver como participa dentro de una red.</p>
+                    <div class="flex flex-wrap gap-3 mb-4">
+                        <button class="tool-btn piece-btn active" data-piece="nic" style="background:#8b5cf6">NIC</button>
+                        <button class="tool-btn piece-btn" data-piece="switch" style="background:#ec4899">Switch</button>
+                        <button class="tool-btn piece-btn" data-piece="router" style="background:#f97316">Router</button>
+                    </div>
+                    <div class="diagram">
+                        <div class="piece" style="left:8%;top:56%">PC</div>
+                        <div class="piece" style="left:39%;top:36%">SWITCH</div>
+                        <div class="piece" style="left:71%;top:20%">ROUTER</div>
+                        <div class="piece" style="left:71%;top:66%">INTERNET</div>
+                        <div class="beam" style="left:20%;top:66%;width:150px;transform:rotate(-15deg)"></div>
+                        <div class="beam" style="left:51%;top:46%;width:145px;transform:rotate(-18deg)"></div>
+                        <div class="beam" style="left:51%;top:64%;width:145px;transform:rotate(18deg)"></div>
+                        <div id="packet" class="packet" style="left:20%;top:62%"></div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Pieza activa</p><p id="pieceTitle" class="text-3xl font-extrabold mt-1">NIC</p></div>
+                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Funcion</p><p id="pieceText" class="font-bold mt-1" style="color:var(--soft)">Es la puerta de entrada y salida de datos en el equipo.</p></div>
+                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Idea clave</p><p id="pieceFact" class="font-bold mt-1 text-fuchsia-600">Sin esta pieza, la computadora no participa de la red.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid lg:grid-cols-2 gap-6">
+            <article class="card p-6">
+                <h2 class="text-3xl font-extrabold mb-4">Hub, switch y router</h2>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-3xl" style="background:rgba(249,115,22,.08)"><p class="font-extrabold text-xl mb-1">Hub</p><p class="font-bold" style="color:var(--soft)">Repite a todos. Es simple, pero menos eficiente.</p></div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(236,72,153,.08)"><p class="font-extrabold text-xl mb-1">Switch</p><p class="font-bold" style="color:var(--soft)">Organiza y manda al destino correcto. Es mas inteligente que un hub.</p></div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(139,92,246,.08)"><p class="font-extrabold text-xl mb-1">Router</p><p class="font-bold" style="color:var(--soft)">Conecta redes distintas y dirige el trafico hacia fuera o hacia dentro.</p></div>
+                </div>
+            </article>
+            <article class="card p-6">
+                <h2 class="text-3xl font-extrabold mb-4">Wifi y señal</h2>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="p-5 rounded-3xl" style="background:rgba(34,197,94,.08)"><div class="text-4xl mb-3">📶</div><p class="font-extrabold text-xl mb-2">Ventaja</p><p class="font-bold" style="color:var(--soft)">Permite moverse sin estar atado a un cable.</p></div>
+                    <div class="p-5 rounded-3xl" style="background:rgba(14,165,233,.08)"><div class="text-4xl mb-3">🧱</div><p class="font-extrabold text-xl mb-2">Limite</p><p class="font-bold" style="color:var(--soft)">Las paredes, distancia e interferencias pueden bajar la calidad.</p></div>
+                </div>
+            </article>
+        </section>
+
+        <section class="grid lg:grid-cols-2 gap-6">
+            <article class="card p-6">
+                <h2 class="text-3xl font-extrabold mb-4">Actividad: elegi la pieza correcta</h2>
+                <div class="space-y-4">
+                    <div><p class="font-extrabold mb-2">1. La pieza que conecta el equipo a la red es la <span class="text-fuchsia-600">_____</span>.</p><select class="select-box quiz" data-answer="nic"><option value="">Elegir</option><option value="nic">tarjeta de red</option><option value="mouse">mouse</option><option value="camara">camara</option></select></div>
+                    <div><p class="font-extrabold mb-2">2. El dispositivo que ordena mejor el trafico dentro de la red es el <span class="text-fuchsia-600">_____</span>.</p><select class="select-box quiz" data-answer="switch"><option value="">Elegir</option><option value="hub">hub</option><option value="switch">switch</option><option value="teclado">teclado</option></select></div>
+                    <div><p class="font-extrabold mb-2">3. El equipo que conecta una red con otra suele ser el <span class="text-fuchsia-600">_____</span>.</p><select class="select-box quiz" data-answer="router"><option value="">Elegir</option><option value="monitor">monitor</option><option value="router">router</option><option value="parlante">parlante</option></select></div>
+                </div>
+                <button id="checkQuiz" class="mt-5 tool-btn" style="background:#ec4899">Revisar</button>
+            </article>
+            <article class="card p-6">
+                <h2 class="text-3xl font-extrabold mb-4">Desafio del aula</h2>
+                <div class="space-y-4 font-bold" style="color:var(--soft)">
+                    <div class="p-4 rounded-3xl" style="background:rgba(139,92,246,.08)">📝 Nombra los componentes que ves en la sala de informatica.</div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(236,72,153,.08)">🎨 Dibuja un recorrido desde una PC hasta el router.</div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(249,115,22,.08)">🗣️ Explica cual parte podria fallar si se corta la señal o un cable.</div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script>
+        const body=document.body,themeToggle=document.getElementById('themeToggle'),fontToggle=document.getElementById('fontToggle');let large=false;
+        themeToggle.addEventListener('click',()=>{body.classList.toggle('dark-mode');themeToggle.textContent=body.classList.contains('dark-mode')?'Modo oscuro':'Modo claro';});
+        fontToggle.addEventListener('click',()=>{large=!large;body.style.fontSize=large?'19px':'';fontToggle.textContent=large?'Texto grande':'Texto normal';});
+        const states={nic:{title:'NIC',text:'Es la puerta de entrada y salida de datos en el equipo.',fact:'Sin esta pieza, la computadora no participa de la red.',left:'20%',top:'62%'},switch:{title:'Switch',text:'Recibe conexiones de varios equipos y organiza el trafico.',fact:'Hace que la red local funcione de forma mas ordenada.',left:'51%',top:'46%'},router:{title:'Router',text:'Une redes y dirige el trafico hacia Internet u otras conexiones.',fact:'Es el puente entre la red local y redes mas grandes.',left:'80%',top:'30%'}};
+        document.querySelectorAll('.piece-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.piece-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const s=states[btn.dataset.piece];document.getElementById('pieceTitle').textContent=s.title;document.getElementById('pieceText').textContent=s.text;document.getElementById('pieceFact').textContent=s.fact;const p=document.getElementById('packet');p.style.left=s.left;p.style.top=s.top;}));
+        document.getElementById('checkQuiz').addEventListener('click',()=>{document.querySelectorAll('.quiz').forEach(el=>{el.classList.remove('good','bad');el.classList.add(el.value===el.dataset.answer?'good':'bad');}));
+    </script>
+</body>
+</html>

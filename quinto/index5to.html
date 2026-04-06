@@ -30,9 +30,30 @@
             margin: 0; padding: 0; min-height: 100%; 
             font-family: 'Quicksand', sans-serif; 
             background: var(--fondo-gradiente);
+            background-image:
+                radial-gradient(circle at 12% 18%, rgba(255,255,255,0.18) 0 2px, transparent 2.5px),
+                radial-gradient(circle at 78% 24%, rgba(255,255,255,0.14) 0 3px, transparent 3.5px),
+                radial-gradient(circle at 30% 70%, rgba(255,255,255,0.12) 0 2px, transparent 2.5px),
+                linear-gradient(135deg, rgba(255,255,255,0.08) 25%, transparent 25%),
+                linear-gradient(225deg, rgba(255,255,255,0.06) 25%, transparent 25%),
+                var(--fondo-gradiente);
+            background-size: 140px 140px, 220px 220px, 180px 180px, 48px 48px, 48px 48px, cover;
+            background-position: 0 0, 0 0, 0 0, 0 0, 24px 24px, center;
             background-attachment: fixed;
             color: var(--texto-principal);
             transition: background 0.5s ease;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.18), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(255,255,255,0.14), transparent 28%),
+                radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 45%);
+            z-index: 0;
         }
 
         /* BOTï¿½"N SOL/LUNA */
@@ -136,18 +157,13 @@
                     <span class="bg-sky-400 text-blue-900 font-black px-4 py-2 rounded-xl text-xl shadow">1er TRIMESTRE</span>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div onclick="window.location.href='submenu_hardware_5to.html'" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
                         <span class="text-5xl mb-3">&#128187;</span>
                         <h4 class="font-bold text-lg leading-tight">La computadora</h4>
                     </div>
                     
-                    <div onclick="abrirClase('submenu_hardware_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
-                        <span class="text-5xl mb-3">&#128421;&#65039;</span>
-                        <h4 class="font-bold text-lg leading-tight">Hardware interno</h4>
-                    </div>
-                    
-                    <div onclick="abrirClase('tema3_5to.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
+                    <div onclick="abrirClase('clase1_SO.html')" class="tema-card rounded-2xl p-6 text-center flex flex-col items-center justify-center min-h-[160px]">
                         <span class="text-5xl mb-3">&#128241;</span>
                         <h4 class="font-bold text-lg leading-tight">Dispositivos digitales</h4>
                     </div>

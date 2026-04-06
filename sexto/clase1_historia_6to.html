@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1 - Historia de la Computacion - 6to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #6366f1 45%, #f472b6 100%);
+            --texto-principal: #ffffff;
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.22);
+            --border-color: rgba(255, 255, 255, 0.28);
+            --header-bg: rgba(255, 255, 255, 0.12);
+            --ok: #bbf7d0;
+            --warn: #fde68a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #4c1d95 100%);
+            --texto-principal: #e2e8f0;
+            --tarjeta-bg: rgba(0, 0, 0, 0.34);
+            --tarjeta-hover: rgba(0, 0, 0, 0.46);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --header-bg: rgba(0, 0, 0, 0.4);
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s forwards;
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            font-weight: 800;
+        }
+
+        .mini-label {
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .icon-card {
+            min-height: 210px;
+            transition: transform 0.25s ease, background 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100%;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-6px);
+            background: var(--tarjeta-hover);
+        }
+
+        .big-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+        }
+
+        .sim-stage {
+            min-height: 260px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sim-button {
+            border: 1px solid rgba(255,255,255,0.24);
+            background: rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 0.8rem 1rem;
+            font-weight: 800;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .sim-button:hover,
+        .sim-button.active {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.22);
+        }
+
+        .sim-screen {
+            border-radius: 22px;
+            border: 2px solid rgba(255,255,255,0.18);
+            background:
+                radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 40%),
+                linear-gradient(180deg, rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.2));
+            min-height: 260px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .machine-piece {
+            position: absolute;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .sim-card {
+            min-height: 122px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .match-layout > * {
+            height: 100%;
+        }
+
+        .drag-token {
+            cursor: grab;
+            user-select: none;
+            min-height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-token.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone {
+            min-height: 104px;
+            border: 2px dashed rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.08);
+            transition: background 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .drop-zone.over {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.7);
+        }
+
+        .drop-zone.correct {
+            border-color: rgba(187,247,208,0.95);
+            background: rgba(34,197,94,0.14);
+        }
+
+        .drop-zone.wrong {
+            border-color: rgba(253,224,71,0.95);
+            background: rgba(234,179,8,0.15);
+        }
+
+        .blank-select {
+            width: 100%;
+            border-radius: 14px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.92);
+            color: #43384e;
+            padding: 0.8rem 1rem;
+            font-weight: 800;
+        }
+
+        .blank-select.good {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34,197,94,0.12);
+        }
+
+        .blank-select.bad {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245,158,11,0.12);
+        }
+
+        .status-box {
+            border-radius: 18px;
+            padding: 0.9rem 1rem;
+            font-weight: 800;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .line-builder {
+            min-height: 120px;
+            border-radius: 22px;
+            border: 2px dashed rgba(255,255,255,0.28);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .step-pill {
+            padding: 0.55rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .summary-card {
+            min-height: 172px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .choice-row {
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .choice-chip {
+            min-width: 58px;
+            text-align: center;
+            border-radius: 999px;
+            border: 2px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.12);
+            padding: 0.55rem 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .choice-chip:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .choice-chip.selected {
+            background: rgba(255,255,255,0.28);
+        }
+
+        .choice-chip.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.16);
+        }
+
+        .choice-chip.wrong {
+            border-color: #f59e0b;
+            background: rgba(245,158,11,0.16);
+        }
+
+        .match-select {
+            width: 100%;
+            border-radius: 14px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.92);
+            color: #43384e;
+            padding: 0.85rem 1rem;
+            font-weight: 800;
+        }
+
+        .match-select.good {
+            border-color: #22c55e;
+        }
+
+        .match-select.bad {
+            border-color: #f59e0b;
+        }
+
+        .sim-floor {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 68px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.14));
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .abacus-frame {
+            position: absolute;
+            inset: 26px 36px 42px;
+            border: 10px solid rgba(196, 132, 67, 0.92);
+            border-radius: 28px;
+            box-shadow: inset 0 0 0 4px rgba(255, 230, 196, 0.18);
+            background: linear-gradient(180deg, rgba(120, 73, 32, 0.26), rgba(92, 52, 22, 0.18));
+        }
+
+        .abacus-row {
+            position: absolute;
+            left: 22px;
+            right: 22px;
+            height: 6px;
+            background: rgba(244, 208, 151, 0.86);
+            border-radius: 999px;
+        }
+
+        .bead {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            box-shadow: inset -3px -4px 0 rgba(0,0,0,0.15);
+        }
+
+        .rack {
+            position: absolute;
+            bottom: 44px;
+            width: 90px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(213, 227, 255, 0.22), rgba(255,255,255,0.08));
+            border: 1px solid rgba(255,255,255,0.16);
+            box-shadow: 0 14px 24px rgba(0,0,0,0.18);
+        }
+
+        .rack::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 12px;
+            border: 1px dashed rgba(255,255,255,0.18);
+        }
+
+        .rack-light {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            background: #ffd166;
+            box-shadow: 0 0 10px rgba(255, 209, 102, 0.8);
+        }
+
+        .cable {
+            position: absolute;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(56,189,248,0.8), rgba(244,114,182,0.8));
+        }
+
+        .chip-board {
+            position: absolute;
+            inset: 24px 34px 48px;
+            border-radius: 26px;
+            background:
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(18, 42, 67, 0.92), rgba(18, 70, 84, 0.84));
+            background-size: 28px 28px, 28px 28px, cover;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .chip-core {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(12,17,28,0.96), rgba(39,50,78,0.94));
+            border: 5px solid rgba(182, 220, 255, 0.22);
+            box-shadow: 0 18px 30px rgba(0,0,0,0.28);
+        }
+
+        .chip-core::before {
+            content: "CPU";
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            color: #dbeafe;
+        }
+
+        .chip-pin {
+            position: absolute;
+            width: 12px;
+            height: 26px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.72);
+        }
+
+        .phone-shell {
+            position: absolute;
+            left: 48px;
+            top: 22px;
+            width: 108px;
+            height: 196px;
+            border-radius: 30px;
+            background: linear-gradient(180deg, rgba(9,18,36,0.96), rgba(26,37,72,0.92));
+            border: 4px solid rgba(222,238,255,0.18);
+            box-shadow: 0 18px 30px rgba(0,0,0,0.28);
+        }
+
+        .phone-screen {
+            position: absolute;
+            inset: 14px 12px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(97, 210, 255, 0.5), rgba(244, 114, 182, 0.34));
+            overflow: hidden;
+        }
+
+        .phone-app {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .network-node {
+            position: absolute;
+            width: 54px;
+            height: 54px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(186,230,253,0.72));
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.16);
+        }
+
+        .network-link {
+            position: absolute;
+            height: 4px;
+            transform-origin: left center;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(125, 211, 252, 0.85), rgba(244, 114, 182, 0.7));
+        }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto pt-16 md:pt-4 space-y-8 md:space-y-10">
+
+        <header class="glass-panel fade-up p-8 md:p-10">
+            <div class="flex flex-col lg:flex-row justify-between gap-8">
+                <div class="max-w-3xl">
+                    <div class="badge-pill mb-4">🕰️ Clase 1 • Historia de la Computacion</div>
+                    <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight">El viaje en el tiempo de la computacion</h1>
+                    <p class="text-lg md:text-xl font-bold text-sky-100 mb-4">Desde el abaco hasta la inteligencia artificial, con comparaciones visuales, lectura guiada y actividades para trabajar toda la clase.</p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="step-pill">🧮 Abaco</span>
+                        <span class="step-pill">🏢 Valvulas</span>
+                        <span class="step-pill">🔌 Transistor</span>
+                        <span class="step-pill">🧠 Chip</span>
+                        <span class="step-pill">📱 IA</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 lg:w-[320px]">
+                    <div class="glass-panel p-5">
+                        <p class="mini-label text-sm font-black opacity-80 mb-2">Objetivo</p>
+                        <p class="font-bold">Entender como cambiaron las computadoras y por que cada invento las hizo mas utiles.</p>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p class="mini-label text-sm font-black opacity-80 mb-2">Recorrido</p>
+                        <p class="font-bold">Observamos, comparamos, leemos, resolvemos consignas y cerramos con una produccion propia.</p>
+                    </div>
+                    <a href="tema1_6to.html" class="inline-flex justify-center items-center bg-white text-blue-900 font-black px-6 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">⬅️ Volver al submenu</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 fade-up" style="animation-delay: 0.1s;">
+            <article class="glass-panel icon-card p-6 text-center">
+                <div class="big-icon mx-auto mb-4">❓</div>
+                <h2 class="text-xl font-black mb-2">Pregunta disparadora</h2>
+                <p class="font-bold opacity-90">¿La primera computadora tenia pantalla o era otra cosa muy distinta?</p>
+            </article>
+            <article class="glass-panel icon-card p-6 text-center">
+                <div class="big-icon mx-auto mb-4">👩</div>
+                <h2 class="text-xl font-black mb-2">Ada Lovelace</h2>
+                <p class="font-bold opacity-90">Imagino que las maquinas podian seguir instrucciones y hacer mas que cuentas.</p>
+            </article>
+            <article class="glass-panel icon-card p-6 text-center">
+                <div class="big-icon mx-auto mb-4">🏗️</div>
+                <h2 class="text-xl font-black mb-2">Babbage</h2>
+                <p class="font-bold opacity-90">Penso una maquina capaz de resolver operaciones automaticamente.</p>
+            </article>
+            <article class="glass-panel icon-card p-6 text-center">
+                <div class="big-icon mx-auto mb-4">⚡</div>
+                <h2 class="text-xl font-black mb-2">Gran idea</h2>
+                <p class="font-bold opacity-90">La historia de la compu es la historia de hacer mas con menos espacio y menos tiempo.</p>
+            </article>
+        </section>
+
+        <section class="glass-panel p-7 md:p-8 fade-up" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🖼️</span>
+                <h2 class="text-2xl md:text-3xl font-black">Comparacion visual de epocas</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                <article class="glass-panel p-5 summary-card text-center">
+                    <div class="big-icon mx-auto mb-4">🧮</div>
+                    <h3 class="text-xl font-black mb-2">Abaco</h3>
+                    <p class="font-bold opacity-90">No tenia electricidad. Servia para contar moviendo piezas.</p>
+                    <p class="font-bold text-yellow-200 mt-3">Tamano: pequeno</p>
+                </article>
+                <article class="glass-panel p-5 summary-card text-center">
+                    <div class="big-icon mx-auto mb-4">🏢</div>
+                    <h3 class="text-xl font-black mb-2">Valvulas</h3>
+                    <p class="font-bold opacity-90">Las maquinas eran gigantes, ocupaban salas y daban mucho calor.</p>
+                    <p class="font-bold text-yellow-200 mt-3">Tamano: enorme</p>
+                </article>
+                <article class="glass-panel p-5 summary-card text-center">
+                    <div class="big-icon mx-auto mb-4">🧠</div>
+                    <h3 class="text-xl font-black mb-2">Microprocesador</h3>
+                    <p class="font-bold opacity-90">Muchos componentes entraron en un chip y nacieron las PC.</p>
+                    <p class="font-bold text-yellow-200 mt-3">Tamano: mediano</p>
+                </article>
+                <article class="glass-panel p-5 summary-card text-center">
+                    <div class="big-icon mx-auto mb-4">📱</div>
+                    <h3 class="text-xl font-black mb-2">Actualidad</h3>
+                    <p class="font-bold opacity-90">Llevamos computadoras en el bolsillo y usamos inteligencia artificial.</p>
+                    <p class="font-bold text-yellow-200 mt-3">Tamano: de mano</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-7 md:p-8 fade-up" style="animation-delay: 0.3s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🧩</span>
+                <h2 class="text-2xl md:text-3xl font-black">Arrastra cada hito a su lugar</h2>
+            </div>
+            <div class="grid xl:grid-cols-[0.9fr_1.1fr] gap-6 match-layout">
+                <div class="glass-panel p-5 flex flex-col">
+                    <p class="font-black text-lg mb-4">Tarjetas para arrastrar</p>
+                    <div id="dragPool" class="grid sm:grid-cols-2 gap-3 flex-1 content-start">
+                        <div class="drag-token glass-panel p-4 text-center font-black" draggable="true" data-match="z1">🏢 Valvulas de vacio</div>
+                        <div class="drag-token glass-panel p-4 text-center font-black" draggable="true" data-match="z2">🔌 Transistor</div>
+                        <div class="drag-token glass-panel p-4 text-center font-black" draggable="true" data-match="z3">🧠 Microprocesador</div>
+                        <div class="drag-token glass-panel p-4 text-center font-black" draggable="true" data-match="z4">📱 Computacion movil e IA</div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="drop-zone glass-panel p-5" data-zone="z1">
+                        <p class="font-black">1. Ocupaban habitaciones enteras y daban mucho calor.</p>
+                    </div>
+                    <div class="drop-zone glass-panel p-5" data-zone="z2">
+                        <p class="font-black">2. Hizo que las maquinas fueran mas pequenas y confiables.</p>
+                    </div>
+                    <div class="drop-zone glass-panel p-5" data-zone="z3">
+                        <p class="font-black">3. Puso muchos componentes dentro de un chip.</p>
+                    </div>
+                    <div class="drop-zone glass-panel p-5" data-zone="z4">
+                        <p class="font-black">4. Lleva la compu al bolsillo y suma asistentes inteligentes.</p>
+                    </div>
+                    <div id="dragStatus" class="status-box">Arrastra las 4 tarjetas. Si te equivocas, la zona se marca en amarillo.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 fade-up" style="animation-delay: 0.4s;">
+            <article class="glass-panel p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="text-4xl">✍️</span>
+                    <h2 class="text-2xl md:text-3xl font-black">Leer y completar</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="glass-panel p-5">
+                        <p class="font-black mb-3">Las primeras computadoras electronicas usaban <span class="text-yellow-200">_____</span> y por eso ocupaban habitaciones.</p>
+                        <select class="blank-select" data-answer="valvulas">
+                            <option value="">Elegir opcion...</option>
+                            <option value="transistor">transistores</option>
+                            <option value="valvulas">valvulas de vacio</option>
+                            <option value="celulares">celulares</option>
+                        </select>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p class="font-black mb-3">El <span class="text-yellow-200">_____</span> permitio que las computadoras se achicaran mucho.</p>
+                        <select class="blank-select" data-answer="transistor">
+                            <option value="">Elegir opcion...</option>
+                            <option value="microfono">microfono</option>
+                            <option value="transistor">transistor</option>
+                            <option value="mouse">mouse</option>
+                        </select>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p class="font-black mb-3">El <span class="text-yellow-200">_____</span> integro muchas funciones dentro de un chip.</p>
+                        <select class="blank-select" data-answer="microprocesador">
+                            <option value="">Elegir opcion...</option>
+                            <option value="microprocesador">microprocesador</option>
+                            <option value="abaco">abaco</option>
+                            <option value="cuaderno">cuaderno</option>
+                        </select>
+                    </div>
+                    <button id="checkBlanks" class="sim-button w-full">Revisar respuestas</button>
+                    <div id="blankStatus" class="status-box">Completa las 3 oraciones y luego toca "Revisar respuestas".</div>
+                </div>
+            </article>
+
+            <article class="glass-panel p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="text-4xl">📚</span>
+                    <h2 class="text-2xl md:text-3xl font-black">Resumen visual rapido</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-panel p-4 text-center summary-card">
+                        <div class="text-5xl mb-2">🧮</div>
+                        <p class="font-black">Abaco</p>
+                        <p class="font-bold text-sm opacity-80 mt-2">Contar moviendo piezas.</p>
+                    </div>
+                    <div class="glass-panel p-4 text-center summary-card">
+                        <div class="text-5xl mb-2">🔥</div>
+                        <p class="font-black">Valvulas</p>
+                        <p class="font-bold text-sm opacity-80 mt-2">Grandes y con calor.</p>
+                    </div>
+                    <div class="glass-panel p-4 text-center summary-card">
+                        <div class="text-5xl mb-2">🔌</div>
+                        <p class="font-black">Transistor</p>
+                        <p class="font-bold text-sm opacity-80 mt-2">Mas chicas y firmes.</p>
+                    </div>
+                    <div class="glass-panel p-4 text-center summary-card">
+                        <div class="text-5xl mb-2">📱</div>
+                        <p class="font-black">Actualidad</p>
+                        <p class="font-bold text-sm opacity-80 mt-2">Movil, conectada e inteligente.</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 fade-up" style="animation-delay: 0.45s;">
+            <article class="glass-panel p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">📖</span>
+                    <h2 class="text-xl font-black">Lectura 1</h2>
+                </div>
+                <p class="font-bold opacity-90">Al principio, las personas necesitaban contar objetos, intercambiar mercaderias y llevar registros. Herramientas como el abaco ayudaban a resolver esos calculos mas rapido.</p>
+                <div class="status-box mt-4">Completa oralmente: el abaco ayudaba a __________.</div>
+            </article>
+            <article class="glass-panel p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">📖</span>
+                    <h2 class="text-xl font-black">Lectura 2</h2>
+                </div>
+                <p class="font-bold opacity-90">Con las valvulas de vacio aparecieron maquinas electronicas enormes. Despues el transistor permitio reducir el tamano y mejorar el funcionamiento.</p>
+                <div class="status-box mt-4">Completa oralmente: el transistor permitio __________.</div>
+            </article>
+            <article class="glass-panel p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">📖</span>
+                    <h2 class="text-xl font-black">Lectura 3</h2>
+                </div>
+                <p class="font-bold opacity-90">El microprocesador puso muchas funciones en un chip. Hoy, telefonos, tablets y relojes realizan tareas que antes necesitaban una maquina enorme.</p>
+                <div class="status-box mt-4">Completa oralmente: hoy una compu puede estar en __________.</div>
+            </article>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 fade-up" style="animation-delay: 0.48s;">
+            <article class="glass-panel p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="text-4xl">✅</span>
+                    <h2 class="text-2xl md:text-3xl font-black">Verdadero o falso</h2>
+                </div>
+                <div class="space-y-4 font-bold">
+                    <div class="glass-panel p-5">
+                        <p>1. El abaco funciona con electricidad.</p>
+                        <div class="choice-row" data-vf="f">
+                            <button type="button" class="choice-chip" data-value="v">V</button>
+                            <button type="button" class="choice-chip" data-value="f">F</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p>2. Las computadoras de valvulas ocupaban mucho espacio.</p>
+                        <div class="choice-row" data-vf="v">
+                            <button type="button" class="choice-chip" data-value="v">V</button>
+                            <button type="button" class="choice-chip" data-value="f">F</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p>3. El transistor ayudo a hacer computadoras mas pequenas.</p>
+                        <div class="choice-row" data-vf="v">
+                            <button type="button" class="choice-chip" data-value="v">V</button>
+                            <button type="button" class="choice-chip" data-value="f">F</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p>4. Hoy una computadora solo sirve para hacer cuentas.</p>
+                        <div class="choice-row" data-vf="f">
+                            <button type="button" class="choice-chip" data-value="v">V</button>
+                            <button type="button" class="choice-chip" data-value="f">F</button>
+                        </div>
+                    </div>
+                    <button id="checkVf" class="sim-button w-full">Revisar V o F</button>
+                    <div id="vfStatus" class="status-box">Marca V o F en cada afirmacion y luego revisa.</div>
+                </div>
+            </article>
+            <article class="glass-panel p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="text-4xl">🔗</span>
+                    <h2 class="text-2xl md:text-3xl font-black">Une cada concepto</h2>
+                </div>
+                <div class="space-y-4 font-bold">
+                    <div class="glass-panel p-5">
+                        <p class="mb-3">Abaco</p>
+                        <select class="match-select" data-match-answer="herramienta">
+                            <option value="">Elegir opcion...</option>
+                            <option value="reduce">Reduce tamano y calor</option>
+                            <option value="herramienta">Herramienta manual de calculo</option>
+                            <option value="maquina">Gran maquina electronica</option>
+                            <option value="chip">Chip con muchas funciones</option>
+                        </select>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p class="mb-3">Valvulas</p>
+                        <select class="match-select" data-match-answer="maquina">
+                            <option value="">Elegir opcion...</option>
+                            <option value="reduce">Reduce tamano y calor</option>
+                            <option value="herramienta">Herramienta manual de calculo</option>
+                            <option value="maquina">Gran maquina electronica</option>
+                            <option value="chip">Chip con muchas funciones</option>
+                        </select>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p class="mb-3">Transistor</p>
+                        <select class="match-select" data-match-answer="reduce">
+                            <option value="">Elegir opcion...</option>
+                            <option value="reduce">Reduce tamano y calor</option>
+                            <option value="herramienta">Herramienta manual de calculo</option>
+                            <option value="maquina">Gran maquina electronica</option>
+                            <option value="chip">Chip con muchas funciones</option>
+                        </select>
+                    </div>
+                    <div class="glass-panel p-5">
+                        <p class="mb-3">Microprocesador</p>
+                        <select class="match-select" data-match-answer="chip">
+                            <option value="">Elegir opcion...</option>
+                            <option value="reduce">Reduce tamano y calor</option>
+                            <option value="herramienta">Herramienta manual de calculo</option>
+                            <option value="maquina">Gran maquina electronica</option>
+                            <option value="chip">Chip con muchas funciones</option>
+                        </select>
+                    </div>
+                    <button id="checkMatch" class="sim-button w-full">Revisar uniones</button>
+                    <div id="matchStatus" class="status-box">Elige una opcion para cada concepto y luego revisa.</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="glass-panel p-7 md:p-8 fade-up" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🛠️</span>
+                <h2 class="text-2xl md:text-3xl font-black">Construye tu linea del tiempo</h2>
+            </div>
+            <div class="grid xl:grid-cols-[1fr_1fr] gap-6">
+                <div class="glass-panel p-5">
+                    <p class="font-black text-lg mb-4">Linea del tiempo personal</p>
+                    <div class="line-builder p-5 flex flex-wrap gap-3 items-start">
+                        <span class="step-pill">1. 📱 Mi primer telefono o compu</span>
+                        <span class="step-pill">2. 🎨 Dibujo o icono</span>
+                        <span class="step-pill">3. ✏️ Como era</span>
+                        <span class="step-pill">4. 🔁 Si luego cambie de equipo</span>
+                        <span class="step-pill">5. 🚀 Como imagino el proximo</span>
+                    </div>
+                </div>
+                <div class="glass-panel p-5">
+                    <p class="font-black text-lg mb-4">Que tienen que pensar</p>
+                    <div class="grid sm:grid-cols-2 gap-3 font-bold">
+                        <div class="glass-panel p-4">📱 ¿Cual fue mi primer telefono o compu?</div>
+                        <div class="glass-panel p-4">🕹️ ¿Para que la usaba?</div>
+                        <div class="glass-panel p-4">🔄 ¿La cambie por otra? ¿Cual?</div>
+                        <div class="glass-panel p-4">🚀 ¿Como seria mi proximo equipo ideal?</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 fade-up" style="animation-delay: 0.56s;">
+            <article class="glass-panel p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="text-4xl">📝</span>
+                    <h2 class="text-2xl md:text-3xl font-black">Consigna final</h2>
+                </div>
+                <div class="space-y-4 font-bold">
+                    <div class="glass-panel p-5">Haz una linea del tiempo de tu propia tecnologia.</div>
+                    <div class="glass-panel p-5">Empieza con tu primer telefono o primera computadora.</div>
+                    <div class="glass-panel p-5">Si luego tuviste otra, agrégala y cuenta que cambio.</div>
+                    <div class="glass-panel p-5">Termina imaginando cual te gustaria tener en el futuro.</div>
+                </div>
+            </article>
+            <article class="glass-panel p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="text-4xl">💡</span>
+                    <h2 class="text-2xl md:text-3xl font-black">Preguntas para ayudarse</h2>
+                </div>
+                <div class="space-y-4 font-bold">
+                    <div class="glass-panel p-5">¿Recuerdas el color, tamaño o marca de tu primer equipo?</div>
+                    <div class="glass-panel p-5">¿Lo usabas para jugar, mirar videos, escribir o comunicarte?</div>
+                    <div class="glass-panel p-5">¿Tu equipo actual es mas rapido, pequeno o util?</div>
+                    <div class="glass-panel p-5">¿Que te gustaria que haga tu proximo equipo?</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="glass-panel p-7 md:p-8 fade-up" style="animation-delay: 0.6s;">
+            <div class="flex items-center gap-3 mb-5">
+                <span class="text-4xl">🔚</span>
+                <h2 class="text-2xl md:text-3xl font-black">Cierre rapido</h2>
+            </div>
+            <div class="grid lg:grid-cols-3 gap-4">
+                <div class="glass-panel p-5 text-center">
+                    <div class="text-4xl mb-2">🤔</div>
+                    <p class="font-black">Pregunta final</p>
+                    <p class="font-bold opacity-90 mt-2">¿Como seran las computadoras en 20 anos?</p>
+                </div>
+                <div class="glass-panel p-5 text-center">
+                    <div class="text-4xl mb-2">🧠</div>
+                    <p class="font-black">Idea clave</p>
+                    <p class="font-bold opacity-90 mt-2">Cada invento resolvio un problema del anterior.</p>
+                </div>
+                <div class="glass-panel p-5 text-center">
+                    <div class="text-4xl mb-2">🖥️</div>
+                    <p class="font-black">Puente a clase 2</p>
+                    <p class="font-bold opacity-90 mt-2">La proxima vemos que hay dentro de la computadora.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="pb-8 text-center opacity-70 font-bold fade-up" style="animation-delay: 0.7s;">
+            <p>Disenado por Profe Braian - 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+        }
+
+        let draggedItem = null;
+        const dragTokens = document.querySelectorAll('.drag-token');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        const dragStatus = document.getElementById('dragStatus');
+
+        dragTokens.forEach(function (token) {
+            token.addEventListener('dragstart', function () {
+                draggedItem = token;
+                token.classList.add('dragging');
+            });
+            token.addEventListener('dragend', function () {
+                token.classList.remove('dragging');
+            });
+        });
+
+        dropZones.forEach(function (zone) {
+            zone.addEventListener('dragover', function (event) {
+                event.preventDefault();
+                zone.classList.add('over');
+            });
+            zone.addEventListener('dragleave', function () {
+                zone.classList.remove('over');
+            });
+            zone.addEventListener('drop', function (event) {
+                event.preventDefault();
+                zone.classList.remove('over');
+                if (!draggedItem) return;
+
+                if (draggedItem.dataset.match === zone.dataset.zone) {
+                    zone.classList.remove('wrong');
+                    zone.classList.add('correct');
+                    zone.appendChild(draggedItem);
+                    draggedItem.setAttribute('draggable', 'false');
+                    draggedItem.style.cursor = 'default';
+                } else {
+                    zone.classList.remove('correct');
+                    zone.classList.add('wrong');
+                }
+
+                const done = document.querySelectorAll('.drop-zone.correct').length;
+                if (done === 4) {
+                    dragStatus.textContent = 'Muy bien. Ya ordenaste todos los hitos correctamente.';
+                } else {
+                    dragStatus.textContent = 'Llevas ' + done + ' de 4 hitos ubicados.';
+                }
+            });
+        });
+
+        const checkBlanksButton = document.getElementById('checkBlanks');
+        const blankStatus = document.getElementById('blankStatus');
+        const blankSelects = document.querySelectorAll('.blank-select');
+        const vfRows = document.querySelectorAll('[data-vf]');
+        const checkVfButton = document.getElementById('checkVf');
+        const vfStatus = document.getElementById('vfStatus');
+        const matchSelects = document.querySelectorAll('.match-select');
+        const checkMatchButton = document.getElementById('checkMatch');
+        const matchStatus = document.getElementById('matchStatus');
+
+        checkBlanksButton.addEventListener('click', function () {
+            let correct = 0;
+            blankSelects.forEach(function (select) {
+                select.classList.remove('good', 'bad');
+                if (select.value === select.dataset.answer) {
+                    correct += 1;
+                    select.classList.add('good');
+                } else {
+                    select.classList.add('bad');
+                }
+            });
+
+            if (correct === blankSelects.length) {
+                blankStatus.textContent = 'Excelente. Completaste las 3 oraciones correctamente.';
+            } else {
+                blankStatus.textContent = 'Tienes ' + correct + ' de 3 correctas. Revisa las que quedaron marcadas.';
+            }
+        });
+
+        vfRows.forEach(function (row) {
+            const buttons = row.querySelectorAll('.choice-chip');
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    buttons.forEach(function (item) {
+                        item.classList.remove('selected');
+                    });
+                    button.classList.add('selected');
+                    row.dataset.selected = button.dataset.value;
+                });
+            });
+        });
+
+        checkVfButton.addEventListener('click', function () {
+            let correct = 0;
+            vfRows.forEach(function (row) {
+                const answer = row.dataset.vf;
+                const selected = row.dataset.selected || '';
+                row.querySelectorAll('.choice-chip').forEach(function (button) {
+                    button.classList.remove('correct', 'wrong');
+                    if (button.dataset.value === selected) {
+                        if (selected === answer) {
+                            button.classList.add('correct');
+                            correct += 1;
+                        } else {
+                            button.classList.add('wrong');
+                        }
+                    }
+                });
+            });
+
+            if (correct === vfRows.length) {
+                vfStatus.textContent = 'Excelente. Respondiste bien todas las afirmaciones de V o F.';
+            } else {
+                vfStatus.textContent = 'Tienes ' + correct + ' de ' + vfRows.length + ' correctas en V o F.';
+            }
+        });
+
+        checkMatchButton.addEventListener('click', function () {
+            let correct = 0;
+            matchSelects.forEach(function (select) {
+                select.classList.remove('good', 'bad');
+                if (select.value === select.dataset.matchAnswer) {
+                    select.classList.add('good');
+                    correct += 1;
+                } else {
+                    select.classList.add('bad');
+                }
+            });
+
+            if (correct === matchSelects.length) {
+                matchStatus.textContent = 'Muy bien. Uniste correctamente todos los conceptos.';
+            } else {
+                matchStatus.textContent = 'Tienes ' + correct + ' de ' + matchSelects.length + ' uniones correctas.';
+            }
+        });
+    </script>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>

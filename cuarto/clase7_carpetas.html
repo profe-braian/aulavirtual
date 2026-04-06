@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 7: Crear y Guardar - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg); border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo { transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; cursor: pointer; }
+        .btn-interactivo:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-interactivo:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); transform: none; }
+
+        /* DRAG AND DROP ORGANIZADOR XL */
+        .item-drag { background: white; color: #0f172a; padding: 8px 12px; border-radius: 12px; font-weight: 900; font-size: 0.9rem; cursor: grab; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 6px; border: 2px solid #cbd5e1; }
+        .dark-mode .item-drag { background: #1e293b; color: white; border-color: #475569; }
+        .item-drag:active { cursor: grabbing; transform: scale(1.1); }
+        .zona-drop { min-height: 100px; border-radius: 16px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; border: 4px dashed rgba(255,255,255,0.5); transition: all 0.3s; }
+        .zona-drop.drag-over { transform: scale(1.02); filter: brightness(1.2); border-color: #fde047; background: rgba(255,255,255,0.1); }
+
+        /* SIMULADOR DE CREAR CARPETA */
+        .win-pantalla { background: #f8fafc; position: relative; overflow: hidden; border-radius: 12px; border: 8px solid #cbd5e1; display: flex; flex-direction: column; aspect-ratio: 16/9; max-height: 450px;}
+        .dark-mode .win-pantalla { background: #0f172a; border-color: #334155; }
+        .win-topbar { background: #e2e8f0; padding: 10px; border-bottom: 1px solid #cbd5e1; display: flex; align-items: center; font-weight: bold; color: #334155; }
+        .dark-mode .win-topbar { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+        .win-body { flex: 1; padding: 20px; position: relative; display: flex; gap: 20px; align-content: flex-start; flex-wrap: wrap; }
+        
+        .context-menu { position: absolute; background: white; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 50; overflow: hidden; width: 180px; display: none; flex-direction: column; }
+        .dark-mode .context-menu { background: #1e293b; border-color: #475569; }
+        .context-item { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 0.9rem; color: #334155; transition: background 0.2s;}
+        .dark-mode .context-item { color: #cbd5e1; }
+        .context-item:hover { background: #e0f2fe; }
+        .dark-mode .context-item:hover { background: #334155; }
+
+        .folder-sim { width: 100px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; border-radius: 8px; padding: 10px; border: 1px solid transparent; transition: all 0.2s;}
+        .folder-sim:hover { background: #e0f2fe; border-color: #bae6fd; }
+        .dark-mode .folder-sim:hover { background: #334155; border-color: #475569; }
+        .folder-icon { font-size: 4rem; line-height: 1; margin-bottom: 5px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        
+        .input-carpeta { width: 100%; border: 2px solid #38bdf8; border-radius: 4px; padding: 2px 5px; font-size: 0.8rem; text-align: center; font-weight: bold; outline: none; }
+
+        /* JUEGO ACCIÓN: GUARDADO RÁPIDO */
+        .area-accion { position: relative; width: 100%; aspect-ratio: 16/9; max-height: 400px; background: rgba(0,0,0,0.2); border-radius: 16px; overflow: hidden; border: 4px dashed rgba(255,255,255,0.5); }
+        .carpeta-central { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; pointer-events: none; }
+        .archivo-fugaz { position: absolute; font-size: 3rem; cursor: pointer; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); transition: transform 0.2s; }
+        .archivo-fugaz:active { transform: scale(0.8); }
+        .volando-a-carpeta { animation: volar 0.4s forwards; pointer-events: none; }
+
+        @keyframes volar { 
+            to { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.1); opacity: 0; } 
+        }
+
+        .shake-anim { animation: shake 0.5s; }
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .confeti { position: fixed; width: 15px; height: 15px; z-index: 9999; pointer-events: none; border-radius: 4px; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">📁</span>
+                <div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-3 text-white drop-shadow-md">Clase 7: Crear y Guardar</h1>
+                    <p class="text-xl md:text-2xl font-bold opacity-90">Aprendemos a organizar nuestros trabajos en la computadora.</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center justify-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-sky-400" style="animation-delay: 0.1s;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="bg-black/20 p-8 rounded-3xl border-2 border-white/20">
+                    <h2 class="text-3xl font-black mb-4 text-sky-300 flex items-center gap-3"><span class="text-5xl">📁</span> ¿Qué es una Carpeta?</h2>
+                    <p class="text-xl font-bold text-white leading-relaxed">
+                        Una carpeta sirve para <strong class="text-sky-300">guardar y ordenar</strong> archivos. Sin carpetas, ¡la compu sería un desorden total!
+                    </p>
+                </div>
+                <div class="bg-black/20 p-8 rounded-3xl border-2 border-white/20">
+                    <h2 class="text-3xl font-black mb-4 text-green-300 flex items-center gap-3"><span class="text-5xl">💾</span> ¿Qué es Guardar?</h2>
+                    <p class="text-xl font-bold text-white leading-relaxed">
+                        Significa meter nuestro trabajo en la computadora para poder <strong class="text-green-300">abrirlo después</strong> y que no se borre cuando la apagamos.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-center flex-wrap gap-6 text-center">
+                <div class="bg-white/20 p-4 px-8 rounded-2xl border border-white/30"><span class="text-5xl block mb-2">📁</span><p class="font-bold">Carpeta</p></div>
+                <div class="bg-white/20 p-4 px-8 rounded-2xl border border-white/30"><span class="text-5xl block mb-2">🖼️</span><p class="font-bold">Imagen</p></div>
+                <div class="bg-white/20 p-4 px-8 rounded-2xl border border-white/30"><span class="text-5xl block mb-2">📝</span><p class="font-bold">Documento</p></div>
+                <div class="bg-white/20 p-4 px-8 rounded-2xl border border-white/30"><span class="text-5xl block mb-2">🎵</span><p class="font-bold">Música</p></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-pink-400 bg-pink-500/10" style="animation-delay: 0.15s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-pink-300 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">✏️</span> El Buen Nombre</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡No podemos llamar "asdasd" a todo! Elegí el mejor nombre para guardar este archivo.</p>
+                <div class="bg-white/20 px-4 py-2 rounded-xl inline-block mt-3 font-bold text-white text-xl"><span id="nombre-progreso">1</span> / 5</div>
+            </div>
+            
+            <div class="bg-black/30 p-8 md:p-12 rounded-3xl text-center border-2 border-white/20 max-w-2xl mx-auto shadow-inner flex flex-col justify-center min-h-[300px]">
+                <div id="img-nombre" class="text-[8rem] mb-6 drop-shadow-lg flex items-center justify-center h-32">🐶</div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="btn-nombres">
+                    </div>
+                <div id="nombre-feedback" class="mt-6 text-2xl font-black hidden p-4 rounded-xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-purple-400 bg-purple-500/10" style="animation-delay: 0.2s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-purple-300 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🗂️</span> A Guardar Todo</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡El Escritorio es un lío! Arrastrá cada archivo a su carpeta correcta.</p>
+            </div>
+
+            <div class="bg-black/30 p-4 rounded-2xl flex flex-wrap justify-center gap-3 mb-8 border border-white/20 min-h-[80px]" id="banco-guardar">
+                <div class="item-drag" draggable="true" data-folder="dibujos">🎨 gato_paint.png</div>
+                <div class="item-drag" draggable="true" data-folder="tareas">📝 tarea_mate.txt</div>
+                <div class="item-drag" draggable="true" data-folder="fotos">📸 vacaciones.jpg</div>
+                <div class="item-drag" draggable="true" data-folder="musica">🎵 cancion_lali.mp3</div>
+                <div class="item-drag" draggable="true" data-folder="videos">🎬 cumple_abuela.mp4</div>
+                <div class="item-drag" draggable="true" data-folder="dibujos">🎨 mi_casa.png</div>
+                <div class="item-drag" draggable="true" data-folder="tareas">📊 ciencias.pdf</div>
+                <div class="item-drag" draggable="true" data-folder="fotos">📸 perro.jpg</div>
+                <div class="item-drag" draggable="true" data-folder="musica">🎵 himno.mp3</div>
+                <div class="item-drag" draggable="true" data-folder="videos">🎬 viaje_sur.mp4</div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-black/20 p-3 rounded-xl border border-white/10 text-center">
+                    <span class="text-3xl block mb-1">📁</span><h3 class="text-sm font-black mb-2 text-pink-300">Dibujos</h3>
+                    <div class="zona-drop bg-pink-900/30 border-pink-400/50" data-acepta="dibujos"></div>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/10 text-center">
+                    <span class="text-3xl block mb-1">📁</span><h3 class="text-sm font-black mb-2 text-sky-300">Tareas</h3>
+                    <div class="zona-drop bg-sky-900/30 border-sky-400/50" data-acepta="tareas"></div>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/10 text-center">
+                    <span class="text-3xl block mb-1">📁</span><h3 class="text-sm font-black mb-2 text-green-300">Fotos</h3>
+                    <div class="zona-drop bg-green-900/30 border-green-400/50" data-acepta="fotos"></div>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/10 text-center">
+                    <span class="text-3xl block mb-1">📁</span><h3 class="text-sm font-black mb-2 text-yellow-300">Música</h3>
+                    <div class="zona-drop bg-yellow-900/30 border-yellow-400/50" data-acepta="musica"></div>
+                </div>
+                <div class="bg-black/20 p-3 rounded-xl border border-white/10 text-center md:col-span-1 col-span-2">
+                    <span class="text-3xl block mb-1">📁</span><h3 class="text-sm font-black mb-2 text-purple-300">Videos</h3>
+                    <div class="zona-drop bg-purple-900/30 border-purple-400/50" data-acepta="videos"></div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-6">
+                <button onclick="verificarGuardado()" class="btn-interactivo bg-purple-600 text-white font-black px-10 py-4 rounded-xl text-2xl border-b-4 border-purple-800 shadow-lg">Comprobar Carpetas</button>
+                <div id="feed-guardar" class="mt-4 text-2xl font-black hidden p-4 rounded-xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-12 fade-up border-t-8 border-orange-500 bg-orange-900/30" style="animation-delay: 0.3s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-5xl font-black text-white drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">💻</span> Práctica de Guardado</h2>
+                <p class="text-xl font-bold text-orange-200 mb-4">Aprendé a crear tu propia carpeta en la computadora.</p>
+                
+                <div class="bg-orange-500 text-white p-4 px-8 rounded-2xl inline-block mt-2 border-4 border-orange-300 shadow-lg">
+                    <p class="text-xl md:text-2xl font-black text-center" id="sim-instruccion">1. Hacé clic en "🖱️ Simular Clic Derecho"</p>
+                </div>
+            </div>
+
+            <div class="win-pantalla w-full max-w-4xl mx-auto shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                <div class="win-topbar flex justify-between">
+                    <div class="flex items-center gap-2"><span class="text-lg">📁</span> Mis Documentos</div>
+                    <div class="flex gap-2" id="sim-controls">
+                        <button onclick="simClicDerecho()" class="btn-interactivo bg-slate-700 text-white px-4 py-1 rounded font-bold text-sm hover:bg-slate-600">🖱️ Simular Clic Derecho</button>
+                    </div>
+                </div>
+                
+                <div class="win-body" id="sim-body" onclick="cerrarMenuContextual()">
+                    <div class="context-menu" id="sim-context-menu">
+                        <div class="context-item opacity-50">👁️ Ver</div>
+                        <div class="context-item opacity-50">🔃 Actualizar</div>
+                        <div class="h-[1px] bg-slate-300 my-1"></div>
+                        <div class="context-item" onclick="simNuevaCarpeta()">✨ Nuevo > Carpeta</div>
+                    </div>
+                    </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-red-500 bg-red-900/20" style="animation-delay: 0.4s;">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-black text-red-400 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🚨</span> ¡Guardado de Emergencia!</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡Se va a cortar la luz! Tocá los archivos rápido para guardarlos en la carpeta antes de que se borren.</p>
+                <div class="mt-4 flex justify-center gap-6 text-2xl font-black text-white">
+                    <div class="bg-black/40 px-6 py-2 rounded-xl border border-red-500">A salvo: <span id="accion-pts" class="text-green-400">0</span></div>
+                    <div class="bg-black/40 px-6 py-2 rounded-xl border border-red-500">Tiempo: <span id="accion-time" class="text-yellow-400">25</span>s</div>
+                </div>
+            </div>
+
+            <div class="area-accion" id="area-accion">
+                <div class="carpeta-central text-[6rem] drop-shadow-lg">
+                    📁
+                    <p class="text-xl font-black text-white bg-black/50 rounded-lg px-2 mt-[-20px]">Seguro</p>
+                </div>
+                
+                <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-20" id="accion-start">
+                    <button onclick="empezarJuegoAccion()" class="btn-interactivo bg-red-600 text-white font-black text-3xl px-10 py-5 rounded-2xl border-b-4 border-red-800 shadow-[0_0_20px_red] hover:scale-110 transition">¡ATRAPAR ARCHIVOS!</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-green-400" style="animation-delay: 0.5s;">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <span class="text-5xl">🏫</span>
+                <h2 class="text-3xl md:text-4xl font-black text-white">¡A la compu de verdad!</h2>
+            </div>
+            <p class="text-xl font-bold opacity-90 mb-6 text-center">Abrí la computadora de la escuela y seguí estos pasos mágicos:</p>
+            
+            <div class="bg-black/30 p-6 md:p-10 rounded-3xl border-2 border-green-400/50 max-w-3xl mx-auto">
+                <ul class="space-y-6 text-xl md:text-2xl font-bold text-white">
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 1. Abrir el Explorador de Archivos 📁.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 2. Entrar en la carpeta "Documentos".
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 3. Crear una Nueva Carpeta que se llame "Informatica".
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 4. Abrir el programa Paint 🎨 y hacer un dibujo.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 5. Tocar en "Archivo > Guardar".
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 6. ¡Buscar tu carpeta "Informatica" y guardarlo ahí adentro!
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-pink-500" style="animation-delay: 0.6s;">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">🏆</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Quiz: Fin de Windows</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-6 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span> / 8</div>
+            </div>
+            
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-pink-400 h-4 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+            </div>
+
+            <div id="quiz-container" class="min-h-[250px] flex flex-col justify-center">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center text-white drop-shadow leading-relaxed"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            
+            <div id="quiz-result" class="hidden text-center py-10">
+                <span class="text-[6rem] block mb-4 animate-bounce">🎓⭐⭐⭐</span>
+                <h3 class="text-4xl md:text-5xl font-black mb-4 text-pink-400 drop-shadow">¡Felicidades!</h3>
+                <p id="quiz-score-text" class="text-2xl font-bold mb-8 text-white">Completaste y aprobaste la Unidad de Windows.</p>
+                <button onclick="reiniciarQuiz()" class="btn-interactivo bg-pink-600 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-pink-800 text-xl mr-4 mb-4 md:mb-0">Reintentar Quiz 🔄</button>
+                <a href="index4to.html" class="btn-interactivo bg-blue-600 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-blue-800 text-xl inline-block shadow-lg">Volver al Menú Principal 🏫</a>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-8" style="animation-delay: 0.7s;">
+            <h2 class="text-3xl font-black mb-4 flex items-center gap-3"><span class="text-4xl">📋</span> Tarea de la clase</h2>
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                 <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- THEME ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema_4to_c7', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema_4to_c7') === 'oscuro') { document.body.classList.add('dark-mode'); document.getElementById('btnT').innerHTML = '🌙'; }
+
+        // --- JUEGO 1: EL BUEN NOMBRE ---
+        const pregNombres = [
+            { img: "🐶", opciones: ["asdasd.jpg", "foto.jpg", "mi_perrito.jpg"], correcta: 2 },
+            { img: "📝", opciones: ["tarea_matematica.doc", "documento1.doc", "12345.doc"], correcta: 0 },
+            { img: "🎂", opciones: ["foto1.jpg", "cumple_feliz.jpg", "jsjsjs.jpg"], correcta: 1 },
+            { img: "🎵", opciones: ["cancion.mp3", "cancion_favorita.mp3", "audio.mp3"], correcta: 1 },
+            { img: "📁", opciones: ["Carpeta Nueva (2)", "mis_dibujos_2026", "carpeta_asd"], correcta: 1 }
+        ];
+        let nomAct = 0;
+
+        function cargarNombres() {
+            if(nomAct >= pregNombres.length) {
+                document.getElementById('img-nombre').innerHTML = "🏆";
+                document.getElementById('img-nombre').className = "text-[6rem] mb-6 drop-shadow-lg flex items-center justify-center h-32 animate-bounce";
+                document.getElementById('btn-nombres').style.display = 'none';
+                document.getElementById('nombre-progreso').innerText = "5";
+                return;
+            }
+            document.getElementById('nombre-progreso').innerText = nomAct + 1;
+            const p = pregNombres[nomAct];
+            document.getElementById('img-nombre').innerHTML = p.img;
+            const cont = document.getElementById('btn-nombres');
+            cont.innerHTML = '';
+            
+            p.opciones.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-interactivo bg-pink-600 text-white font-black text-lg px-4 py-5 rounded-2xl border-b-4 border-pink-800 shadow-md break-all";
+                btn.innerHTML = opt;
+                btn.onclick = () => checkNombre(idx, p.correcta);
+                cont.appendChild(btn);
+            });
+        }
+        cargarNombres();
+
+        function checkNombre(elegida, correcta) {
+            const feed = document.getElementById('nombre-feedback');
+            feed.style.display = 'block';
+            if(elegida === correcta) {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-green-500/20 text-green-300 border-2 border-green-400";
+                feed.innerHTML = "✅ ¡Perfecto! Ese nombre se entiende muy bien.";
+                nomAct++;
+                setTimeout(() => { feed.style.display = 'none'; cargarNombres(); }, 1500);
+            } else {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-red-500/20 text-red-300 border-2 border-red-400 shake-anim";
+                feed.innerHTML = "❌ ¡Cuidado! Si le ponés ese nombre después no lo vas a encontrar.";
+                setTimeout(() => { feed.style.display = 'none'; }, 2000);
+            }
+        }
+
+
+        // --- JUEGO 2: ORDENAR ARCHIVOS XL (DRAG & DROP) ---
+        let itemGuardar = null;
+        document.querySelectorAll('.item-drag').forEach(item => {
+            item.addEventListener('dragstart', () => { itemGuardar = item; setTimeout(() => item.style.opacity = '0.5', 0); });
+            item.addEventListener('dragend', () => { item.style.opacity = '1'; itemGuardar = null; });
+        });
+
+        document.querySelectorAll('.zona-drop').forEach(zona => {
+            zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('drag-over'); });
+            zona.addEventListener('dragleave', () => zona.classList.remove('drag-over'));
+            zona.addEventListener('drop', e => {
+                e.preventDefault(); zona.classList.remove('drag-over');
+                if(itemGuardar) { zona.appendChild(itemGuardar); }
+            });
+        });
+
+        function verificarGuardado() {
+            const feed = document.getElementById('feed-guardar');
+            let todoCorrecto = true;
+            
+            document.querySelectorAll('.zona-drop').forEach(zona => {
+                const tipoAceptado = zona.dataset.acepta;
+                zona.querySelectorAll('.item-drag').forEach(item => {
+                    if(item.dataset.folder !== tipoAceptado) todoCorrecto = false;
+                });
+            });
+            
+            const totalItems = document.getElementById('banco-guardar').children.length;
+            if(totalItems > 0) {
+                feed.style.display = 'block'; feed.className = "mt-4 font-black text-yellow-300 bg-yellow-900/50 p-4 rounded-xl border border-yellow-500";
+                feed.innerHTML = "⚠️ ¡Faltan archivos por guardar!"; return;
+            }
+
+            feed.style.display = 'block';
+            if(todoCorrecto) {
+                feed.className = "mt-4 font-black text-green-300 bg-green-900/50 p-4 rounded-xl border border-green-500";
+                feed.innerHTML = "✅ ¡Carpetas perfectamente ordenadas!"; lanzarConfeti();
+            } else {
+                feed.className = "mt-4 font-black text-red-300 bg-red-900/50 p-4 rounded-xl border border-red-500 shake-anim";
+                feed.innerHTML = "❌ Hay algún archivo en la carpeta equivocada. Revisá.";
+            }
+        }
+
+        // --- JUEGO 3: SIMULADOR DE CREAR CARPETA Y GUARDAR ---
+        let simPaso = 1; 
+        const inst = document.getElementById('sim-instruccion');
+        const sBody = document.getElementById('sim-body');
+        const ctxMenu = document.getElementById('sim-context-menu');
+        const sControls = document.getElementById('sim-controls');
+        let createdFolderName = "";
+
+        function simClicDerecho() {
+            if(simPaso !== 1) return;
+            ctxMenu.style.display = 'flex';
+            ctxMenu.style.top = '20px'; ctxMenu.style.left = '20px';
+            inst.innerHTML = '2. Elegí "✨ Nuevo > Carpeta" en el menú blanco';
+            inst.parentElement.className = "bg-blue-500 text-white p-4 px-8 rounded-2xl inline-block mt-4 border-4 border-blue-300 shadow-lg transition-all";
+        }
+
+        function cerrarMenuContextual() {
+            if(ctxMenu.style.display === 'flex') ctxMenu.style.display = 'none';
+        }
+
+        function simNuevaCarpeta() {
+            if(simPaso !== 1) return;
+            simPaso = 2;
+            
+            const folder = document.createElement('div');
+            folder.className = 'folder-sim'; folder.id = 'sim-new-folder';
+            folder.innerHTML = `<span class="folder-icon">📁</span><input type="text" id="sim-input-name" class="input-carpeta" value="Nueva carpeta" autocomplete="off" onkeypress="handleEnter(event)">`;
+            sBody.appendChild(folder);
+            
+            setTimeout(() => { const inp = document.getElementById('sim-input-name'); inp.focus(); inp.select(); }, 100);
+
+            inst.innerHTML = '3. Escribí un nombre (Ej: Informatica) y apretá ENTER en tu teclado';
+            inst.parentElement.className = "bg-purple-500 text-white p-4 px-8 rounded-2xl inline-block mt-4 border-4 border-purple-300 shadow-lg transition-all";
+        }
+
+        function handleEnter(e) {
+            if(e.key === 'Enter' && simPaso === 2) {
+                const inp = document.getElementById('sim-input-name');
+                createdFolderName = inp.value.trim() || "Nueva carpeta";
+                
+                const folder = document.getElementById('sim-new-folder');
+                folder.innerHTML = `<span class="folder-icon">📁</span><span class="font-bold text-sm break-all text-slate-800 dark:text-white">${createdFolderName}</span>`;
+                
+                folder.onclick = abrirCarpetaSimulada;
+
+                simPaso = 3;
+                inst.innerHTML = '4. ¡Carpeta lista! Hacé DOBLE CLIC (o tocá) para abrirla';
+                inst.parentElement.className = "bg-pink-500 text-white p-4 px-8 rounded-2xl inline-block mt-4 border-4 border-pink-300 shadow-lg transition-all";
+                sControls.innerHTML = '';
+            }
+        }
+
+        function abrirCarpetaSimulada() {
+            if(simPaso !== 3) return;
+            simPaso = 4;
+            
+            document.querySelector('.win-topbar').innerHTML = `<div class="flex items-center gap-2"><span class="text-lg">📁</span> ${createdFolderName}</div> <button onclick="resetSimulador()" class="btn-interactivo bg-slate-300 text-slate-800 px-3 py-1 rounded font-bold text-sm hover:bg-slate-400">⬅️ Volver</button>`;
+            
+            sBody.innerHTML = `
+                <div class="w-full h-full flex flex-col items-center justify-center gap-6">
+                    <p class="text-slate-400 font-bold text-xl">Esta carpeta está vacía.</p>
+                    <button onclick="simGuardarArchivo()" class="btn-interactivo bg-green-500 text-white px-8 py-4 rounded-xl font-black text-xl border-b-4 border-green-700 shadow-xl">💾 Guardar mi dibujo de Paint acá</button>
+                </div>
+            `;
+
+            inst.innerHTML = '5. ¡Ya estás adentro! Hacé clic en el botón verde para Guardar tu trabajo.';
+            inst.parentElement.className = "bg-green-500 text-white p-4 px-8 rounded-2xl inline-block mt-4 border-4 border-green-300 shadow-lg transition-all";
+        }
+
+        function simGuardarArchivo() {
+            if(simPaso !== 4) return;
+            simPaso = 5;
+
+            sBody.innerHTML = `
+                <div class="folder-sim">
+                    <span class="folder-icon">🎨</span>
+                    <span class="font-bold text-sm break-all text-slate-800 dark:text-white">Mi_Dibujo.png</span>
+                </div>
+            `;
+
+            inst.innerHTML = '🎉 ¡MISIÓN CUMPLIDA! Aprendiste a crear y guardar.';
+            inst.parentElement.className = "bg-yellow-400 text-yellow-900 p-4 px-8 rounded-2xl inline-block mt-4 border-4 border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.6)] transition-all";
+            lanzarConfeti();
+        }
+
+        function resetSimulador() {
+            simPaso = 1;
+            sControls.innerHTML = `<button onclick="simClicDerecho()" class="btn-interactivo bg-slate-700 text-white px-4 py-1 rounded font-bold text-sm hover:bg-slate-600">🖱️ Simular Clic Derecho</button>`;
+            document.querySelector('.win-topbar').innerHTML = `<div class="flex items-center gap-2"><span class="text-lg">📁</span> Mis Documentos</div>` + sControls.outerHTML;
+            sBody.innerHTML = `<div class="context-menu" id="sim-context-menu"><div class="context-item opacity-50">👁️ Ver</div><div class="context-item opacity-50">🔃 Actualizar</div><div class="h-[1px] bg-slate-300 my-1"></div><div class="context-item" onclick="simNuevaCarpeta()">✨ Nuevo > Carpeta</div></div>`;
+            ctxMenu = document.getElementById('sim-context-menu');
+            inst.innerHTML = '1. Hacé clic en "🖱️ Simular Clic Derecho"';
+            inst.parentElement.className = "bg-orange-500 text-white p-4 px-8 rounded-2xl inline-block mt-4 border-4 border-orange-300 shadow-lg transition-all";
+        }
+
+        // --- JUEGO 4 NUEVO: ¡GUARDADO DE EMERGENCIA! ---
+        let accPuntos = 0; let accTiempo = 25; let accInterval; let accTimer; let accJuegoActivo = false;
+        const areaAccion = document.getElementById('area-accion');
+        const emojisArchivos = ['📄', '🖼️', '🎵', '🎬', '📊', '📝'];
+
+        function empezarJuegoAccion() {
+            document.getElementById('accion-start').style.display = 'none';
+            document.querySelectorAll('.archivo-fugaz').forEach(e => e.remove());
+
+            accPuntos = 0; accTiempo = 25; accJuegoActivo = true;
+            document.getElementById('accion-pts').innerText = accPuntos;
+            document.getElementById('accion-time').innerText = accTiempo;
+            
+            accTimer = setInterval(() => {
+                accTiempo--; document.getElementById('accion-time').innerText = accTiempo;
+                if(accTiempo <= 0) terminarJuegoAccion();
+            }, 1000);
+
+            generarArchivoFugaz();
+            accInterval = setInterval(generarArchivoFugaz, 800); // Salen mas rapido
+        }
+
+        function generarArchivoFugaz() {
+            if(!accJuegoActivo) return;
+            const a = document.createElement('div');
+            a.className = 'archivo-fugaz';
+            a.innerHTML = emojisArchivos[Math.floor(Math.random() * emojisArchivos.length)];
+            
+            // Random pos, evitando el centro exacto donde esta la carpeta
+            let x, y;
+            do {
+                x = Math.floor(Math.random() * (areaAccion.clientWidth - 50));
+                y = Math.floor(Math.random() * (areaAccion.clientHeight - 50));
+            } while (Math.abs(x - areaAccion.clientWidth/2) < 60 && Math.abs(y - areaAccion.clientHeight/2) < 60);
+
+            a.style.left = x + 'px';
+            a.style.top = y + 'px';
+
+            a.onmousedown = () => {
+                if(!accJuegoActivo) return;
+                accPuntos++;
+                document.getElementById('accion-pts').innerText = accPuntos;
+                
+                // Animacion volando a la carpeta
+                a.classList.add('volando-a-carpeta');
+                setTimeout(() => { if(a.parentNode) a.remove(); }, 400);
+            };
+
+            areaAccion.appendChild(a);
+
+            // Desaparece despues de 1.2s si no lo tocan (es dificil)
+            setTimeout(() => { if(a.parentNode && !a.classList.contains('volando-a-carpeta')) a.remove(); }, 1200);
+        }
+
+        function terminarJuegoAccion() {
+            accJuegoActivo = false; clearInterval(accInterval); clearInterval(accTimer);
+            document.querySelectorAll('.archivo-fugaz').forEach(e => e.remove());
+            
+            const screen = document.createElement('div');
+            screen.className = 'absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-20';
+            
+            if(accPuntos >= 15) {
+                screen.innerHTML = `<span class="text-[5rem] mb-2">🏆</span><h3 class="text-4xl font-black text-green-400 drop-shadow mb-2">¡Récord!</h3><p class="text-2xl text-white font-bold mb-4">Guardaste ${accPuntos} archivos.</p><button onclick="empezarJuegoAccion(); this.parentElement.remove();" class="btn-interactivo bg-green-600 text-white font-black px-6 py-3 rounded-xl border-b-4 border-green-800">Jugar de nuevo</button>`;
+                lanzarConfeti();
+            } else {
+                screen.innerHTML = `<span class="text-[5rem] mb-2">⚠️</span><h3 class="text-4xl font-black text-yellow-400 drop-shadow mb-2">¡Tiempo!</h3><p class="text-2xl text-white font-bold mb-4">Solo salvaste ${accPuntos}. ¡Podés hacerlo mejor!</p><button onclick="empezarJuegoAccion(); this.parentElement.remove();" class="btn-interactivo bg-yellow-600 text-yellow-900 font-black px-6 py-3 rounded-xl border-b-4 border-yellow-800">Reintentar</button>`;
+            }
+            areaAccion.appendChild(screen);
+        }
+
+
+        // --- MEGA QUIZ FINAL (8 PREGUNTAS CON REPASO) ---
+        const preguntasQuiz = [
+            { q: "¿Para qué sirve una Carpeta?", options: ["Para apagar la computadora rápido", "Para guardar y organizar archivos adentro"], correct: 1 },
+            { q: "¿Qué significa 'Guardar' un archivo?", options: ["Guardar un trabajo en la compu para no perderlo y poder abrirlo después", "Borrarlo para siempre"], correct: 0 },
+            { q: "¿Cuáles son los pasos para crear una Carpeta Nueva?", options: ["Clic derecho -> Nuevo -> Carpeta", "Hacer un dibujo y pintarlo de amarillo"], correct: 0 },
+            { q: "REPASO: ¿Qué es la Barra de Tareas?", options: ["La cinta de abajo donde vemos la hora y los programas abiertos", "La pantalla gigante del fondo"], correct: 0 },
+            { q: "REPASO: ¿Cómo se llama la pantalla principal de Windows?", options: ["Escritorio", "Teclado"], correct: 0 },
+            { q: "¿Adentro de qué carpeta guardarías la foto de tus vacaciones?", options: ["En la carpeta de 'Tareas de Matemática'", "En la carpeta de 'Fotos' o 'Imágenes'"], correct: 1 },
+            { q: "REPASO: ¿Qué botón de la pantalla usamos para apagar la computadora?", options: ["El Botón Inicio (Logo de Windows)", "El botón de la Papelera de reciclaje"], correct: 0 },
+            { q: "¿Qué pasa si NO guardamos nuestro dibujo en Paint y cerramos el programa?", options: ["El dibujo se guarda solo mágicamente", "¡Perdemos el dibujo y hay que hacerlo de nuevo!"], correct: 1 }
+        ];
+        let quizAct = 0; let quizPts = 0;
+
+        function cargarQuiz() {
+            if(quizAct >= preguntasQuiz.length) {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('quiz-score-text').innerText = `Puntaje Final: ${quizPts} de ${preguntasQuiz.length}`;
+                if(quizPts >= 6) lanzarConfeti();
+                return;
+            }
+            const p = preguntasQuiz[quizAct];
+            document.getElementById('quiz-question').innerText = p.q;
+            document.getElementById('quiz-count').innerText = quizAct + 1;
+            document.getElementById('quiz-progress').style.width = ((quizAct) / preguntasQuiz.length) * 100 + "%";
+            const cont = document.getElementById('quiz-options'); cont.innerHTML = '';
+            
+            p.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-black/20 p-6 rounded-2xl font-bold border-2 border-white/30 hover:bg-white/20 transition text-white text-xl text-left leading-relaxed';
+                btn.innerText = opt; 
+                btn.onclick = () => { if(index === p.correct) quizPts++; quizAct++; cargarQuiz(); };
+                cont.appendChild(btn);
+            });
+        }
+        cargarQuiz();
+
+        function reiniciarQuiz() {
+            quizAct = 0; quizPts = 0;
+            document.getElementById('quiz-container').style.display = 'flex';
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+
+        // --- CONFETI ---
+        function lanzarConfeti() {
+            const colores = ['#38bdf8', '#f472b6', '#4ade80', '#facc15'];
+            for(let i=0; i<80; i++) {
+                let conf = document.createElement('div'); conf.className = 'confeti';
+                conf.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                document.body.appendChild(conf);
+                let duracion = Math.random() * 2 + 2;
+                conf.animate([
+                    { transform: `translate3d(0,0,0) rotate(0deg)` },
+                    { transform: `translate3d(${Math.random()*400 - 200}px, ${window.innerHeight}px, 0) rotate(${Math.random()*720}deg)` }
+                ], { duration: duracion * 1000 });
+                setTimeout(() => conf.remove(), duracion * 1000);
+            }
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

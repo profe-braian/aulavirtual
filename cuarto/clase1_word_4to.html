@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1: Introducción a Word - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #0ea5e9 0%, #2563eb 45%, #22c55e 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.38);
+            --texto-principal: #082f49;
+            --texto-claro: #ffffff;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #082f49 0%, #172554 45%, #14532d 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.36);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --texto-principal: #f8fafc;
+            --texto-claro: #e0f2fe;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+            transition: all 0.4s ease;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 16px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        .btn-interactivo {
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-interactivo:hover:not(:disabled) {
+            transform: scale(1.04);
+            box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+        }
+
+        .btn-interactivo:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s forwards;
+            opacity: 0;
+            transform: translateY(28px);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .option-btn {
+            border: 3px solid transparent;
+        }
+
+        .option-btn.correcta {
+            background: #22c55e;
+            color: white;
+            border-color: #166534;
+        }
+
+        .option-btn.incorrecta {
+            background: #ef4444;
+            color: white;
+            border-color: #7f1d1d;
+        }
+
+        .hoja-word {
+            background: white;
+            color: #0f172a;
+            border-radius: 18px;
+            min-height: 340px;
+            box-shadow: inset 0 0 0 1px #cbd5e1, 0 10px 25px rgba(15, 23, 42, 0.18);
+        }
+
+        .renglon {
+            border-bottom: 2px dashed #cbd5e1;
+            padding: 12px 6px;
+            min-height: 46px;
+        }
+
+        .pieza {
+            user-select: none;
+        }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-24">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-10">
+        <header class="glass-panel p-8 md:p-10 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">📝</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-2 text-white drop-shadow-md">Clase 1: Introducción a Word</h1>
+                    <p class="text-xl md:text-2xl font-bold text-emerald-100">Conocemos para qué sirve Word y cómo empezar a escribir.</p>
+                </div>
+            </div>
+            <a href="tema6_word.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl text-xl shrink-0">
+                ← Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-t-8 border-emerald-400" style="animation-delay: 0.1s;">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-black mb-3 text-white">¿Qué es Microsoft Word?</h2>
+                <p class="text-xl font-bold text-sky-50 max-w-4xl mx-auto">Word es un programa que usamos para escribir, leer, ordenar textos y hacer trabajos prolijos en la computadora.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/20 rounded-3xl p-6 text-center border border-white/30">
+                    <div class="text-6xl mb-4">⌨️</div>
+                    <h3 class="text-2xl font-black mb-2 text-white">Escribir</h3>
+                    <p class="font-bold text-sky-50">Podemos escribir cuentos, tareas, títulos y listas.</p>
+                </div>
+                <div class="bg-white/20 rounded-3xl p-6 text-center border border-white/30">
+                    <div class="text-6xl mb-4">🔤</div>
+                    <h3 class="text-2xl font-black mb-2 text-white">Cambiar letras</h3>
+                    <p class="font-bold text-sky-50">Permite agrandar, achicar, poner negrita y cambiar colores.</p>
+                </div>
+                <div class="bg-white/20 rounded-3xl p-6 text-center border border-white/30">
+                    <div class="text-6xl mb-4">💾</div>
+                    <h3 class="text-2xl font-black mb-2 text-white">Guardar</h3>
+                    <p class="font-bold text-sky-50">Sirve para guardar el trabajo y seguir después.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-4 border-sky-300" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6 text-white">Partes importantes de Word</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-black/15 rounded-2xl p-6 border border-white/20">
+                    <h3 class="text-2xl font-black text-sky-100 mb-2">Barra de herramientas</h3>
+                    <p class="font-bold text-white/95">Ahí están los botones para cambiar el tamaño de la letra, poner negrita, subrayar y más.</p>
+                </div>
+                <div class="bg-black/15 rounded-2xl p-6 border border-white/20">
+                    <h3 class="text-2xl font-black text-sky-100 mb-2">Hoja de trabajo</h3>
+                    <p class="font-bold text-white/95">Es el espacio grande blanco donde escribimos el texto.</p>
+                </div>
+                <div class="bg-black/15 rounded-2xl p-6 border border-white/20">
+                    <h3 class="text-2xl font-black text-sky-100 mb-2">Cursor</h3>
+                    <p class="font-bold text-white/95">Es la rayita que titila y muestra dónde van a aparecer las letras.</p>
+                </div>
+                <div class="bg-black/15 rounded-2xl p-6 border border-white/20">
+                    <h3 class="text-2xl font-black text-sky-100 mb-2">Botón Guardar</h3>
+                    <p class="font-bold text-white/95">Sirve para no perder el trabajo que hicimos.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-4 border-yellow-300 bg-yellow-500/10" style="animation-delay: 0.3s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-yellow-100">Ejercicios</h2>
+                <p class="text-xl font-bold text-white">Elegí la respuesta correcta en cada pregunta.</p>
+            </div>
+
+            <div class="space-y-8">
+                <div class="bg-black/20 rounded-2xl p-6 border border-white/20">
+                    <p class="text-2xl font-black text-white mb-4">1. ¿Para qué usamos Word?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-question="q1">
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl" data-correct="true">Para escribir textos</button>
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl">Para lavar ropa</button>
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl">Para jugar al fútbol</button>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 rounded-2xl p-6 border border-white/20">
+                    <p class="text-2xl font-black text-white mb-4">2. ¿Dónde escribimos en Word?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-question="q2">
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl">En el botón cerrar</button>
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl" data-correct="true">En la hoja de trabajo</button>
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl">En el parlante</button>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 rounded-2xl p-6 border border-white/20">
+                    <p class="text-2xl font-black text-white mb-4">3. ¿Qué botón ayuda a no perder el trabajo?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-question="q3">
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl">Inicio</button>
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl">Imprimir pantalla</button>
+                        <button class="option-btn btn-interactivo bg-white text-slate-800 font-black px-4 py-4 rounded-2xl" data-correct="true">Guardar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz-feedback" class="mt-8 text-center text-2xl font-black hidden rounded-2xl p-4"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-4 border-fuchsia-300 bg-fuchsia-500/10" style="animation-delay: 0.4s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-white">Práctica interactiva</h2>
+                <p class="text-xl font-bold text-fuchsia-100">Armá tu mini documento y practicá cómo se ve una hoja de Word.</p>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-8 items-start">
+                <div class="bg-black/20 rounded-3xl p-6 border border-white/20">
+                    <h3 class="text-2xl font-black text-white mb-4">Caja de palabras</h3>
+                    <p class="font-bold text-white/90 mb-5">Arrastrá cada tarjeta al renglón correcto.</p>
+                    <div id="banco-palabras" class="flex flex-wrap gap-3">
+                        <div class="pieza bg-white text-slate-800 px-4 py-3 rounded-2xl font-black shadow-md cursor-grab" draggable="true">Mi nombre es</div>
+                        <div class="pieza bg-white text-slate-800 px-4 py-3 rounded-2xl font-black shadow-md cursor-grab" draggable="true">Hoy aprendí Word</div>
+                        <div class="pieza bg-white text-slate-800 px-4 py-3 rounded-2xl font-black shadow-md cursor-grab" draggable="true">Puedo escribir</div>
+                    </div>
+                    <button onclick="reiniciarPractica()" class="btn-interactivo mt-6 w-full bg-fuchsia-600 text-white font-black px-6 py-4 rounded-2xl border-b-4 border-fuchsia-800">Reiniciar práctica</button>
+                </div>
+
+                <div>
+                    <div class="bg-slate-100/90 rounded-t-2xl px-5 py-3 flex flex-wrap gap-3 items-center text-slate-700 font-black">
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-lg">Archivo</span>
+                        <span class="bg-blue-500 text-white px-3 py-1 rounded-lg">Inicio</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-lg">Fuente</span>
+                        <span class="bg-slate-200 px-3 py-1 rounded-lg">Guardar</span>
+                    </div>
+                    <div class="hoja-word p-8">
+                        <div class="mb-6 text-center">
+                            <h3 id="titulo-doc" class="text-3xl font-black">Mi primer documento</h3>
+                            <p class="font-bold text-slate-500">Completá los renglones de abajo</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="renglon rounded-lg" data-slot="1"></div>
+                            <div class="renglon rounded-lg" data-slot="2"></div>
+                            <div class="renglon rounded-lg" data-slot="3"></div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex flex-wrap gap-4">
+                        <button onclick="revisarPractica()" class="btn-interactivo bg-emerald-500 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-emerald-700">Revisar documento</button>
+                        <button onclick="simularGuardar()" class="btn-interactivo bg-sky-500 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-sky-700">Guardar</button>
+                    </div>
+                    <div id="practica-feedback" class="mt-5 text-xl font-black hidden rounded-2xl p-4"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').textContent = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modo', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').textContent = '🌙';
+        }
+
+        const questionGroups = document.querySelectorAll('[data-question]');
+        let respuestasCorrectas = 0;
+        const respondidas = new Set();
+
+        questionGroups.forEach(group => {
+            const buttons = group.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (respondidas.has(group.dataset.question)) {
+                        return;
+                    }
+
+                    respondidas.add(group.dataset.question);
+                    const correcta = button.dataset.correct === 'true';
+
+                    buttons.forEach(btn => {
+                        if (btn.dataset.correct === 'true') {
+                            btn.classList.add('correcta');
+                        } else if (btn === button) {
+                            btn.classList.add('incorrecta');
+                        }
+                        btn.disabled = true;
+                    });
+
+                    if (correcta) {
+                        respuestasCorrectas += 1;
+                    }
+
+                    actualizarQuiz();
+                });
+            });
+        });
+
+        function actualizarQuiz() {
+            if (respondidas.size !== questionGroups.length) {
+                return;
+            }
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            if (respuestasCorrectas === questionGroups.length) {
+                feedback.className = 'mt-8 text-center text-2xl font-black rounded-2xl p-4 bg-emerald-500 text-white';
+                feedback.textContent = 'Excelente: respondiste todo muy bien.';
+            } else {
+                feedback.className = 'mt-8 text-center text-2xl font-black rounded-2xl p-4 bg-sky-500 text-white';
+                feedback.textContent = `Muy bien. Tuviste ${respuestasCorrectas} de ${questionGroups.length} correctas.`;
+            }
+        }
+
+        const piezas = document.querySelectorAll('.pieza');
+        const slots = document.querySelectorAll('[data-slot]');
+        const banco = document.getElementById('banco-palabras');
+        let piezaActiva = null;
+
+        piezas.forEach(pieza => {
+            pieza.addEventListener('dragstart', () => {
+                piezaActiva = pieza;
+            });
+        });
+
+        [...slots, banco].forEach(zona => {
+            zona.addEventListener('dragover', event => {
+                event.preventDefault();
+            });
+
+            zona.addEventListener('drop', event => {
+                event.preventDefault();
+                if (!piezaActiva) {
+                    return;
+                }
+
+                zona.appendChild(piezaActiva);
+                piezaActiva = null;
+            });
+        });
+
+        function revisarPractica() {
+            const feedback = document.getElementById('practica-feedback');
+            const completos = [...slots].every(slot => slot.children.length === 1);
+            feedback.classList.remove('hidden');
+
+            if (completos) {
+                feedback.className = 'mt-5 text-xl font-black rounded-2xl p-4 bg-emerald-500 text-white';
+                feedback.textContent = 'Tu documento está completo. Ya armaste una hoja de Word básica.';
+            } else {
+                feedback.className = 'mt-5 text-xl font-black rounded-2xl p-4 bg-amber-400 text-slate-900';
+                feedback.textContent = 'Todavía faltan renglones. Arrastrá una tarjeta a cada línea.';
+            }
+        }
+
+        function simularGuardar() {
+            const feedback = document.getElementById('practica-feedback');
+            feedback.classList.remove('hidden');
+            feedback.className = 'mt-5 text-xl font-black rounded-2xl p-4 bg-sky-500 text-white';
+            feedback.textContent = 'Documento guardado. Buen trabajo.';
+        }
+
+        function reiniciarPractica() {
+            piezas.forEach(pieza => banco.appendChild(pieza));
+            const feedback = document.getElementById('practica-feedback');
+            feedback.classList.add('hidden');
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
+

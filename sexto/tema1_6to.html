@@ -3,63 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia de la Computación - 6to Grado</title>
+    <title>Historia de la Computacion - 6to Grado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
         :root {
-            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #6366f1 50%, #f472b6 100%);
-            --tarjeta-bg: rgba(255, 255, 255, 0.18);
-            --border-color: rgba(255, 255, 255, 0.28);
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #f472b6 50%, #2563eb 100%);
             --texto-principal: #ffffff;
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --header-bg: rgba(255, 255, 255, 0.1);
         }
+
         .dark-mode {
-            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
-            --tarjeta-bg: rgba(0, 0, 0, 0.35);
-            --border-color: rgba(255, 255, 255, 0.12);
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            --texto-principal: #e2e8f0;
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --tarjeta-hover: rgba(0, 0, 0, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(0, 0, 0, 0.4);
         }
-        body {
+
+        body, html {
             margin: 0;
-            min-height: 100vh;
+            padding: 0;
+            min-height: 100%;
             font-family: 'Quicksand', sans-serif;
             background: var(--fondo-gradiente);
             background-attachment: fixed;
             color: var(--texto-principal);
+            transition: background 0.5s ease;
         }
-        .glass-panel {
+
+        .tema-card {
             background: var(--tarjeta-bg);
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(16px);
-            border-radius: 24px;
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .tema-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: var(--tarjeta-hover);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
-        <link rel="stylesheet" href="../shared/ui-theme.css">
+    <link rel="stylesheet" href="../shared/ui-theme.css">
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto pt-10 md:pt-4">
-        <header class="glass-panel p-8 md:p-10 text-center mb-10">
-            <div class="text-7xl mb-4">📚</div>
-            <h1 class="text-4xl md:text-5xl font-black mb-3">Historia de la Computación</h1>
-            <p class="text-xl font-bold text-sky-100">6to Grado</p>
+
+    <div class="w-full max-w-5xl mx-auto pt-16 md:pt-4 space-y-12">
+
+        <header class="fade-up flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-8 md:p-9 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg gap-6">
+            <div class="flex items-center gap-6 text-center md:text-left">
+                <span class="text-7xl drop-shadow-lg">🕰️</span>
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black drop-shadow-lg mb-2">Historia de la Computacion</h1>
+                    <p class="text-lg md:text-xl font-bold opacity-80 text-sky-100">Modulo 1 - Nivel 6to Grado</p>
+                </div>
+            </div>
+            <a href="index6to.html" class="mt-6 md:mt-0 bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
         </header>
-        <section class="glass-panel p-8 md:p-10 text-center space-y-6">
-            <h2 class="text-2xl md:text-3xl font-black">Sección conectada</h2>
-            <p class="text-lg md:text-xl font-bold text-white/90">Página creada para conectar el índice con sus futuros contenidos.</p>
-            <p class="text-base md:text-lg font-bold text-white/75">Podés volver al menú del curso y seguir navegando sin enlaces vacíos.</p>
-            <div class="pt-2">
-                <a href="index6to.html" class="inline-block bg-white text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">← Volver</a>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div onclick="window.location.href='clase1_historia_6to.html'" class="tema-card rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        📜
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-blue-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Clase 1</span>
+                        <h3 class="text-2xl font-black mb-2">El viaje en el tiempo de la computacion</h3>
+                        <p class="font-bold opacity-80">Desde el abaco hasta la inteligencia artificial, con teoria, linea del tiempo y desafios.</p>
+                    </div>
+                </div>
+
+                <div onclick="window.location.href='clase2_historia_6to.html'" class="tema-card rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        🖥️
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-fuchsia-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Clase 2</span>
+                        <h3 class="text-2xl font-black mb-2">Que hay dentro de una computadora</h3>
+                        <p class="font-bold opacity-80">Espacio preparado para continuar con los componentes internos y la evolucion del hardware.</p>
+                    </div>
+                </div>
+
             </div>
         </section>
+
     </div>
-    <script>
-        if (localStorage.getItem('modo') === 'oscuro') {
-            document.body.classList.add('dark-mode');
-        }
-    </script>
-        <script src="../shared/ui-theme.js" defer></script>
+
+    <script src="../shared/ui-theme.js" defer></script>
 </body>
 </html>
-
-
-

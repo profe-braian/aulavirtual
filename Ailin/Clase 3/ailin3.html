@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Mouse - Jugando con Ailín</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;900&display=swap');
+
+        /* FONDO GLOBAL CON CIELO Y NUBES */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(to bottom, #89f7fe 0%, #66a6ff 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: #4a4a4a;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        h1, h2, h3, .fuente-redonda { font-family: 'Fredoka', sans-serif; }
+
+        /* NUBES GLOBALES ANIMADAS */
+        .cielo-global {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; /* Quedan por detrás de todo */
+            pointer-events: none; /* No interfieren con los clics */
+        }
+        .nube {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 200px;
+            animation: moverNubes linear infinite;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+        }
+        .nube::before, .nube::after {
+            content: ''; position: absolute; background: rgba(255, 255, 255, 0.9); border-radius: 50%;
+        }
+        /* Nube 1 (Arriba) */
+        .nube-1 { width: 180px; height: 60px; top: 10%; left: -200px; animation-duration: 35s; }
+        .nube-1::after { width: 70px; height: 70px; top: -30px; left: 25px; }
+        .nube-1::before { width: 90px; height: 90px; top: -45px; right: 25px; }
+        /* Nube 2 (Medio) */
+        .nube-2 { width: 250px; height: 80px; top: 40%; left: -300px; animation-duration: 45s; animation-delay: -15s; transform: scale(1.2); opacity: 0.8;}
+        .nube-2::after { width: 90px; height: 90px; top: -40px; left: 40px; }
+        .nube-2::before { width: 120px; height: 120px; top: -60px; right: 40px; }
+        /* Nube 3 (Abajo) */
+        .nube-3 { width: 150px; height: 50px; top: 75%; left: -200px; animation-duration: 25s; animation-delay: -5s; opacity: 0.7;}
+        .nube-3::after { width: 50px; height: 50px; top: -20px; left: 20px; }
+        .nube-3::before { width: 80px; height: 80px; top: -35px; right: 20px; }
+        /* Nube 4 (Extra desfasada) */
+        .nube-4 { width: 200px; height: 60px; top: 25%; left: -250px; animation-duration: 38s; animation-delay: -25s; }
+        .nube-4::after { width: 60px; height: 60px; top: -25px; left: 30px; }
+        .nube-4::before { width: 100px; height: 100px; top: -45px; right: 30px; }
+
+        @keyframes moverNubes {
+            from { left: -300px; }
+            to { left: 110%; }
+        }
+
+        /* CAJAS BLANCAS Y VIBRANTES */
+        .caja-blanca {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 40px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .titulo-colorido { color: #ff6b6b; text-shadow: 3px 3px 0px #fef08a; }
+
+        /* ANIMACIONES Y EFECTOS */
+        .bounce-suave { animation: bounceS 2s infinite; }
+        @keyframes bounceS { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        .pulse-suave { animation: pulseS 2s infinite; }
+        @keyframes pulseS { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* JUEGO 1: ESTRELLAS SVG */
+        .estrella-contenedor { cursor: crosshair; display: flex; justify-content: center; }
+        .estrella-svg { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 120px; height: 120px; }
+        @media (min-width: 768px) { .estrella-svg { width: 160px; height: 160px; } }
+        .estrella-apaga { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 2px; }
+        .estrella-prende { fill: #fcd34d; stroke: #000000; stroke-width: 3px; transform: scale(1.3) rotate(15deg); filter: drop-shadow(0 10px 8px rgba(0,0,0,0.2)); }
+
+        /* JUEGO 2: MARIPOSAS */
+        .area-mariposas { position: relative; height: 300px; width: 100%; border-radius: 30px; background: #faf5ff; overflow: hidden; cursor: crosshair; }
+        .mariposa { position: absolute; font-size: 5rem; transition: all 0.4s ease-out; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+
+        /* JUEGO 3: GLOBOS (AHORA ESTÁN DESORDENADOS EN UN CONTENEDOR RELATIVO) */
+        .globo-juego { 
+            cursor: pointer; transition: all 0.3s ease-in; filter: drop-shadow(0 8px 6px rgba(0,0,0,0.2)); 
+            animation: flotarGlobo 4s ease-in-out infinite alternate;
+        }
+        .globo-juego:hover { transform: scale(1.1) !important; animation: none !important; }
+        .globo-vuela { transform: translateY(-800px) scale(0.5) !important; opacity: 0; pointer-events: none; animation: none !important;}
+        @keyframes flotarGlobo { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-25px) rotate(3deg); } }
+
+        /* JUEGOS ARRASTRAR */
+        .item-arrastrable { cursor: grab; transition: transform 0.2s; touch-action: none; filter: drop-shadow(0 8px 6px rgba(0,0,0,0.2)); }
+        .item-arrastrable:active { cursor: grabbing; transform: scale(1.1); }
+        .item-arrastrable.dragging { opacity: 0.5; }
+        .zona-destino { transition: all 0.3s; }
+        .zona-destino.drag-over { background-color: #dcfce7 !important; border-color: #4ade80 !important; transform: scale(1.05); }
+
+        /* JUEGO 5: PIZARRA MÁGICA */
+        .pizarra-canvas { width: 100%; height: 400px; background: white; border-radius: 24px; cursor: crosshair; touch-action: none; }
+        .btn-herramienta { padding: 10px; border-radius: 16px; border: 4px solid transparent; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-herramienta.activo { border-color: #000; transform: scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .color-rojo { background-color: #ef4444; } .color-azul { background-color: #3b82f6; } .color-amarillo { background-color: #eab308; }
+
+        /* JUEGO 6: BURBUJAS INFINITAS */
+        .area-burbujas { position: relative; height: 450px; width: 100%; border-radius: 30px; background: linear-gradient(to top, #7dd3fc, #e0f2fe); overflow: hidden; border: 8px solid #fff; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); cursor: crosshair; }
+        .burbuja {
+            position: absolute; bottom: -150px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.3) 60%, rgba(186, 230, 253, 0.5));
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 -4px 15px rgba(56,189,248,0.3);
+            border: 2px solid rgba(255,255,255,0.9); transition: transform 0.1s; animation: flotarBurbuja linear forwards;
+        }
+        .burbuja:hover { transform: scale(1.05); }
+        @keyframes flotarBurbuja { 0% { transform: translateY(0) scale(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-700px) scale(1.1); opacity: 0; } }
+        .burbuja-pop { transform: scale(1.5) !important; opacity: 0 !important; transition: all 0.2s ease-out !important; }
+
+        /* JUEGO 7: NOMBRE AILIN */
+        .zona-letra { transition: all 0.3s; } .letra-drag { transition: transform 0.2s; touch-action: none; }
+        .letra-drag:active { transform: scale(1.1); }
+        .letra-encajada { box-shadow: none !important; cursor: default !important; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
+
+        /* BOTONES GLOBALES */
+        .btn-gigante { background: #f472b6; color: white; border: none; padding: 20px 40px; font-size: 2rem; font-weight: 900; border-radius: 30px; box-shadow: 0 8px 0px #db2777; cursor: pointer; transition: all 0.2s; font-family: 'Fredoka', sans-serif;}
+        .btn-gigante:hover { transform: translateY(-4px); box-shadow: 0 12px 0px #db2777; filter: brightness(1.1); }
+        .btn-gigante:active { transform: translateY(4px); box-shadow: 0 0px 0px #db2777; }
+        .confeti { position: fixed; width: 20px; height: 20px; z-index: 9999; pointer-events: none; border-radius: 50%; }
+    </style>
+        <link rel="stylesheet" href="../../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-32 relative">
+
+    <div class="cielo-global">
+        <div class="nube nube-1"></div>
+        <div class="nube nube-2"></div>
+        <div class="nube nube-3"></div>
+        <div class="nube nube-4"></div>
+    </div>
+
+    <div class="max-w-5xl mx-auto space-y-12 relative z-10">
+        
+        <header class="caja-blanca p-10 text-center flex flex-col items-center gap-2">
+            <div class="bg-white inline-flex items-center gap-4 px-10 py-4 rounded-3xl border-4 border-gray-100 shadow-sm">
+                <h1 class="text-6xl md:text-8xl titulo-colorido tracking-wide">¡Hola Ailín!</h1>
+                <span class="text-6xl md:text-7xl">🌸</span>
+            </div>
+            <div class="flex items-center justify-center gap-4 mt-4">
+                <span class="text-4xl md:text-5xl text-gray-400">🖱️</span>
+                <p class="text-3xl md:text-4xl font-black text-blue-500 fuente-redonda tracking-wide">A jugar con el Mouse</p>
+                <span class="text-4xl md:text-5xl text-gray-400">🖱️</span>
+            </div>
+        </header>
+
+        <section class="caja-blanca p-8 md:p-12 text-center border-[6px] border-yellow-400">
+            <div class="flex items-center justify-center gap-4 mb-10">
+                <h2 class="text-4xl md:text-5xl font-black text-yellow-500">1. Pasá la flechita por arriba</h2>
+                <span class="text-5xl">✨</span>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto py-8" id="contenedor-estrellas">
+                </div>
+            
+            <div id="mensaje-estrellas" class="hidden mt-8">
+                <p class="text-5xl font-black text-green-500 mb-6 fuente-redonda">¡Magia!</p>
+                <button onclick="reiniciarEstrellas()" class="btn-gigante bg-yellow-400 shadow-[0_8px_0px_#d97706] hover:shadow-[0_12px_0px_#d97706]">Otra vez 🔄</button>
+            </div>
+        </section>
+
+        <section class="caja-blanca p-8 md:p-12 text-center border-[6px] border-purple-400">
+            <h2 class="text-4xl md:text-5xl font-black text-purple-500 mb-6">2. ¡Que vuelen las mariposas! 🦋</h2>
+            <p class="text-2xl font-bold text-gray-500 mb-8">Movete cerca de ellas sin hacer clic.</p>
+            
+            <div class="area-mariposas border-4 border-purple-300" id="area-mariposas">
+                </div>
+        </section>
+
+        <section id="seccion-globos" class="caja-blanca p-8 md:p-12 text-center border-[6px] border-red-400 relative">
+            <div class="flex items-center justify-center gap-4 mb-10 relative z-10">
+                <h2 class="text-4xl md:text-5xl font-black text-red-500">3. Hacé CLIC en los globos</h2>
+                <span class="text-5xl">🎈</span>
+            </div>
+            
+            <div class="relative w-full h-[350px] md:h-[450px] max-w-4xl mx-auto bg-blue-50 border-4 border-dashed border-blue-200 rounded-3xl" id="contenedor-globos">
+                </div>
+            
+            <div id="mensaje-globos" class="hidden mt-8 relative z-10">
+                <p class="text-5xl font-black text-green-500 mb-6 fuente-redonda">¡Al cielo!</p>
+                <button onclick="reiniciarGlobos()" class="btn-gigante bg-red-400 shadow-[0_8px_0px_#b91c1c] hover:shadow-[0_12px_0px_#b91c1c]">Más globos 🎈</button>
+            </div>
+        </section>
+
+        <section class="caja-blanca p-8 md:p-12 text-center border-[6px] border-green-400">
+            <h2 class="text-4xl md:text-5xl font-black text-green-500 mb-12">4. Llevá el hueso a la casita 🐶</h2>
+
+            <div class="flex flex-col md:flex-row items-center justify-around max-w-4xl mx-auto gap-12">
+                <div id="hueso" class="item-arrastrable text-[8rem]" draggable="true">🦴</div>
+                <div class="text-[5rem] text-gray-300 hidden md:block">➡️</div>
+                <div class="text-[5rem] text-gray-300 block md:hidden">⬇️</div>
+                <div id="casita-perro" class="zona-destino w-64 h-64 md:w-80 md:h-80 bg-green-50 border-8 border-dashed border-gray-300 rounded-[40px] flex flex-col items-center justify-center relative">
+                    <span id="perrito-emoji" class="text-[8rem] z-10 bounce-suave">🐶</span>
+                </div>
+            </div>
+
+            <div id="mensaje-arrastrar" class="hidden mt-12">
+                <button onclick="reiniciarArrastrar()" class="btn-gigante bg-green-400 shadow-[0_8px_0px_#15803d] hover:shadow-[0_12px_0px_#15803d]">Otro hueso 🦴</button>
+            </div>
+        </section>
+
+        <section class="caja-blanca p-8 md:p-12 text-center border-[6px] border-yellow-500 bg-yellow-50">
+            <h2 class="text-4xl md:text-5xl font-black text-yellow-500 mb-4">5. Pizarra Mágica 🎨</h2>
+            <p class="text-2xl font-bold text-gray-500 mb-8">¡Solo mové el mouse para pintar! Tocá <span class="bg-gray-100 text-gray-800 px-4 py-1 rounded-xl border-b-4 border-gray-300 inline-block font-black mx-1">ESPACIO</span> para borrar.</p>
+            
+            <div class="flex flex-wrap justify-center gap-6 mb-6 bg-white p-4 rounded-3xl border-4 border-yellow-200 shadow-sm">
+                <div class="flex gap-3 border-r-4 border-gray-200 pr-6">
+                    <button class="btn-herramienta activo color-rojo w-16 h-16" onclick="setHerramienta('color', '#ef4444', this)"></button>
+                    <button class="btn-herramienta color-amarillo w-16 h-16" onclick="setHerramienta('color', '#eab308', this)"></button>
+                    <button class="btn-herramienta color-azul w-16 h-16" onclick="setHerramienta('color', '#3b82f6', this)"></button>
+                </div>
+                <div class="flex gap-3 items-center border-r-4 border-gray-200 pr-6">
+                    <button class="btn-herramienta w-12 h-12 bg-gray-300 rounded-full" onclick="setHerramienta('size', 15, this)"></button>
+                    <button class="btn-herramienta activo w-16 h-16 bg-gray-400 rounded-full" onclick="setHerramienta('size', 25, this)"></button>
+                    <button class="btn-herramienta w-20 h-20 bg-gray-500 rounded-full" onclick="setHerramienta('size', 40, this)"></button>
+                </div>
+                <div class="flex gap-3 text-4xl">
+                    <button class="btn-herramienta bg-white shadow-sm" onclick="setHerramienta('sello', '⭐', this)">⭐</button>
+                    <button class="btn-herramienta bg-white shadow-sm" onclick="setHerramienta('sello', '💖', this)">💖</button>
+                    <button class="btn-herramienta bg-white shadow-sm" onclick="setHerramienta('sello', '🌸', this)">🌸</button>
+                </div>
+            </div>
+
+            <canvas id="pizarra" class="pizarra-canvas border-[6px] border-gray-300"></canvas>
+        </section>
+
+        <section class="caja-blanca p-8 md:p-12 text-center border-[6px] border-sky-400 bg-sky-50 overflow-hidden">
+            <h2 class="text-4xl md:text-5xl font-black text-sky-500 mb-4">6. ¡Explotar Burbujas! 🫧</h2>
+            <p class="text-2xl font-bold text-gray-500 mb-8">Hacé clic para reventar todas las burbujas que puedas.</p>
+            
+            <div class="flex justify-center mb-8 relative z-10">
+                <div class="bg-white px-10 py-4 rounded-full text-4xl font-black text-sky-500 border-4 border-sky-200 pulse-suave shadow-sm">
+                    Puntos: <span id="puntos-burbujas" class="text-6xl text-sky-600">0</span>
+                </div>
+            </div>
+
+            <div id="area-burbujas" class="area-burbujas">
+                </div>
+        </section>
+
+        <section class="caja-blanca p-8 md:p-12 text-center border-[6px] border-orange-400 bg-orange-50 overflow-hidden">
+            <h2 class="text-4xl md:text-5xl font-black text-orange-500 mb-4">7. ¡Tu Nombre! 🔠</h2>
+            <p class="text-2xl font-bold text-gray-500 mb-12">Arrastrá las letras a su lugar para armar AILÍN.</p>
+
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 mb-12">
+                <div class="zona-letra w-24 h-32 md:w-32 md:h-40 border-8 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black text-gray-300 bg-gray-50" data-letra="A"><span>A</span></div>
+                <div class="zona-letra w-24 h-32 md:w-32 md:h-40 border-8 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black text-gray-300 bg-gray-50" data-letra="I1"><span>I</span></div>
+                <div class="zona-letra w-24 h-32 md:w-32 md:h-40 border-8 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black text-gray-300 bg-gray-50" data-letra="L"><span>L</span></div>
+                <div class="zona-letra w-24 h-32 md:w-32 md:h-40 border-8 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black text-gray-300 bg-gray-50" data-letra="I2"><span>Í</span></div>
+                <div class="zona-letra w-24 h-32 md:w-32 md:h-40 border-8 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black text-gray-300 bg-gray-50" data-letra="N"><span>N</span></div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6" id="banco-letras-nombre">
+                <div class="letra-drag w-24 h-32 md:w-32 md:h-40 bg-pink-400 text-white rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black shadow-[0_8px_0_#be185d] border-4 border-pink-300 cursor-grab" draggable="true" data-letra="I2">Í</div>
+                <div class="letra-drag w-24 h-32 md:w-32 md:h-40 bg-sky-400 text-white rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black shadow-[0_8px_0_#0369a1] border-4 border-sky-300 cursor-grab" draggable="true" data-letra="A">A</div>
+                <div class="letra-drag w-24 h-32 md:w-32 md:h-40 bg-yellow-400 text-white rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black shadow-[0_8px_0_#b45309] border-4 border-yellow-300 cursor-grab" draggable="true" data-letra="N">N</div>
+                <div class="letra-drag w-24 h-32 md:w-32 md:h-40 bg-green-400 text-white rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black shadow-[0_8px_0_#15803d] border-4 border-green-300 cursor-grab" draggable="true" data-letra="L">L</div>
+                <div class="letra-drag w-24 h-32 md:w-32 md:h-40 bg-purple-400 text-white rounded-3xl flex items-center justify-center text-6xl md:text-8xl font-black shadow-[0_8px_0_#7e22ce] border-4 border-purple-300 cursor-grab" draggable="true" data-letra="I1">I</div>
+            </div>
+
+            <div id="mensaje-nombre" class="hidden mt-12">
+                <p class="text-[5rem] font-black text-orange-500 mb-6 bounce-suave fuente-redonda">¡AILÍN!</p>
+                <button onclick="reiniciarNombre()" class="btn-gigante bg-orange-400 shadow-[0_8px_0px_#c2410c] hover:shadow-[0_12px_0px_#c2410c]">Armarlo de nuevo 🔄</button>
+            </div>
+        </section>
+
+        <section class="caja-blanca p-12 text-center border-[6px] border-pink-400 bg-pink-100 overflow-hidden relative">
+            <span class="text-[10rem] block mb-4 pulse-suave relative z-10">🏆</span>
+            <h2 class="text-6xl md:text-7xl font-black text-pink-500 mb-4 fuente-redonda relative z-10">¡Bravo Ailín!</h2>
+            <p class="text-4xl font-bold text-gray-500 relative z-10">¡Sos una genia con el mouse!</p>
+        </section>
+
+    </div>
+
+    <script>
+        function lanzarConfeti() {
+            const colores = ['#f472b6', '#fbbf24', '#38bdf8', '#34d399', '#fb7185'];
+            for(let i=0; i<60; i++) {
+                let conf = document.createElement('div');
+                conf.className = 'confeti';
+                conf.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                document.body.appendChild(conf);
+                let duracion = Math.random() * 2 + 2;
+                conf.animate([
+                    { transform: `translate3d(0,0,0) rotate(0deg)` },
+                    { transform: `translate3d(${Math.random()*400 - 200}px, ${window.innerHeight}px, 0) rotate(${Math.random()*720}deg)` }
+                ], { duration: duracion * 1000, easing: 'ease-in' });
+                setTimeout(() => conf.remove(), duracion * 1000);
+            }
+        }
+
+        // --- JUEGO 1: ESTRELLAS SVG ---
+        let estrellasEncendidas = 0; const totalEstrellas = 8;
+        const svgApagada = `<svg viewBox="0 0 24 24" class="estrella-svg estrella-apaga"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>`;
+        const svgPrendida = `<svg viewBox="0 0 24 24" class="estrella-svg estrella-prende"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>`;
+
+        function iniciarEstrellas() {
+            const cont = document.getElementById('contenedor-estrellas');
+            cont.innerHTML = ''; estrellasEncendidas = 0;
+            document.getElementById('mensaje-estrellas').classList.add('hidden');
+
+            for(let i=0; i<totalEstrellas; i++) {
+                const estrellaCont = document.createElement('div');
+                estrellaCont.className = 'estrella-contenedor';
+                estrellaCont.innerHTML = svgApagada;
+                
+                estrellaCont.addEventListener('mouseover', function() {
+                    const svgInner = this.querySelector('svg');
+                    if (svgInner.classList.contains('estrella-apaga')) {
+                        this.innerHTML = svgPrendida;
+                        estrellasEncendidas++;
+                        if (estrellasEncendidas === totalEstrellas) {
+                            setTimeout(() => { document.getElementById('mensaje-estrellas').classList.remove('hidden'); lanzarConfeti(); }, 400);
+                        }
+                    }
+                });
+                cont.appendChild(estrellaCont);
+            }
+        }
+        function reiniciarEstrellas() { iniciarEstrellas(); }
+        iniciarEstrellas();
+
+        // --- JUEGO 2: MARIPOSAS ---
+        const areaMariposas = document.getElementById('area-mariposas');
+        const cantidadMariposas = 5;
+        function iniciarMariposas() {
+            areaMariposas.innerHTML = '';
+            for(let i=0; i<cantidadMariposas; i++) {
+                const m = document.createElement('div'); m.className = 'mariposa'; m.innerHTML = '🦋';
+                m.style.left = Math.random() * (areaMariposas.clientWidth - 100) + 'px';
+                m.style.top = Math.random() * (areaMariposas.clientHeight - 100) + 'px';
+                m.addEventListener('mouseenter', () => {
+                    m.style.left = Math.random() * (areaMariposas.clientWidth - 100) + 'px';
+                    m.style.top = Math.random() * (areaMariposas.clientHeight - 100) + 'px';
+                    m.style.transform = `rotate(${(Math.random() - 0.5) * 90}deg) scale(1.2)`;
+                    setTimeout(() => m.style.transform = 'rotate(0deg) scale(1)', 400);
+                });
+                areaMariposas.appendChild(m);
+            }
+        }
+        setTimeout(iniciarMariposas, 500);
+
+        // --- JUEGO 3: GLOBOS (Desordenados, flotando en el cielo) ---
+        let globosExplotados = 0; const totalGlobos = 5;
+        function iniciarGlobos() {
+            const cont = document.getElementById('contenedor-globos');
+            cont.innerHTML = ''; globosExplotados = 0;
+            document.getElementById('mensaje-globos').classList.add('hidden');
+
+            for(let i=0; i<totalGlobos; i++) {
+                const globoCont = document.createElement('div');
+                globoCont.className = 'absolute text-[6rem] md:text-[8rem] globo-juego';
+                globoCont.innerHTML = '🎈';
+                
+                // Color aleatorio vibrante
+                globoCont.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg) drop-shadow(0 8px 6px rgba(0,0,0,0.2))`;
+
+                // Posición dispersa por todo el contenedor relative
+                globoCont.style.left = (5 + Math.random() * 75) + '%';
+                globoCont.style.top = (5 + Math.random() * 50) + '%';
+                // Para que no se muevan todos al mismo tiempo
+                globoCont.style.animationDelay = (Math.random() * 2) + 's';
+
+                globoCont.addEventListener('click', function() {
+                    if (!this.classList.contains('globo-vuela')) {
+                        this.classList.add('globo-vuela'); 
+                        globosExplotados++;
+                        if(globosExplotados === totalGlobos) {
+                            setTimeout(() => { document.getElementById('mensaje-globos').classList.remove('hidden'); lanzarConfeti(); }, 400);
+                        }
+                    }
+                });
+                cont.appendChild(globoCont);
+            }
+        }
+        function reiniciarGlobos() { iniciarGlobos(); }
+        // Llamada al cargar
+        setTimeout(iniciarGlobos, 100); 
+
+        // --- JUEGO 4: ARRASTRAR ---
+        const hueso = document.getElementById('hueso');
+        const casita = document.getElementById('casita-perro');
+        const perrito = document.getElementById('perrito-emoji');
+        const msjArrastrar = document.getElementById('mensaje-arrastrar');
+
+        hueso.addEventListener('dragstart', (e) => { setTimeout(() => hueso.classList.add('dragging'), 0); e.dataTransfer.setData('text/plain', 'huesito'); });
+        hueso.addEventListener('dragend', () => hueso.classList.remove('dragging'));
+        casita.addEventListener('dragover', (e) => { e.preventDefault(); casita.classList.add('drag-over', 'bg-green-100'); perrito.innerHTML = '🐶👅'; });
+        casita.addEventListener('dragleave', () => { casita.classList.remove('drag-over', 'bg-green-100'); perrito.innerHTML = '🐶'; });
+        casita.addEventListener('drop', (e) => {
+            e.preventDefault(); casita.classList.remove('drag-over', 'bg-green-100');
+            const data = e.dataTransfer.getData('text/plain');
+            if(data === 'huesito') {
+                hueso.style.display = 'none'; perrito.innerHTML = '🐕❤️'; perrito.classList.add('text-[9rem]'); msjArrastrar.classList.remove('hidden'); lanzarConfeti();
+            }
+        });
+        function reiniciarArrastrar() { hueso.style.display = 'block'; perrito.innerHTML = '🐶'; perrito.classList.remove('text-[9rem]'); msjArrastrar.classList.add('hidden'); }
+
+        // --- JUEGO 5: PIZARRA MÁGICA ---
+        const canvas = document.getElementById('pizarra'); const ctx = canvas.getContext('2d');
+        let modoActual = 'pincel'; let colorActual = '#ef4444'; let grosorActual = 25; let selloActual = '⭐';
+        let lastX = null; let lastY = null; let lastStampX = null; let lastStampY = null;
+        function resizeCanvas() { canvas.width = canvas.parentElement.clientWidth - 64; canvas.height = 400; }
+        window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 100);
+        function setHerramienta(tipo, valor, elementoBtn) {
+            if(tipo === 'color') { modoActual = 'pincel'; colorActual = valor; document.querySelectorAll('.color-rojo, .color-azul, .color-amarillo').forEach(b => b.classList.remove('activo')); } 
+            else if (tipo === 'size') { modoActual = 'pincel'; grosorActual = valor; document.querySelectorAll('.bg-gray-300, .bg-gray-400, .bg-gray-500').forEach(b => b.classList.remove('activo')); } 
+            else if (tipo === 'sello') { modoActual = 'sello'; selloActual = valor; document.querySelectorAll('.btn-herramienta').forEach(b => b.classList.remove('activo')); }
+            elementoBtn.classList.add('activo');
+        }
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            if (modoActual === 'pincel') {
+                if (lastX !== null && lastY !== null) {
+                    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.strokeStyle = colorActual; ctx.lineWidth = grosorActual; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
+                }
+                lastX = x; lastY = y;
+            } else if (modoActual === 'sello') {
+                lastX = null; lastY = null; 
+                if (lastStampX === null || Math.hypot(x - lastStampX, y - lastStampY) > grosorActual * 1.5) {
+                    ctx.font = `${grosorActual * 2}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(selloActual, x, y); lastStampX = x; lastStampY = y;
+                }
+            }
+        });
+        canvas.addEventListener('mouseleave', () => { lastX = null; lastY = null; lastStampX = null; });
+        window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.opacity = '0.5'; setTimeout(() => canvas.style.opacity = '1', 150); } });
+
+        // --- JUEGO 6: BURBUJAS INFINITAS ---
+        let ptsBurbujas = 0; const areaBurbujas = document.getElementById('area-burbujas'); const txtPuntosBurbujas = document.getElementById('puntos-burbujas'); const emojisBurbuja = ['🐠', '🐟', '🐙', '⭐', ''];
+        function crearBurbuja() {
+            const b = document.createElement('div'); const size = Math.random() * 50 + 60; b.className = 'burbuja'; b.style.width = size + 'px'; b.style.height = size + 'px'; b.style.left = Math.random() * (areaBurbujas.clientWidth - size) + 'px'; if(Math.random() > 0.5) b.innerText = emojisBurbuja[Math.floor(Math.random() * emojisBurbuja.length)]; b.style.animationDuration = (Math.random() * 4 + 4) + 's'; 
+            b.addEventListener('click', function() { if(this.classList.contains('burbuja-pop')) return; this.classList.add('burbuja-pop'); this.innerText = '✨'; ptsBurbujas++; txtPuntosBurbujas.innerText = ptsBurbujas; txtPuntosBurbujas.parentElement.classList.remove('pulse-suave'); txtPuntosBurbujas.parentElement.style.transform = 'scale(1.1)'; setTimeout(() => { txtPuntosBurbujas.parentElement.style.transform = 'scale(1)'; txtPuntosBurbujas.parentElement.classList.add('pulse-suave'); }, 200); if(ptsBurbujas % 10 === 0) lanzarConfeti(); setTimeout(() => this.remove(), 200); });
+            b.addEventListener('animationend', () => b.remove()); areaBurbujas.appendChild(b);
+        }
+        setInterval(crearBurbuja, 1000);
+
+        // --- JUEGO 7: NOMBRE AILIN ---
+        let letraDrag = null; let letrasAcomodadas = 0; const letrasNombre = document.querySelectorAll('.letra-drag'); const zonasNombre = document.querySelectorAll('.zona-letra'); const msjNombre = document.getElementById('mensaje-nombre');
+        letrasNombre.forEach(letra => { letra.addEventListener('dragstart', () => { letraDrag = letra; setTimeout(() => letra.classList.add('opacity-50'), 0); }); letra.addEventListener('dragend', () => { letra.classList.remove('opacity-50'); letraDrag = null; }); });
+        zonasNombre.forEach(zona => { zona.addEventListener('dragover', e => { e.preventDefault(); if(letraDrag && zona.dataset.letra === letraDrag.dataset.letra && zona.querySelector('span')) { zona.classList.add('bg-orange-100', 'border-orange-400', 'scale-105'); } }); zona.addEventListener('dragleave', () => { zona.classList.remove('bg-orange-100', 'border-orange-400', 'scale-105'); }); zona.addEventListener('drop', e => { e.preventDefault(); zona.classList.remove('bg-orange-100', 'border-orange-400', 'scale-105'); if(letraDrag && zona.dataset.letra === letraDrag.dataset.letra && zona.querySelector('span')) { zona.innerHTML = ''; zona.appendChild(letraDrag); letraDrag.classList.remove('shadow-[0_8px_0_#be185d]', 'shadow-[0_8px_0_#0369a1]', 'shadow-[0_8px_0_#b45309]', 'shadow-[0_8px_0_#15803d]', 'shadow-[0_8px_0_#7e22ce]'); letraDrag.classList.add('letra-encajada'); letraDrag.setAttribute('draggable', 'false'); zona.style.border = 'none'; zona.style.backgroundColor = 'transparent'; lanzarConfeti(); letrasAcomodadas++; if(letrasAcomodadas === 5) setTimeout(() => { msjNombre.classList.remove('hidden'); }, 500); } }); });
+        function reiniciarNombre() { const banco = document.getElementById('banco-letras-nombre'); letrasAcomodadas = 0; msjNombre.classList.add('hidden'); zonasNombre.forEach(zona => { const char = zona.dataset.letra.replace(/[0-9]/g, ''); zona.innerHTML = `<span>${char}</span>`; zona.style.border = ''; zona.style.backgroundColor = ''; }); letrasNombre.forEach(letra => { banco.appendChild(letra); letra.setAttribute('draggable', 'true'); letra.classList.remove('letra-encajada'); if(letra.classList.contains('bg-pink-400')) letra.classList.add('shadow-[0_8px_0_#be185d]'); if(letra.classList.contains('bg-sky-400')) letra.classList.add('shadow-[0_8px_0_#0369a1]'); if(letra.classList.contains('bg-yellow-400')) letra.classList.add('shadow-[0_8px_0_#b45309]'); if(letra.classList.contains('bg-green-400')) letra.classList.add('shadow-[0_8px_0_#15803d]'); if(letra.classList.contains('bg-purple-400')) letra.classList.add('shadow-[0_8px_0_#7e22ce]'); }); }
+
+    </script>
+        <script src="../../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

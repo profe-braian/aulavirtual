@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burbujas Pop - Aula Virtual</title>
+    <style>
+        /* Fondo base y Modo Oscuro */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #fbc2eb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            color: #333;
+            transition: background 0.5s ease;
+        }
+
+        body.modo-oscuro {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #e0e0e0;
+        }
+
+        /* Efecto de fondo animado (burbujas flotantes) */
+        .fondo-animado {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Queda detrás del juego */
+        }
+
+        .burbuja-bg {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: flotar linear infinite;
+        }
+
+        body.modo-oscuro .burbuja-bg { background: rgba(255, 255, 255, 0.05); }
+
+        @keyframes flotar {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+        }
+
+        /* Contenedor principal vidriado */
+        .app-contenedor {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        body.modo-oscuro .app-contenedor {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Gestión de Pantallas */
+        .pantalla { display: none; flex-direction: column; align-items: center; }
+        .pantalla.activa { display: flex; animation: fundido 0.5s ease-out; }
+
+        @keyframes fundido {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Logo y Menú de Inicio */
+        .logo-area {
+            background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 100%);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 70px;
+            box-shadow: 0 10px 25px rgba(2, 119, 189, 0.2);
+            margin-bottom: 20px;
+            border: 5px solid #4fc3f7;
+        }
+
+        body.modo-oscuro .logo-area { background: #1c2a33; border-color: #0277bd; }
+
+        .titulo-principal {
+            color: #01579b;
+            font-size: 38px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 30px 0;
+            text-shadow: 2px 2px 0px #ffffff;
+        }
+
+        body.modo-oscuro .titulo-principal { color: #81d4fa; text-shadow: 2px 2px 0px #000; }
+
+        /* Cabecera del Juego */
+        .cabecera {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        h2 { margin: 0; font-size: 22px; color: #01579b; }
+        body.modo-oscuro h2 { color: #81d4fa; }
+
+        .marcador {
+            background: rgba(255, 255, 255, 0.8);
+            color: #ec407a;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            border: 2px solid #f8bbd0;
+        }
+
+        body.modo-oscuro .marcador { background: rgba(0, 0, 0, 0.5); border-color: #c2185b; color: #f48fb1; }
+
+        /* Botones */
+        .btn-primario {
+            background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(2, 119, 189, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primario:hover { transform: translateY(-3px); background: linear-gradient(135deg, #039be5 0%, #0288d1 100%); }
+
+        .btn-oscuro {
+            background: none; border: none; font-size: 24px; cursor: pointer;
+            position: absolute; top: 25px; right: 25px;
+            transition: transform 0.2s;
+        }
+        .btn-oscuro:hover { transform: scale(1.1); }
+
+        /* Canvas */
+        canvas {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            border: 4px solid #81d4fa;
+            cursor: crosshair;
+            margin-bottom: 15px;
+        }
+
+        body.modo-oscuro canvas { background: rgba(0, 0, 0, 0.3); border-color: #0277bd; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body>
+
+    <div class="fondo-animado" id="fondoAnimado"></div>
+
+    <div class="app-contenedor">
+        <button class="btn-oscuro" id="toggleOscuro" onclick="cambiarModo()">🌙</button>
+        
+        <div id="pantalla-inicio" class="pantalla activa">
+            <div class="logo-area">🔵</div>
+            <h1 class="titulo-principal">Burbujas Pop</h1>
+            <button class="btn-primario" onclick="iniciarJuego()">Nuevo Juego</button>
+        </div>
+
+        <div id="pantalla-juego" class="pantalla">
+            <div class="cabecera">
+                <h2>🔵 POP</h2>
+                <div class="marcador" id="indicadorNivel">Nivel: 1</div>
+                <div class="marcador" id="puntaje">Pts: 0</div>
+            </div>
+            
+            <canvas id="juegoCanvas" width="400" height="480"></canvas>
+            
+            <button class="btn-primario" style="font-size: 16px; padding: 10px 30px;" onclick="volverAlMenu()">Volver al Menú</button>
+        </div>
+    </div>
+
+    <script>
+        // --- EFECTO DE FONDO ANIMADO ---
+        function crearBurbujasFondo() {
+            const contenedor = document.getElementById('fondoAnimado');
+            for (let i = 0; i < 20; i++) {
+                let burbuja = document.createElement('div');
+                burbuja.classList.add('burbuja-bg');
+                burbuja.style.left = `${Math.random() * 100}%`;
+                burbuja.style.width = `${Math.random() * 40 + 20}px`;
+                burbuja.style.height = burbuja.style.width;
+                burbuja.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                burbuja.style.animationDelay = `${Math.random() * 5}s`;
+                contenedor.appendChild(burbuja);
+            }
+        }
+        crearBurbujasFondo();
+
+        // --- MODO OSCURO ---
+        function cambiarModo() {
+            document.body.classList.toggle('modo-oscuro');
+            const btn = document.getElementById('toggleOscuro');
+            btn.innerText = document.body.classList.contains('modo-oscuro') ? '☀️' : '🌙';
+        }
+
+        // --- NAVEGACIÓN DE PANTALLAS ---
+        function cambiarPantalla(id) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            document.getElementById(id).classList.add('activa');
+        }
+
+        function volverAlMenu() {
+            cancelAnimationFrame(animacionFrame);
+            cambiarPantalla('pantalla-inicio');
+        }
+
+        // --- CONFIGURACIÓN DEL JUEGO Y NIVELES ---
+        const canvas = document.getElementById('juegoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 10 Niveles con aves y fauna
+        const niveles = [
+            { id: 1, filas: 4, coloresMax: 3, icono: '🦆' }, // Pato
+            { id: 2, filas: 4, coloresMax: 4, icono: '🦉' }, // Buho
+            { id: 3, filas: 5, coloresMax: 4, icono: '🦅' }, // Aguila
+            { id: 4, filas: 5, coloresMax: 5, icono: '🐧' }, // Pinguino
+            { id: 5, filas: 6, coloresMax: 5, icono: '🐸' }, // Rana
+            { id: 6, filas: 6, coloresMax: 6, icono: '🦊' }, // Zorro
+            { id: 7, filas: 7, coloresMax: 6, icono: '🐢' }, // Tortuga
+            { id: 8, filas: 7, coloresMax: 7, icono: '🦋' }, // Mariposa
+            { id: 9, filas: 8, coloresMax: 7, icono: '🐞' }, // Vaquita
+            { id: 10, filas: 8, coloresMax: 7, icono: '🐝' }  // Abeja
+        ];
+
+        const radioBurbuja = 20;
+        const diametro = radioBurbuja * 2;
+        const columnas = 10;
+        const filasVisibles = 12;
+        const paletaColores = ['#ff4081', '#00e5ff', '#76ff03', '#ffd600', '#e040fb', '#ff9100', '#ff5252']; 
+        
+        let cuadricula = [];
+        let burbujaDisparo = null;
+        let puntaje = 0;
+        let nivelActual = 0;
+        let animacionFrame;
+        let bloqueado = false;
+
+        const centroCañon = { x: canvas.width / 2, y: canvas.height - radioBurbuja - 10 };
+        let mouseX = centroCañon.x, mouseY = 0;
+
+        function iniciarJuego() {
+            puntaje = 0;
+            nivelActual = 0;
+            document.getElementById('puntaje').innerText = `Pts: 0`;
+            cambiarPantalla('pantalla-juego');
+            cargarNivel();
+            gameLoop();
+        }
+
+        function cargarNivel() {
+            if (nivelActual >= niveles.length) {
+                alert("¡FELICITACIONES! Completaste todos los niveles.");
+                volverAlMenu();
+                return;
+            }
+            
+            const config = niveles[nivelActual];
+            document.getElementById('indicadorNivel').innerText = `Nivel: ${config.id}`;
+            
+            cuadricula = Array(filasVisibles).fill().map(() => Array(columnas).fill(null));
+            
+            for (let f = 0; f < config.filas; f++) {
+                let colsEnFila = (f % 2 === 0) ? columnas : columnas - 1;
+                for (let c = 0; c < colsEnFila; c++) {
+                    cuadricula[f][c] = paletaColores[Math.floor(Math.random() * config.coloresMax)];
+                }
+            }
+            recargarCañon();
+        }
+
+        function recargarCañon() {
+            bloqueado = false;
+            burbujaDisparo = {
+                x: centroCañon.x, y: centroCañon.y,
+                color: paletaColores[Math.floor(Math.random() * niveles[nivelActual].coloresMax)],
+                dx: 0, dy: 0, disparada: false
+            };
+        }
+
+        // --- RENDERIZADO (CANVAS) ---
+        function dibujarBurbuja(x, y, color) {
+            ctx.beginPath(); ctx.arc(x + 2, y + 2, radioBurbuja, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill(); 
+            ctx.beginPath(); ctx.arc(x, y, radioBurbuja, 0, Math.PI * 2);
+            ctx.fillStyle = color; ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.beginPath(); ctx.arc(x - 6, y - 6, radioBurbuja / 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill(); 
+        }
+
+        function dibujar() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Marca de agua del fondo
+            ctx.globalAlpha = document.body.classList.contains('modo-oscuro') ? 0.05 : 0.15;
+            ctx.font = "160px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(niveles[nivelActual].icono, canvas.width / 2, canvas.height / 2.5);
+            ctx.globalAlpha = 1.0;
+
+            for (let f = 0; f < filasVisibles; f++) {
+                let colsEnFila = (f % 2 === 0) ? columnas : columnas - 1;
+                for (let c = 0; c < colsEnFila; c++) {
+                    if (cuadricula[f][c]) {
+                        let x = c * diametro + radioBurbuja + (f % 2 === 0 ? 0 : radioBurbuja);
+                        let y = f * (diametro - 5) + radioBurbuja; 
+                        dibujarBurbuja(x, y, cuadricula[f][c]);
+                    }
+                }
+            }
+
+            if (burbujaDisparo && !burbujaDisparo.disparada && !bloqueado) {
+                ctx.beginPath(); ctx.moveTo(centroCañon.x, centroCañon.y); ctx.lineTo(mouseX, mouseY);
+                ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(255, 64, 129, 0.5)';
+                ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]);
+            }
+
+            if (burbujaDisparo) dibujarBurbuja(burbujaDisparo.x, burbujaDisparo.y, burbujaDisparo.color);
+
+            ctx.beginPath(); ctx.arc(centroCañon.x, centroCañon.y + 10, radioBurbuja + 10, Math.PI, 0);
+            ctx.fillStyle = '#01579b'; ctx.fill();
+        }
+
+        // --- FÍSICAS ---
+        function actualizar() {
+            if (burbujaDisparo && burbujaDisparo.disparada) {
+                burbujaDisparo.x += burbujaDisparo.dx;
+                burbujaDisparo.y += burbujaDisparo.dy;
+
+                if (burbujaDisparo.x - radioBurbuja <= 0 || burbujaDisparo.x + radioBurbuja >= canvas.width) {
+                    burbujaDisparo.dx *= -1; 
+                }
+
+                let colision = false;
+                if (burbujaDisparo.y - radioBurbuja <= 0) colision = true; 
+
+                for (let f = 0; !colision && f < filasVisibles; f++) {
+                    let colsEnFila = (f % 2 === 0) ? columnas : columnas - 1;
+                    for (let c = 0; c < colsEnFila; c++) {
+                        if (cuadricula[f][c]) {
+                            let bx = c * diametro + radioBurbuja + (f % 2 === 0 ? 0 : radioBurbuja);
+                            let by = f * (diametro - 5) + radioBurbuja;
+                            if (Math.hypot(burbujaDisparo.x - bx, burbujaDisparo.y - by) < diametro - 2) {
+                                colision = true; break;
+                            }
+                        }
+                    }
+                }
+                if (colision) encastrarBurbuja();
+            }
+        }
+
+        function encastrarBurbuja() {
+            bloqueado = true;
+            let fila = Math.max(0, Math.round((burbujaDisparo.y - radioBurbuja) / (diametro - 5)));
+            let colsEnFila = (fila % 2 === 0) ? columnas : columnas - 1;
+            let offset = (fila % 2 === 0) ? 0 : radioBurbuja;
+            let col = Math.max(0, Math.min(colsEnFila - 1, Math.round((burbujaDisparo.x - radioBurbuja - offset) / diametro)));
+
+            cuadricula[fila][col] = burbujaDisparo.color;
+            
+            let grupo = buscarConectadas(fila, col, burbujaDisparo.color);
+            if (grupo.length >= 3) {
+                grupo.forEach(b => cuadricula[b.r][b.c] = null);
+                puntaje += grupo.length * 10;
+                tirarFlotantes();
+            } else {
+                // Si la burbuja toca el borde inferior de la pantalla, se pierde
+                if (fila >= filasVisibles - 1) {
+                    alert("¡Las burbujas llegaron muy abajo! Fin del juego.");
+                    volverAlMenu();
+                    return;
+                }
+            }
+            
+            document.getElementById('puntaje').innerText = `Pts: ${puntaje}`;
+            verificarVictoria() ? setTimeout(() => { nivelActual++; cargarNivel(); }, 500) : recargarCañon();
+        }
+
+        // --- ALGORITMOS BFS ---
+        function obtenerVecinos(r, c) {
+            const vecinos = [];
+            const dirs = (r % 2 === 0) ? [[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]] : [[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]];
+            for (let d of dirs) {
+                let nr = r + d[0], nc = c + d[1];
+                if (nr >= 0 && nr < filasVisibles && nc >= 0 && nc < ((nr % 2 === 0) ? columnas : columnas - 1)) {
+                    vecinos.push({r: nr, c: nc});
+                }
+            }
+            return vecinos;
+        }
+
+        function buscarConectadas(r, c, color) {
+            let visitado = new Set([`${r},${c}`]);
+            let grupo = [];
+            let cola = [{r, c}];
+            while (cola.length > 0) {
+                let actual = cola.shift();
+                grupo.push(actual);
+                obtenerVecinos(actual.r, actual.c).forEach(v => {
+                    if (!visitado.has(`${v.r},${v.c}`) && cuadricula[v.r][v.c] === color) {
+                        visitado.add(`${v.r},${v.c}`); cola.push(v);
+                    }
+                });
+            }
+            return grupo;
+        }
+
+        function tirarFlotantes() {
+            let conectadasAlTecho = new Set();
+            let cola = [];
+            for (let c = 0; c < columnas; c++) {
+                if (cuadricula[0][c]) { cola.push({r: 0, c: c}); conectadasAlTecho.add(`0,${c}`); }
+            }
+            while (cola.length > 0) {
+                let actual = cola.shift();
+                obtenerVecinos(actual.r, actual.c).forEach(v => {
+                    if (!conectadasAlTecho.has(`${v.r},${v.c}`) && cuadricula[v.r][v.c]) {
+                        conectadasAlTecho.add(`${v.r},${v.c}`); cola.push(v);
+                    }
+                });
+            }
+            for (let f = 0; f < filasVisibles; f++) {
+                let cols = (f % 2 === 0) ? columnas : columnas - 1;
+                for (let c = 0; c < cols; c++) {
+                    if (cuadricula[f][c] && !conectadasAlTecho.has(`${f},${c}`)) {
+                        cuadricula[f][c] = null; puntaje += 20; 
+                    }
+                }
+            }
+        }
+
+        function verificarVictoria() {
+            return !cuadricula.some(fila => fila.some(celda => celda !== null));
+        }
+
+        // --- CONTROLES ---
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('click', () => {
+            if (burbujaDisparo && !burbujaDisparo.disparada && !bloqueado) {
+                let angulo = Math.atan2(mouseY - centroCañon.y, mouseX - centroCañon.x);
+                burbujaDisparo.dx = Math.cos(angulo) * 15;
+                burbujaDisparo.dy = Math.sin(angulo) * 15;
+                burbujaDisparo.disparada = true;
+            }
+        });
+
+        function gameLoop() {
+            actualizar(); dibujar();
+            animacionFrame = requestAnimationFrame(gameLoop);
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

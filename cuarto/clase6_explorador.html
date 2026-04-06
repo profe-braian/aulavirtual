@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 6: Explorador de Archivos - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg); border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo { transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; cursor: pointer; }
+        .btn-interactivo:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-interactivo:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); transform: none; }
+
+        /* ESTILOS SIMULADOR EXPLORADOR (CORREGIDOS) */
+        .explorador-container { position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.4); background: white; display: flex; flex-direction: column; aspect-ratio: 16/10; max-height: 500px;}
+        .dark-mode .explorador-container { background: #1e293b; color: white; }
+        
+        .exp-topbar { background: #f1f5f9; padding: 10px; border-bottom: 1px solid #cbd5e1; display: flex; gap: 15px; align-items: center; }
+        .dark-mode .exp-topbar { background: #0f172a; border-color: #334155; }
+        .exp-btn-back { background: #e2e8f0; border: 1px solid #cbd5e1; font-size: 1.2rem; cursor: pointer; border-radius: 8px; padding: 4px 12px; transition: background 0.2s; }
+        .exp-btn-back:hover { background: #cbd5e1; }
+        .dark-mode .exp-btn-back { background: #334155; border-color: #475569; color: white; }
+        .dark-mode .exp-btn-back:hover { background: #475569; }
+        .exp-breadcrumb { flex: 1; background: white; border: 1px solid #cbd5e1; padding: 6px 15px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dark-mode .exp-breadcrumb { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+
+        .exp-body { display: flex; flex: 1; overflow: hidden; }
+        
+        .exp-sidebar { width: 30%; background: #f8fafc; border-right: 1px solid #cbd5e1; padding: 10px 0; overflow-y: auto; }
+        .dark-mode .exp-sidebar { background: #0f172a; border-color: #334155; }
+        .exp-side-item { padding: 12px 20px; cursor: pointer; display: flex; gap: 10px; align-items: center; font-weight: bold; font-size: 0.95rem; color: #475569; transition: background 0.2s;}
+        .dark-mode .exp-side-item { color: #cbd5e1; }
+        .exp-side-item:hover { background: #e2e8f0; }
+        .dark-mode .exp-side-item:hover { background: #334155; }
+        .exp-side-item.active { background: #e0f2fe; color: #0369a1; border-left: 4px solid #0284c7; }
+        .dark-mode .exp-side-item.active { background: #0c4a6e; color: #bae6fd; border-color: #38bdf8; }
+
+        .exp-main { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 15px; align-content: flex-start; position: relative;}
+        
+        .exp-item { width: 90px; padding: 10px; border-radius: 8px; border: 1px solid transparent; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .exp-item:hover { background: #e0f2fe; border-color: #bae6fd; }
+        .dark-mode .exp-item:hover { background: #334155; border-color: #475569; }
+        .exp-item-icon { font-size: 3rem; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .exp-item-name { font-size: 0.75rem; font-weight: bold; line-height: 1.2; word-wrap: break-word; width: 100%; }
+
+        /* JUEGO DE LA MEMORIA */
+        .memo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; }
+        @media (min-width: 640px) { .memo-grid { grid-template-columns: repeat(4, 1fr); gap: 15px; } }
+        .memo-card { aspect-ratio: 1; perspective: 1000px; cursor: pointer; }
+        .memo-inner { width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; position: relative; }
+        .memo-card.flipped .memo-inner { transform: rotateY(180deg); }
+        .memo-card.matched .memo-inner { transform: rotateY(180deg) scale(0.95); }
+        .memo-card.matched .memo-back { border-color: #4ade80; background-color: #bbf7d0; box-shadow: 0 0 15px rgba(74,222,128,0.5); }
+        .dark-mode .memo-card.matched .memo-back { border-color: #22c55e; background-color: rgba(34,197,94,0.3); }
+        .memo-front, .memo-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 4px solid rgba(255,255,255,0.3); transition: all 0.3s; flex-direction: column; }
+        .memo-front { background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: white; font-weight: 900; }
+        .memo-back { background: white; transform: rotateY(180deg); border-color: #38bdf8; }
+        .dark-mode .memo-back { background: #1e293b; border-color: #818cf8; color: white;}
+
+        /* DRAG AND DROP RUTAS */
+        .ruta-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 60px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 2px dashed rgba(255,255,255,0.4); }
+        .ruta-item { background: #3b82f6; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: grab; box-shadow: 0 4px 6px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; }
+        .ruta-item:active { cursor: grabbing; transform: scale(1.05); }
+        .ruta-item.dragging { opacity: 0.5; }
+
+        .shake-anim { animation: shake 0.5s; }
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .confeti { position: fixed; width: 15px; height: 15px; z-index: 9999; pointer-events: none; border-radius: 4px; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">🗂️</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Clase 6: El Explorador</h1>
+                    <p class="text-xl md:text-2xl font-bold opacity-90">Aprendemos a encontrar cosas guardadas en la compu.</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center justify-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-blue-400" style="animation-delay: 0.1s;">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black mb-4 text-white drop-shadow-md">¿Cómo se organiza la PC?</h2>
+                <div class="bg-black/20 p-6 rounded-2xl border border-white/30 inline-block max-w-4xl">
+                    <p class="text-xl font-bold text-white leading-relaxed">
+                        El <strong class="text-blue-300 text-2xl">Explorador de Archivos</strong> es como un mueble gigante lleno de cajones. Adentro guarda todo lo que hacemos en la compu, ordenado en Carpetas.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white/20 p-8 rounded-3xl text-center border-2 border-white/30 hover:scale-105 transition shadow-lg relative overflow-hidden">
+                    <span class="text-[6rem] block mb-4 drop-shadow-lg">📁</span>
+                    <h3 class="text-4xl font-black mb-4 text-yellow-900 dark:text-yellow-300">Carpetas</h3>
+                    <p class="font-bold opacity-90 text-xl">Son "cajones" que sirven para <strong class="text-white">guardar y ordenar</strong> cosas adentro. Podés poner carpetas adentro de otras carpetas.</p>
+                    <div class="absolute -bottom-6 -right-6 text-[8rem] opacity-20 pointer-events-none">📂</div>
+                </div>
+
+                <div class="bg-white/20 p-8 rounded-3xl text-center border-2 border-white/30 hover:scale-105 transition shadow-lg relative overflow-hidden">
+                    <span class="text-[6rem] block mb-4 drop-shadow-lg">📄</span>
+                    <h3 class="text-4xl font-black mb-4 text-sky-900 dark:text-sky-300">Archivos</h3>
+                    <p class="font-bold opacity-90 text-xl">Es la información real: una foto 🖼️, una canción 🎵, un video 🎬 o un texto 📝.</p>
+                    <div class="absolute -bottom-6 -right-6 text-[8rem] opacity-20 pointer-events-none">📸</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-yellow-400 bg-yellow-500/10" style="animation-delay: 0.2s;">
+            <div class="text-center mb-8">
+                <span class="text-6xl block mb-4 animate-bounce">⚡</span>
+                <h2 class="text-3xl md:text-4xl font-black text-yellow-600 dark:text-yellow-400 drop-shadow-md mb-2">Clasificación Rápida</h2>
+                <p class="text-xl font-bold opacity-90 text-white">Mirá la imagen y decidí rapidísimo: ¿Es un Archivo o una Carpeta?</p>
+                <div class="bg-white/20 px-4 py-2 rounded-xl inline-block mt-3 font-bold text-white text-xl">Nivel <span id="clas-progreso">1</span> / 10</div>
+            </div>
+            
+            <div class="bg-black/30 p-8 md:p-12 rounded-3xl text-center border-2 border-white/20 max-w-2xl mx-auto shadow-inner flex flex-col justify-center min-h-[350px]">
+                <div id="img-clasificador" class="text-[8rem] mb-2 drop-shadow-lg flex items-center justify-center h-32">📁</div>
+                <p id="txt-clasificador" class="text-2xl font-black text-white mb-8">Cargando...</p>
+                
+                <div class="flex justify-center gap-4" id="btn-clasificador">
+                    <button onclick="checkClasificador('archivo')" class="btn-interactivo bg-blue-500 text-white font-black text-2xl px-8 py-5 rounded-2xl border-b-4 border-blue-700 w-full shadow-lg">📄 Archivo</button>
+                    <button onclick="checkClasificador('carpeta')" class="btn-interactivo bg-yellow-500 text-yellow-900 font-black text-2xl px-8 py-5 rounded-2xl border-b-4 border-yellow-700 w-full shadow-lg">📁 Carpeta</button>
+                </div>
+                <div id="clas-feedback" class="mt-6 text-2xl font-black hidden p-4 rounded-xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-purple-500" style="animation-delay: 0.3s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-white drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🃏</span> Memotest de Archivos</h2>
+                <p class="text-xl font-bold opacity-90 text-purple-200">Encontrá las parejas: Uní el ícono con su tipo de archivo.</p>
+                <p class="text-lg font-black text-white mt-4">Intentos: <span id="memo-intentos" class="text-purple-300 text-2xl">0</span></p>
+            </div>
+
+            <div class="memo-grid" id="memo-board">
+                </div>
+
+            <div id="memo-victoria" class="hidden text-center mt-8 animate-bounce">
+                <h3 class="text-4xl font-black text-green-400 drop-shadow-md">¡Memoria brillante! 🎉</h3>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-12 fade-up border-t-8 border-sky-400 bg-sky-900/30" style="animation-delay: 0.4s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-5xl font-black text-white drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🔍</span> Simulador de Búsqueda</h2>
+                <p class="text-xl font-bold text-sky-200 mb-4">Navegá por las carpetas usando el menú izquierdo o haciendo doble clic.</p>
+                
+                <div class="bg-yellow-400 text-yellow-900 p-4 px-8 rounded-2xl inline-block border-4 border-yellow-500 shadow-[0_0_20px_rgba(250,204,21,0.5)]">
+                    <p class="text-xl font-black uppercase tracking-widest mb-1 opacity-80 text-center">Misión <span id="sim-lvl-txt">1/6</span></p>
+                    <p class="text-2xl md:text-3xl font-black text-center" id="mision-texto">Buscando...</p>
+                </div>
+            </div>
+
+            <div class="explorador-container w-full max-w-4xl mx-auto border-2 border-slate-400">
+                <div class="exp-topbar">
+                    <button class="exp-btn-back" onclick="simGoBack()">⬅️ Atrás</button>
+                    <div class="exp-breadcrumb" id="sim-path">Este Equipo > </div>
+                </div>
+                <div class="exp-body">
+                    <div class="exp-sidebar hidden sm:block">
+                        <div class="exp-side-item active" id="side-root" onclick="simOpenFolder('root')"><span class="text-xl">💻</span> Este Equipo</div>
+                        <div class="exp-side-item" id="side-docs" onclick="simOpenFolder('docs')"><span class="text-xl">📝</span> Documentos</div>
+                        <div class="exp-side-item" id="side-imgs" onclick="simOpenFolder('imgs')"><span class="text-xl">🖼️</span> Imágenes</div>
+                        <div class="exp-side-item" id="side-musica" onclick="simOpenFolder('musica')"><span class="text-xl">🎵</span> Música</div>
+                        <div class="exp-side-item" id="side-videos" onclick="simOpenFolder('videos')"><span class="text-xl">🎬</span> Videos</div>
+                    </div>
+                    <div class="exp-main" id="sim-main">
+                        </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-orange-400 bg-orange-500/10" style="animation-delay: 0.5s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-orange-600 dark:text-orange-400 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🛤️</span> Construí la Ruta</h2>
+                <p class="text-xl font-bold opacity-90 text-white">Arrastrá y ordená las carpetas para formar el camino correcto para encontrar el <strong class="text-yellow-300">"Juego.exe"</strong>.</p>
+                <div class="bg-black/40 text-white p-3 rounded-xl inline-block mt-4 border border-orange-400">
+                    Pista: Está adentro de la carpeta 'Descargas', que está en 'Este Equipo'.
+                </div>
+            </div>
+
+            <div class="bg-black/20 p-6 md:p-10 rounded-3xl border-2 border-white/20 max-w-3xl mx-auto">
+                <div class="ruta-list mb-6" id="lista-ruta">
+                    <div class="ruta-item" draggable="true" data-id="4">🎮 Juego.exe</div>
+                    <div class="ruta-item" draggable="true" data-id="2">⬇️ Descargas</div>
+                    <div class="ruta-item" draggable="true" data-id="1">💻 Este Equipo</div>
+                    <div class="ruta-item" draggable="true" data-id="3">📁 Juegos Nuevos</div>
+                </div>
+                
+                <button onclick="verificarRuta()" class="btn-interactivo bg-orange-500 text-white font-black text-2xl px-10 py-4 rounded-xl border-b-4 border-orange-700 w-full shadow-lg">Comprobar Ruta</button>
+                <div id="ruta-feedback" class="mt-6 text-2xl font-black hidden p-4 rounded-xl text-center"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-green-400" style="animation-delay: 0.6s;">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <span class="text-5xl">🏫</span>
+                <h2 class="text-3xl md:text-4xl font-black text-white">Práctica en la Compu</h2>
+            </div>
+            <p class="text-xl font-bold opacity-90 mb-6 text-center">¡Es hora de hacerlo de verdad! Abrí la computadora de la escuela y hacé estos pasos:</p>
+            
+            <div class="bg-black/30 p-6 md:p-10 rounded-3xl border-2 border-green-400/50 max-w-3xl mx-auto">
+                <ul class="space-y-6 text-xl md:text-2xl font-bold text-white">
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 1. Abrir el Explorador (la carpetita amarilla abajo).
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 2. Hacer clic en "Documentos" a la izquierda.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 3. Hacer clic en "Imágenes" a la izquierda.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 4. Encontrar cualquier archivo que sea una foto.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 5. Tocar la flechita de "Atrás" (⬅️) arriba de todo.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-pink-500" style="animation-delay: 0.7s;">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">🏆</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Mega Quiz Final</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-6 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span> / 8</div>
+            </div>
+            
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-pink-400 h-4 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+            </div>
+
+            <div id="quiz-container" class="min-h-[250px] flex flex-col justify-center">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center text-white drop-shadow leading-relaxed"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            
+            <div id="quiz-result" class="hidden text-center py-10">
+                <span class="text-[6rem] block mb-4 animate-bounce">⭐⭐⭐</span>
+                <h3 class="text-4xl md:text-5xl font-black mb-4 text-green-400 drop-shadow">¡Navegante Experto!</h3>
+                <p id="quiz-score-text" class="text-2xl font-bold mb-8 text-white">Conocés todo sobre archivos y carpetas.</p>
+                <button onclick="reiniciarQuiz()" class="btn-interactivo bg-pink-600 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-pink-800 text-xl mr-4 mb-4 md:mb-0">Reintentar Quiz 🔄</button>
+                <a href="index4to.html" class="btn-interactivo bg-blue-600 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-blue-800 text-xl inline-block shadow-lg">Volver al Menú 🏫</a>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-8" style="animation-delay: 0.8s;">
+            <h2 class="text-3xl font-black mb-4 flex items-center gap-3"><span class="text-4xl">📋</span> Tarea de la clase</h2>
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- THEME ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema_4to_exp', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema_4to_exp') === 'oscuro') { document.body.classList.add('dark-mode'); document.getElementById('btnT').innerHTML = '🌙'; }
+
+        // --- JUEGO 1: CLASIFICADOR RÁPIDO (10 NIVELES) ---
+        const itemsClas = [
+            { img: '📁', txt: 'Carpeta de Trabajos', type: 'carpeta' },
+            { img: '🖼️', txt: 'foto_perro.jpg', type: 'archivo' },
+            { img: '📝', txt: 'Cuento.txt', type: 'archivo' },
+            { img: '📂', txt: 'Mis Dibujos', type: 'carpeta' },
+            { img: '🎵', txt: 'cancion.mp3', type: 'archivo' },
+            { img: '🎬', txt: 'video_viaje.mp4', type: 'archivo' },
+            { img: '📁', txt: 'Juegos PC', type: 'carpeta' },
+            { img: '📊', txt: 'Matematica.pdf', type: 'archivo' },
+            { img: '📂', txt: 'Música Favorita', type: 'carpeta' },
+            { img: '🎮', txt: 'Minecraft.exe', type: 'archivo' }
+        ];
+        let clasAct = 0;
+
+        function cargarClasificador() {
+            if(clasAct >= itemsClas.length) {
+                document.getElementById('img-clasificador').innerHTML = "🏆";
+                document.getElementById('txt-clasificador').innerHTML = "¡Clasificación perfecta!";
+                document.getElementById('txt-clasificador').className = "text-4xl font-black text-green-400 mb-8 drop-shadow";
+                document.getElementById('btn-clasificador').style.display = 'none';
+                document.getElementById('clas-progreso').innerText = "10";
+                lanzarConfeti();
+                return;
+            }
+            document.getElementById('clas-progreso').innerText = clasAct + 1;
+            document.getElementById('img-clasificador').innerHTML = itemsClas[clasAct].img;
+            document.getElementById('txt-clasificador').innerHTML = itemsClas[clasAct].txt;
+        }
+        cargarClasificador();
+
+        function checkClasificador(respuesta) {
+            const correcto = itemsClas[clasAct].type;
+            const feed = document.getElementById('clas-feedback');
+            feed.style.display = 'block';
+            
+            if(respuesta === correcto) {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-green-500/20 text-green-300 border-2 border-green-400";
+                feed.innerHTML = "✅ ¡Correcto!";
+                clasAct++;
+                setTimeout(() => { feed.style.display = 'none'; cargarClasificador(); }, 1000);
+            } else {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-red-500/20 text-red-300 border-2 border-red-400 shake-anim";
+                feed.innerHTML = "❌ ¡Cuidado! Pensalo bien.";
+                setTimeout(() => { feed.style.display = 'none'; }, 1000);
+            }
+        }
+
+        // --- JUEGO 2: MEMOTEST DE EXTENSIONES ---
+        const memoData = [
+            { id: 1, front: '🎵', back: 'Música' },
+            { id: 2, front: '🖼️', back: 'Foto' },
+            { id: 3, front: '📝', back: 'Texto' },
+            { id: 4, front: '🎬', back: 'Video' },
+            { id: 5, front: '📁', back: 'Carpeta' },
+            { id: 6, front: '📊', back: 'PDF' }
+        ];
+        
+        // Crear pares: Unimos el ícono visual con su palabra descriptiva usando el mismo ID
+        let memoCards = [];
+        memoData.forEach(item => {
+            memoCards.push({ id: item.id, content: item.front, type: 'icon' });
+            memoCards.push({ id: item.id, content: item.back, type: 'text' });
+        });
+        
+        let memoFlipped = [];
+        let memoMatched = 0;
+        let memoIntentos = 0;
+        let memoLocked = false;
+        const memoBoard = document.getElementById('memo-board');
+        const txtIntentos = document.getElementById('memo-intentos');
+
+        function initMemo() {
+            memoCards.sort(() => Math.random() - 0.5); 
+            memoBoard.innerHTML = '';
+            memoFlipped = []; memoMatched = 0; memoIntentos = 0; memoLocked = false;
+            txtIntentos.innerText = memoIntentos;
+            document.getElementById('memo-victoria').classList.add('hidden');
+
+            memoCards.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'memo-card';
+                card.dataset.id = item.id;
+                // Si es texto, hacemos la letra mas chica para que entre
+                const fontSize = item.type === 'text' ? 'text-2xl md:text-3xl' : 'text-[4rem]';
+                card.innerHTML = `
+                    <div class="memo-inner">
+                        <div class="memo-front text-[3rem]">❓</div>
+                        <div class="memo-back ${fontSize} font-black">${item.content}</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => flipMemoCard(card));
+                memoBoard.appendChild(card);
+            });
+        }
+
+        function flipMemoCard(card) {
+            if (memoLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            
+            card.classList.add('flipped');
+            memoFlipped.push(card);
+
+            if (memoFlipped.length === 2) {
+                memoLocked = true;
+                memoIntentos++;
+                txtIntentos.innerText = memoIntentos;
+                
+                const match = memoFlipped[0].dataset.id === memoFlipped[1].dataset.id;
+                
+                if (match) {
+                    setTimeout(() => {
+                        memoFlipped[0].classList.add('matched');
+                        memoFlipped[1].classList.add('matched');
+                        memoFlipped = [];
+                        memoLocked = false;
+                        memoMatched++;
+                        if(memoMatched === memoData.length) {
+                            document.getElementById('memo-victoria').classList.remove('hidden');
+                            lanzarConfeti();
+                        }
+                    }, 500);
+                } else {
+                    setTimeout(() => {
+                        memoFlipped[0].classList.remove('flipped');
+                        memoFlipped[1].classList.remove('flipped');
+                        memoFlipped = [];
+                        memoLocked = false;
+                    }, 1000);
+                }
+            }
+        }
+        initMemo(); 
+
+
+        // --- JUEGO 3: SIMULADOR EXPLORADOR (BUG ARREGLADO + 6 NIVELES) ---
+        const fileSystem = {
+            "root": { name: "Este Equipo", children: ["docs", "imgs", "musica", "videos"] },
+            "docs": { name: "Documentos", parent: "root", children: ["tareas", "proyectos", "cuento_txt"] },
+            "imgs": { name: "Imágenes", parent: "root", children: ["dibujos", "vacaciones", "foto_perro_jpg"] },
+            "musica": { name: "Música", parent: "root", children: ["cancion1_mp3"] },
+            "videos": { name: "Videos", parent: "root", children: ["viaje_mp4"] },
+            "tareas": { name: "Tareas", parent: "docs", children: ["matematica_pdf", "lengua_doc"] },
+            "proyectos": { name: "Proyectos", parent: "docs", children: ["secreto"] },
+            "secreto": { name: "Secreto", parent: "proyectos", children: ["clave_txt"] },
+            "dibujos": { name: "Dibujos", parent: "imgs", children: ["gato_png", "casa_png"] },
+            "vacaciones": { name: "Vacaciones", parent: "imgs", children: ["playa_jpg"] }
+        };
+        const fileData = {
+            "docs": { type: "folder", icon: "📁", title: "Documentos" },
+            "imgs": { type: "folder", icon: "📁", title: "Imágenes" },
+            "musica": { type: "folder", icon: "📁", title: "Música" },
+            "videos": { type: "folder", icon: "📁", title: "Videos" },
+            "tareas": { type: "folder", icon: "📂", title: "Tareas" },
+            "proyectos": { type: "folder", icon: "📂", title: "Proyectos" },
+            "secreto": { type: "folder", icon: "🔒", title: "Secreto" },
+            "dibujos": { type: "folder", icon: "📂", title: "Dibujos" },
+            "vacaciones": { type: "folder", icon: "📂", title: "Vacaciones" },
+            "cuento_txt": { type: "file", icon: "📝", title: "Cuento.txt" },
+            "foto_perro_jpg": { type: "file", icon: "🖼️", title: "Foto_perro.jpg" },
+            "cancion1_mp3": { type: "file", icon: "🎵", title: "Cancion.mp3" },
+            "viaje_mp4": { type: "file", icon: "🎬", title: "Viaje_Sur.mp4" },
+            "matematica_pdf": { type: "file", icon: "📊", title: "Mate.pdf" },
+            "lengua_doc": { type: "file", icon: "📝", title: "Lengua.doc" },
+            "gato_png": { type: "file", icon: "🐱", title: "gato.png" },
+            "casa_png": { type: "file", icon: "🏠", title: "casa.png" },
+            "playa_jpg": { type: "file", icon: "🏖️", title: "Playa.jpg" },
+            "clave_txt": { type: "file", icon: "🔑", title: "Clave.txt" }
+        };
+
+        const misionesSim = [
+            { target: "cancion1_mp3", txt: "Encontrá 'Cancion.mp3' adentro de Música." },
+            { target: "matematica_pdf", txt: "Buscá 'Mate.pdf' en Documentos > Tareas." },
+            { target: "gato_png", txt: "Buscá la foto 'gato.png' en Imágenes > Dibujos." },
+            { target: "viaje_mp4", txt: "Encontrá el video 'Viaje_Sur.mp4' en Videos." },
+            { target: "playa_jpg", txt: "Buscá la foto de la 'Playa.jpg' en Imágenes > Vacaciones." },
+            { target: "clave_txt", txt: "Misión Secreta: Encontrá 'Clave.txt' en Documentos > Proyectos > Secreto." }
+        ];
+        
+        let simCurrentPath = "root";
+        let simMisionAct = 0;
+
+        function loadSimMision() {
+            if(simMisionAct >= misionesSim.length) {
+                document.getElementById('sim-lvl-txt').innerText = "¡Misiones Completadas!";
+                document.getElementById('mision-texto').innerHTML = "Sos un Detective de Archivos profesional. 🕵️‍♂️";
+                document.getElementById('mision-texto').classList.replace('text-yellow-900', 'text-green-700');
+                lanzarConfeti(); return;
+            }
+            document.getElementById('sim-lvl-txt').innerText = `Misión ${simMisionAct+1} de 6`;
+            document.getElementById('mision-texto').innerHTML = misionesSim[simMisionAct].txt;
+            simOpenFolder('root'); // Resetear al inicio de cada mision
+        }
+
+        function renderSimExplorer() {
+            // Sidebar
+            document.querySelectorAll('.exp-side-item').forEach(el => el.classList.remove('active'));
+            if(simCurrentPath === 'root') document.getElementById('side-root').classList.add('active');
+            if(simCurrentPath.includes('doc') || simCurrentPath.includes('tarea') || simCurrentPath.includes('proy')) document.getElementById('side-docs').classList.add('active');
+            if(simCurrentPath.includes('img') || simCurrentPath.includes('dibujo') || simCurrentPath.includes('vaca')) document.getElementById('side-imgs').classList.add('active');
+            if(simCurrentPath.includes('musica')) document.getElementById('side-musica').classList.add('active');
+            if(simCurrentPath.includes('video')) document.getElementById('side-videos').classList.add('active');
+
+            // Breadcrumb
+            let bread = "Este Equipo";
+            if(simCurrentPath !== 'root') {
+                const folder = fileSystem[simCurrentPath];
+                bread = `Este Equipo > ${folder.name}`;
+            }
+            document.getElementById('sim-path').innerText = bread;
+
+            // Main Area
+            const main = document.getElementById('sim-main');
+            main.innerHTML = '';
+            
+            const childrenIds = fileSystem[simCurrentPath].children;
+            childrenIds.forEach(id => {
+                const data = fileData[id];
+                const div = document.createElement('div');
+                div.className = 'exp-item';
+                div.innerHTML = `<div class="exp-item-icon">${data.icon}</div><div class="exp-item-name">${data.title}</div>`;
+                
+                if(data.type === 'folder') {
+                    // Doble clic para abrir carpeta, un clic selecciona (efecto hover)
+                    div.ondblclick = () => simOpenFolder(id);
+                    // Para tactil, un clic la abre directo para no complicar
+                    div.onclick = (e) => { if(e.pointerType !== 'mouse') simOpenFolder(id); };
+                } else {
+                    div.onclick = () => simClickFile(id);
+                }
+                main.appendChild(div);
+            });
+        }
+
+        function simOpenFolder(id) {
+            simCurrentPath = id;
+            renderSimExplorer();
+        }
+
+        function simGoBack() {
+            if(simCurrentPath !== 'root') {
+                simCurrentPath = fileSystem[simCurrentPath].parent;
+                renderSimExplorer();
+            }
+        }
+
+        // EL BUG DE OVERLAY ARREGLADO ACÁ
+        function simClickFile(id) {
+            if(simMisionAct >= misionesSim.length) return;
+            const target = misionesSim[simMisionAct].target;
+            
+            const overlay = document.createElement('div');
+            // Cambiado 'absolute' para que cubra la explorador-container (q tiene position relative)
+            overlay.className = 'absolute inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center p-4 text-center backdrop-blur-sm transition-all rounded-xl';
+            
+            if(id === target) {
+                overlay.innerHTML = `<span class="text-[5rem] md:text-[7rem] mb-4 drop-shadow-lg">🎉</span><h3 class="text-3xl md:text-5xl font-black text-green-400 mb-4 leading-tight">¡Archivo Encontrado!</h3><p class="text-xl md:text-2xl text-white font-bold">Lograste la misión perfectamente.</p>`;
+                document.querySelector('.explorador-container').appendChild(overlay);
+                simMisionAct++;
+                setTimeout(() => { overlay.remove(); loadSimMision(); }, 2500);
+            } else {
+                overlay.innerHTML = `<span class="text-[5rem] md:text-[7rem] mb-4 drop-shadow-lg">❌</span><h3 class="text-3xl md:text-5xl font-black text-red-500 mb-4 leading-tight">Ese no es el archivo</h3><p class="text-xl md:text-2xl text-white font-bold">Leé bien el nombre en la caja amarilla.</p>`;
+                document.querySelector('.explorador-container').appendChild(overlay);
+                setTimeout(() => { overlay.remove(); }, 2000);
+            }
+        }
+
+        loadSimMision(); 
+
+        // --- JUEGO 4 NUEVO: CONSTRUÍ LA RUTA (DRAG LIST) ---
+        let dragRuta = null;
+        const listaRuta = document.getElementById('lista-ruta');
+        
+        listaRuta.addEventListener('dragstart', (e) => { dragRuta = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); });
+        listaRuta.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); dragRuta = null; });
+        listaRuta.addEventListener('dragover', (e) => {
+            e.preventDefault(); 
+            const afterElement = [...listaRuta.querySelectorAll('.ruta-item:not(.dragging)')].reduce((closest, child) => {
+                const box = child.getBoundingClientRect(); const offset = e.clientX - box.left - box.width / 2;
+                if (offset < 0 && offset > closest.offset) return { offset: offset, element: child }; else return closest;
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+            if (afterElement == null) listaRuta.appendChild(dragRuta); else listaRuta.insertBefore(dragRuta, afterElement);
+        });
+
+        function verificarRuta() {
+            const items = [...document.getElementById('lista-ruta').querySelectorAll('.ruta-item')];
+            const ordenUsuario = items.map(i => i.getAttribute('data-id')).join('');
+            const feed = document.getElementById('ruta-feedback'); 
+            feed.style.display = 'block';
+            
+            // Orden: 1 (Este equipo) -> 2 (Descargas) -> 3 (Juegos Nuevos) -> 4 (Juego.exe)
+            if(ordenUsuario === "1234") {
+                feed.innerHTML = "✅ ¡Ruta Correcta! La compu sabe exactamente dónde ir."; 
+                feed.className = "mt-6 font-black text-green-300 bg-green-500/20 p-4 rounded-xl border border-green-400";
+                lanzarConfeti();
+            } else {
+                feed.innerHTML = "❌ Hay un error en el camino. Revisá el orden."; 
+                feed.className = "mt-6 font-black text-red-300 bg-red-500/20 p-4 rounded-xl border border-red-400 shake-anim";
+            }
+        }
+
+        // --- MEGA QUIZ FINAL (8 PREGUNTAS) ---
+        const preguntasQuiz = [
+            { q: "¿Para qué sirven las Carpetas?", options: ["Para cambiar el fondo de pantalla", "Para guardar y organizar archivos adentro"], correct: 1 },
+            { q: "¿Qué aplicación usamos para ver carpetas en Windows?", options: ["El Explorador de Archivos", "El Paint"], correct: 0 },
+            { q: "¿Qué puede ser un Archivo?", options: ["El mouse físico", "Una foto, una canción o un texto escrito"], correct: 1 },
+            { q: "¿Para qué sirve el botón 'Atrás' (⬅️) en el Explorador?", options: ["Para apagar la computadora", "Para salir de la carpeta actual y volver a la anterior"], correct: 1 },
+            { q: "REPASO: ¿Qué componente usamos para hacer CLIC y abrir algo?", options: ["El Teclado", "El Mouse", "El Parlante"], correct: 1 },
+            { q: "¿Puedo guardar una carpeta ADENTRO de otra carpeta?", options: ["No, está prohibido", "¡Sí! Sirve para organizar todo mucho mejor"], correct: 1 },
+            { q: "Si veo un archivo que tiene este ícono 🎵, seguro es...", options: ["Un documento de texto", "Un archivo de Música o Audio"], correct: 1 },
+            { q: "REPASO: ¿Dónde están los íconos apenas prendemos la compu?", options: ["En el Escritorio (la pantalla principal)", "Escondidos adentro del Gabinete"], correct: 0 }
+        ];
+        let quizAct = 0; let quizPts = 0;
+
+        function cargarQuiz() {
+            if(quizAct >= preguntasQuiz.length) {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('quiz-score-text').innerText = `Puntaje Final: ${quizPts} de ${preguntasQuiz.length}`;
+                if(quizPts >= 6) lanzarConfeti();
+                return;
+            }
+            const p = preguntasQuiz[quizAct];
+            document.getElementById('quiz-question').innerText = p.q;
+            document.getElementById('quiz-count').innerText = quizAct + 1;
+            document.getElementById('quiz-progress').style.width = ((quizAct) / preguntasQuiz.length) * 100 + "%";
+            const cont = document.getElementById('quiz-options'); cont.innerHTML = '';
+            
+            p.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-black/20 p-6 rounded-2xl font-bold border-2 border-white/30 hover:bg-white/20 transition text-white text-xl text-left leading-relaxed';
+                btn.innerText = opt; 
+                btn.onclick = () => { if(index === p.correct) quizPts++; quizAct++; cargarQuiz(); };
+                cont.appendChild(btn);
+            });
+        }
+        cargarQuiz();
+
+        function reiniciarQuiz() {
+            quizAct = 0; quizPts = 0;
+            document.getElementById('quiz-container').style.display = 'flex';
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+
+        // --- CONFETI ---
+        function lanzarConfeti() {
+            const colores = ['#38bdf8', '#f472b6', '#4ade80', '#facc15'];
+            for(let i=0; i<80; i++) {
+                let conf = document.createElement('div'); conf.className = 'confeti';
+                conf.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                document.body.appendChild(conf);
+                let duracion = Math.random() * 2 + 2;
+                conf.animate([
+                    { transform: `translate3d(0,0,0) rotate(0deg)` },
+                    { transform: `translate3d(${Math.random()*400 - 200}px, ${window.innerHeight}px, 0) rotate(${Math.random()*720}deg)` }
+                ], { duration: duracion * 1000 });
+                setTimeout(() => conf.remove(), duracion * 1000);
+            }
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

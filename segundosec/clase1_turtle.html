@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1 - Introducción a Turtle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #4db8ff 0%, #b8a4f5 50%, #f48fb1 100%);
+            --card-bg: rgba(255, 255, 255, 0.24);
+            --soft-bg: rgba(255, 255, 255, 0.18);
+            --card-border: rgba(255, 255, 255, 0.34);
+            --text-main: #2c3e50;
+            --text-soft: #546e7a;
+        }
+
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --card-bg: rgba(20, 30, 40, 0.5);
+            --soft-bg: rgba(40, 50, 60, 0.42);
+            --card-border: rgba(255, 255, 255, 0.16);
+            --text-main: #f5f6fa;
+            --text-soft: #dcdde1;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.14);
+        }
+
+        .soft-panel {
+            background: var(--soft-bg);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 22px;
+        }
+
+        .code-box {
+            background: rgba(30, 30, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 1rem 1.1rem;
+            font-family: Consolas, Monaco, monospace;
+            overflow-x: auto;
+            line-height: 1.65;
+            color: #f8fafc;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.38);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            font-weight: 800;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.75s ease forwards;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .step-line {
+            position: relative;
+            padding-left: 1.15rem;
+        }
+
+        .step-line::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.55rem;
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 999px;
+            background: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.55);
+        }
+
+        .visual-box {
+            background:
+                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+                rgba(255, 255, 255, 0.12);
+            background-size: 24px 24px, 24px 24px, auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto pt-14 md:pt-6 pb-16 space-y-8">
+
+        <header class="glass-panel p-8 md:p-10 fade-up flex flex-col lg:flex-row justify-between items-center gap-8 text-center lg:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="text-7xl md:text-8xl drop-shadow-lg">🐢</div>
+                <div>
+                    <p class="pill mb-4">2do año • Python • Clase 1 del módulo Turtle</p>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white">Introducción a Turtle</h1>
+                    <p class="text-lg md:text-2xl font-bold text-sky-100">Programar dibujos con instrucciones simples.</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 text-lg font-bold">
+                <a href="mod2_2sec.html" class="bg-white/90 text-blue-900 px-6 py-3 rounded-2xl hover:bg-white transition shadow-lg">← Volver</a>
+                <a href="index2sec.html" class="bg-black/15 text-white px-6 py-3 rounded-2xl hover:bg-black/25 transition border border-white/20">Inicio</a>
+            </div>
+        </header>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.08s;">
+            <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl md:text-4xl font-black mb-4">¿Qué vamos a aprender hoy?</h2>
+                    <p class="text-lg leading-relaxed mb-5">
+                        Turtle es una forma visual de empezar a programar: en vez de ver solo texto, vemos una tortuga que
+                        se mueve por la pantalla y dibuja según nuestras instrucciones.
+                    </p>
+                    <div class="grid sm:grid-cols-3 gap-3">
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">➡️</div>
+                            <p class="font-black">Mover</p>
+                            <p class="text-sm">forward()</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">↩️</div>
+                            <p class="font-black">Girar</p>
+                            <p class="text-sm">left() / right()</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">✏️</div>
+                            <p class="font-black">Dibujar</p>
+                            <p class="text-sm">Líneas y figuras</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Plan de clase (1 hora)</h3>
+                    <div class="space-y-4 font-bold">
+                        <div class="step-line">10 min: qué es Turtle y cómo abrir un programa.</div>
+                        <div class="step-line">15 min: comandos básicos y lectura de ejemplos.</div>
+                        <div class="step-line">15 min: dibujo guiado de figuras simples.</div>
+                        <div class="step-line">15 min: práctica individual.</div>
+                        <div class="step-line">5 min: cierre y captura del trabajo.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.14s;">
+            <div class="grid md:grid-cols-4 gap-4">
+                <article class="glass-panel p-5 border-l-8 border-sky-400">
+                    <h3 class="text-xl font-black mb-2">1. Importar</h3>
+                    <p class="mb-3">Primero activamos el módulo.</p>
+                    <div class="code-box text-green-300 text-sm">from turtle import *</div>
+                </article>
+                <article class="glass-panel p-5 border-l-8 border-indigo-400">
+                    <h3 class="text-xl font-black mb-2">2. Mostrar</h3>
+                    <p class="mb-3">Podemos ver a la tortuga en pantalla.</p>
+                    <div class="code-box text-sky-300 text-sm">shape('turtle')</div>
+                </article>
+                <article class="glass-panel p-5 border-l-8 border-amber-400">
+                    <h3 class="text-xl font-black mb-2">3. Avanzar</h3>
+                    <p class="mb-3">Se mueve la cantidad de pasos indicada.</p>
+                    <div class="code-box text-yellow-300 text-sm">forward(100)</div>
+                </article>
+                <article class="glass-panel p-5 border-l-8 border-pink-400">
+                    <h3 class="text-xl font-black mb-2">4. Girar</h3>
+                    <p class="mb-3">Los giros se expresan en grados.</p>
+                    <div class="code-box text-pink-300 text-sm">right(90)</div>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.2s;">
+            <div class="grid lg:grid-cols-2 gap-6 items-stretch">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Idea clave</h2>
+                    <p class="text-lg leading-relaxed mb-4">
+                        Programar con Turtle es darle órdenes exactas a un personaje. Si una instrucción está mal escrita,
+                        Python no la entiende. Si está bien escrita, la tortuga la ejecuta.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="soft-panel p-4">
+                            <p class="font-black text-green-300 mb-2">Correcto</p>
+                            <div class="code-box text-green-300 text-sm">forward(80)</div>
+                        </div>
+                        <div class="soft-panel p-4">
+                            <p class="font-black text-red-300 mb-2">Error común</p>
+                            <div class="code-box text-red-300 text-sm">Forward 80</div>
+                        </div>
+                    </div>
+                    <p class="mt-4 font-bold">Recordá: Python distingue mayúsculas, paréntesis y comillas.</p>
+                </div>
+
+                <div class="soft-panel p-6 flex flex-col justify-center">
+                    <h3 class="text-2xl font-black mb-4 text-center">Cómo se mueve la tortuga</h3>
+                    <div class="visual-box p-6">
+                        <svg viewBox="0 0 360 220" class="w-full h-auto">
+                            <defs>
+                                <marker id="flecha" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                                    <polygon points="0 0, 10 3, 0 6" fill="#ffffff"></polygon>
+                                </marker>
+                            </defs>
+                            <line x1="60" y1="160" x2="170" y2="160" stroke="#fbbf24" stroke-width="6" marker-end="url(#flecha)"></line>
+                            <line x1="170" y1="160" x2="170" y2="70" stroke="#60a5fa" stroke-width="6" marker-end="url(#flecha)"></line>
+                            <circle cx="60" cy="160" r="10" fill="#f472b6"></circle>
+                            <text x="36" y="188" fill="#ffffff" font-size="16" font-weight="700">Inicio</text>
+                            <text x="90" y="145" fill="#fde68a" font-size="16" font-weight="700">forward(110)</text>
+                            <text x="188" y="122" fill="#bfdbfe" font-size="16" font-weight="700">left(90)</text>
+                            <text x="183" y="65" fill="#ffffff" font-size="16" font-weight="700">forward(90)</text>
+                            <text x="148" y="173" fill="#ffffff" font-size="34">🐢</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.26s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Primer programa completo</h2>
+            <div class="grid lg:grid-cols-[1fr_0.95fr] gap-6">
+                <div class="soft-panel p-6">
+                    <p class="text-lg mb-4">Este ejemplo dibuja una "L". Es ideal para entender el orden de las instrucciones.</p>
+                    <div class="code-box text-emerald-200 text-base md:text-lg">
+from turtle import *<br>
+shape('turtle')<br>
+forward(120)<br>
+left(90)<br>
+forward(80)
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-3 mt-4 font-bold">
+                        <div class="soft-panel p-4">`forward(120)` hace una línea recta.</div>
+                        <div class="soft-panel p-4">`left(90)` cambia la dirección.</div>
+                        <div class="soft-panel p-4">El último `forward(80)` dibuja la segunda parte.</div>
+                        <div class="soft-panel p-4">Las órdenes se leen de arriba hacia abajo.</div>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Antes de ejecutar</h3>
+                    <div class="space-y-3 text-lg">
+                        <p class="step-line">Abrí IDLE o el editor donde trabajen en clase.</p>
+                        <p class="step-line">Creá un archivo nuevo.</p>
+                        <p class="step-line">Copiá el código respetando mayúsculas y paréntesis.</p>
+                        <p class="step-line">Guardá el archivo.</p>
+                        <p class="step-line">Ejecutá con F5.</p>
+                    </div>
+                    <div class="mt-5 bg-yellow-300/25 border border-yellow-300/40 rounded-2xl p-4 font-bold">
+                        Si no aparece una tortuga sino una flecha, no está mal. `shape('turtle')` solo cambia el dibujo del cursor.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.32s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Figuras guiadas</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <article class="soft-panel p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-4xl">🟦</span>
+                        <h3 class="text-2xl font-black">Cuadrado</h3>
+                    </div>
+                    <p class="font-bold mb-4">Un cuadrado tiene 4 lados iguales y se gira 90° en cada esquina.</p>
+                    <div class="code-box text-sky-300 text-base">
+from turtle import *<br>
+shape('turtle')<br>
+forward(100)<br>
+right(90)<br>
+forward(100)<br>
+right(90)<br>
+forward(100)<br>
+right(90)<br>
+forward(100)
+                    </div>
+                </article>
+
+                <article class="soft-panel p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-4xl">🔺</span>
+                        <h3 class="text-2xl font-black">Triángulo</h3>
+                    </div>
+                    <p class="font-bold mb-4">Para un triángulo equilátero usamos giros de 120°.</p>
+                    <div class="code-box text-amber-300 text-base">
+from turtle import *<br>
+shape('turtle')<br>
+forward(120)<br>
+left(120)<br>
+forward(120)<br>
+left(120)<br>
+forward(120)
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-cyan-300" style="animation-delay: 0.38s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🧪</span>
+                <h2 class="text-3xl md:text-4xl font-black">Práctica en clase</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-5">
+                <div class="soft-panel p-5">
+                    <p class="text-sm uppercase tracking-widest font-black text-cyan-200 mb-2">Nivel 1</p>
+                    <h3 class="text-2xl font-black mb-3">Recta + giro</h3>
+                    <p class="mb-4">Hacé una línea de 150 pasos, girá a la derecha y avanzá 60 pasos.</p>
+                    <div class="bg-white/15 rounded-2xl p-4 flex justify-center">
+                        <svg width="160" height="120" viewBox="0 0 160 120" fill="none">
+                            <path d="M 20 90 H 120 V 35" stroke="#67e8f9" stroke-width="5" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="soft-panel p-5">
+                    <p class="text-sm uppercase tracking-widest font-black text-cyan-200 mb-2">Nivel 2</p>
+                    <h3 class="text-2xl font-black mb-3">Escalera</h3>
+                    <p class="mb-4">Intentá copiar el recorrido. Pensá cuántas veces avanza y cuántas veces gira.</p>
+                    <div class="bg-white/15 rounded-2xl p-4 flex justify-center">
+                        <svg width="170" height="120" viewBox="0 0 170 120" fill="none">
+                            <path d="M 20 100 H 70 V 70 H 120 V 40 H 150" stroke="#fcd34d" stroke-width="5" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="soft-panel p-5">
+                    <p class="text-sm uppercase tracking-widest font-black text-cyan-200 mb-2">Nivel 3</p>
+                    <h3 class="text-2xl font-black mb-3">Desafío libre</h3>
+                    <p class="mb-4">Elegí una figura: cuadrado, triángulo o una casita simple hecha con líneas.</p>
+                    <div class="bg-white/15 rounded-2xl p-4 flex justify-center">
+                        <svg width="170" height="120" viewBox="0 0 170 120" fill="none">
+                            <path d="M 45 95 H 120 V 55 H 45 Z" stroke="#60a5fa" stroke-width="5" />
+                            <path d="M 45 55 L 82 25 L 120 55" stroke="#f472b6" stroke-width="5" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.44s;">
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Mini resumen</h2>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">`from turtle import *` activa las herramientas.</p>
+                        <p class="step-line">`shape('turtle')` muestra la tortuga.</p>
+                        <p class="step-line">`forward()` mueve hacia adelante.</p>
+                        <p class="step-line">`left()` y `right()` cambian la dirección.</p>
+                        <p class="step-line">El orden de las instrucciones importa.</p>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Entrega sugerida</h2>
+                    <p class="text-lg mb-4">
+                        Al terminar la clase, cada estudiante debería tener al menos un dibujo funcionando y una captura del código.
+                    </p>
+                    <div class="bg-black/10 rounded-2xl p-5 border border-white/20">
+                        <p class="font-black text-xl mb-2">Checklist final</p>
+                        <p class="font-bold">1. El programa abre sin errores.</p>
+                        <p class="font-bold">2. La tortuga dibuja una figura.</p>
+                        <p class="font-bold">3. El archivo quedó guardado.</p>
+                        <p class="font-bold">4. Se tomó captura del resultado.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="glass-panel p-6 md:p-8 fade-up text-center" style="animation-delay: 0.5s;">
+            <p class="text-lg md:text-xl font-bold">Objetivo cumplido si al final de la clase pueden leer, escribir y modificar un programa simple de Turtle.</p>
+        </footer>
+    </div>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3 - ¿Como viajan los datos? - 7mo Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        :root{--hero:linear-gradient(135deg,#10b981 0%,#0ea5e9 50%,#2563eb 100%);--bg:linear-gradient(180deg,#f6fffd 0%,#eefbff 100%);--card:rgba(255,255,255,.95);--border:rgba(14,165,233,.12);--text:#0f172a;--soft:#4b5563}
+        .dark-mode{--hero:linear-gradient(135deg,#064e3b 0%,#0c4a6e 50%,#1e3a8a 100%);--bg:linear-gradient(180deg,#0f172a 0%,#111827 100%);--card:rgba(17,24,39,.84);--border:rgba(255,255,255,.08);--text:#e2e8f0;--soft:#cbd5e1}
+        html,body{margin:0;min-height:100%;font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text)}
+        .hero{background:var(--hero);color:#fff}.card{background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:0 20px 40px rgba(14,165,233,.12)}
+        .pill,.tool-btn{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;font-weight:900}
+        .pill{padding:.65rem 1rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.18)}
+        .tool-btn{padding:.8rem 1rem;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.14);color:#fff}
+        .ghost-btn{border-radius:999px;background:rgba(255,255,255,.94);color:#0f766e;padding:.9rem 1.2rem;font-weight:900}
+        .icon{width:78px;height:78px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff}
+        .route-box{min-height:340px;position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,rgba(16,185,129,.08),rgba(14,165,233,.1));border:1px solid var(--border)}
+        .stop{position:absolute;width:126px;height:88px;border-radius:22px;background:rgba(255,255,255,.9);color:#0f766e;border:2px solid rgba(14,165,233,.14);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;box-shadow:0 12px 24px rgba(14,165,233,.14)}
+        .dark-mode .stop{background:rgba(31,41,55,.92);color:#e2e8f0;border-color:rgba(255,255,255,.09)}
+        .beam{position:absolute;height:4px;border-radius:999px;background:linear-gradient(90deg,#10b981,#0ea5e9,#2563eb)}
+        .packet{position:absolute;width:18px;height:18px;border-radius:50%;background:#fde047;box-shadow:0 0 0 8px rgba(253,224,71,.18);transition:all .35s ease}
+        .chip{min-width:92px;text-align:center;border-radius:999px;border:2px solid rgba(14,165,233,.18);background:#fff;color:#0f172a;padding:.6rem 1rem;font-weight:900;cursor:pointer}
+        .dark-mode .chip{background:#e2e8f0}
+        .chip.selected{background:#bae6fd}.chip.correct{border-color:#22c55e}.chip.wrong{border-color:#f59e0b}
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="max-w-6xl mx-auto px-4 py-6 md:py-8">
+            <div class="flex flex-wrap justify-between gap-3 mb-10">
+                <a href="tema1_7mo.html" class="ghost-btn no-underline">← Volver a Redes</a>
+                <div class="flex gap-3 flex-wrap"><button id="themeToggle" class="tool-btn">Modo claro</button><button id="fontToggle" class="tool-btn">Texto normal</button></div>
+            </div>
+            <div class="max-w-4xl mx-auto text-center pb-16">
+                <div class="pill mb-5">🚀 Clase 3 · ¿Como viajan los datos?</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Del clic al destino</h1>
+                <p class="text-lg md:text-xl font-bold text-white/85 max-w-3xl mx-auto mb-8">En esta clase vemos como los datos viajan por la red, que reglas usan para entenderse, que es una IP, para que sirve DNS y que comandos pueden ayudar a observar la conexion.</p>
+                <div class="flex flex-wrap justify-center gap-5 text-sm md:text-base font-bold text-white/80"><span>📏 Reglas</span><span>🪪 Direccion IP</span><span>📒 DNS</span><span>⌨️ Comandos</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
+        <section class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#10b981,#0ea5e9)">📏</div><h2 class="text-2xl font-extrabold mb-2">Reglas</h2><p class="font-bold" style="color:var(--soft)">Los equipos necesitan reglas comunes para comunicarse y entender los mensajes.</p></article>
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#2563eb,#06b6d4)">🪪</div><h2 class="text-2xl font-extrabold mb-2">IP</h2><p class="font-bold" style="color:var(--soft)">La direccion IP ayuda a ubicar a un equipo o destino dentro de la red.</p></article>
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">📒</div><h2 class="text-2xl font-extrabold mb-2">DNS</h2><p class="font-bold" style="color:var(--soft)">Traduce nombres faciles de recordar a direcciones que usan las maquinas.</p></article>
+            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#0ea5e9,#6366f1)">⌨️</div><h2 class="text-2xl font-extrabold mb-2">Comandos</h2><p class="font-bold" style="color:var(--soft)">Herramientas como ping o tracert ayudan a observar que pasa en la conexion.</p></article>
+        </section>
+
+        <section class="card p-6 md:p-8">
+            <div class="grid lg:grid-cols-[1.08fr_.92fr] gap-6 items-start">
+                <div>
+                    <h2 class="text-3xl font-extrabold mb-3">Grafico interactivo del viaje</h2>
+                    <p class="font-bold mb-4" style="color:var(--soft)">Cambia la etapa para ver como un pedido sale del cliente, busca destino y llega al servidor.</p>
+                    <div class="flex flex-wrap gap-3 mb-4">
+                        <button class="tool-btn trip-btn active" data-trip="cliente" style="background:#10b981">Cliente</button>
+                        <button class="tool-btn trip-btn" data-trip="dns" style="background:#0ea5e9">DNS</button>
+                        <button class="tool-btn trip-btn" data-trip="servidor" style="background:#2563eb">Servidor</button>
+                    </div>
+                    <div class="route-box">
+                        <div class="stop" style="left:8%;top:60%">CLIENTE</div>
+                        <div class="stop" style="left:39%;top:36%">DNS</div>
+                        <div class="stop" style="left:72%;top:20%">SERVIDOR</div>
+                        <div class="stop" style="left:72%;top:70%">RESPUESTA</div>
+                        <div class="beam" style="left:20%;top:68%;width:150px;transform:rotate(-18deg)"></div>
+                        <div class="beam" style="left:51%;top:46%;width:146px;transform:rotate(-18deg)"></div>
+                        <div class="beam" style="left:51%;top:66%;width:146px;transform:rotate(18deg)"></div>
+                        <div id="packet" class="packet" style="left:20%;top:64%"></div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Etapa activa</p><p id="tripTitle" class="text-3xl font-extrabold mt-1">Cliente</p></div>
+                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Explicacion</p><p id="tripText" class="font-bold mt-1" style="color:var(--soft)">El usuario hace un pedido desde una app, una web o un juego.</p></div>
+                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Idea clave</p><p id="tripFact" class="font-bold mt-1 text-cyan-600">Todo viaje de datos empieza cuando alguien solicita algo.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid lg:grid-cols-2 gap-6">
+            <article class="card p-6">
+                <h2 class="text-3xl font-extrabold mb-4">Elegi la mejor respuesta</h2>
+                <div class="space-y-5">
+                    <div class="p-5 rounded-3xl" style="background:rgba(16,185,129,.08)">
+                        <p class="font-extrabold mb-3">¿Para que sirve una direccion IP?</p>
+                        <div class="flex flex-wrap gap-3 question" data-answer="1">
+                            <button class="chip">Para dibujar iconos</button>
+                            <button class="chip">Para ubicar un destino dentro de la red</button>
+                            <button class="chip">Para apagar el router</button>
+                        </div>
+                    </div>
+                    <div class="p-5 rounded-3xl" style="background:rgba(14,165,233,.08)">
+                        <p class="font-extrabold mb-3">¿Que hace el DNS?</p>
+                        <div class="flex flex-wrap gap-3 question" data-answer="2">
+                            <button class="chip">Rompe la señal</button>
+                            <button class="chip">Cambia el teclado</button>
+                            <button class="chip">Traduce nombres a direcciones</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="checkQuestions" class="mt-5 tool-btn" style="background:#0ea5e9">Revisar</button>
+            </article>
+            <article class="card p-6">
+                <h2 class="text-3xl font-extrabold mb-4">Comandos utiles</h2>
+                <div class="space-y-4 font-bold" style="color:var(--soft)">
+                    <div class="p-4 rounded-3xl" style="background:rgba(37,99,235,.08)"><span class="text-cyan-600 font-black">ping</span> comprueba si hay respuesta desde un destino.</div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(14,165,233,.08)"><span class="text-cyan-600 font-black">tracert</span> muestra varios saltos hasta llegar a un sitio.</div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(16,185,129,.08)"><span class="text-cyan-600 font-black">nslookup</span> ayuda a mirar datos relacionados con nombres y DNS.</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="card p-6">
+            <h2 class="text-3xl font-extrabold mb-4">Desafio final</h2>
+            <div class="grid md:grid-cols-3 gap-4 font-bold" style="color:var(--soft)">
+                <div class="p-5 rounded-3xl" style="background:rgba(16,185,129,.08)">🙋 Un alumno hace de cliente.</div>
+                <div class="p-5 rounded-3xl" style="background:rgba(14,165,233,.08)">📒 Otro hace de DNS y busca el destino.</div>
+                <div class="p-5 rounded-3xl" style="background:rgba(37,99,235,.08)">🖥️ Otro recibe como servidor y devuelve la respuesta.</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const body=document.body,themeToggle=document.getElementById('themeToggle'),fontToggle=document.getElementById('fontToggle');let large=false;
+        themeToggle.addEventListener('click',()=>{body.classList.toggle('dark-mode');themeToggle.textContent=body.classList.contains('dark-mode')?'Modo oscuro':'Modo claro';});
+        fontToggle.addEventListener('click',()=>{large=!large;body.style.fontSize=large?'19px':'';fontToggle.textContent=large?'Texto grande':'Texto normal';});
+        const states={cliente:{title:'Cliente',text:'El usuario hace un pedido desde una app, una web o un juego.',fact:'Todo viaje de datos empieza cuando alguien solicita algo.',left:'20%',top:'64%'},dns:{title:'DNS',text:'Ayuda a encontrar a que direccion corresponde el nombre escrito por la persona.',fact:'Hace de traductor entre nombres y direcciones.',left:'51%',top:'46%'},servidor:{title:'Servidor',text:'Recibe el pedido, busca la informacion y responde hacia el cliente.',fact:'La respuesta tambien viaja por la red hasta volver.',left:'80%',top:'28%'}};
+        document.querySelectorAll('.trip-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.trip-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const s=states[btn.dataset.trip];document.getElementById('tripTitle').textContent=s.title;document.getElementById('tripText').textContent=s.text;document.getElementById('tripFact').textContent=s.fact;const p=document.getElementById('packet');p.style.left=s.left;p.style.top=s.top;}));
+        document.querySelectorAll('.chip').forEach(chip=>chip.addEventListener('click',()=>{const row=chip.parentElement;row.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');}));
+        document.getElementById('checkQuestions').addEventListener('click',()=>{document.querySelectorAll('.question').forEach(q=>{const ans=Number(q.dataset.answer);q.querySelectorAll('.chip').forEach((chip,i)=>{chip.classList.remove('correct','wrong');if(i===ans){chip.classList.add('correct')}else if(chip.classList.contains('selected')){chip.classList.add('wrong')}});}));
+    </script>
+</body>
+</html>

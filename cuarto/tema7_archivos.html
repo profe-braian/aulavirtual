@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Archivos - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #60a5fa 50%, #22c55e 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.22);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --header-bg: rgba(255, 255, 255, 0.1);
+            --texto-principal: #ffffff;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #082f49 0%, #1e3a8a 50%, #14532d 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.35);
+            --tarjeta-hover: rgba(0, 0, 0, 0.45);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --header-bg: rgba(0, 0, 0, 0.35);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(14px);
+            border-radius: 24px;
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-hover {
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            background: var(--tarjeta-hover);
+        }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-5xl mx-auto pt-10 md:pt-4">
+        <header class="glass-panel p-8 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 bg-[var(--header-bg)]">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl drop-shadow-md">📁</span>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black">Gestión de Archivos</h1>
+                    <p class="text-xl font-bold text-sky-200 mt-2">Elegí la clase para practicar con carpetas y archivos</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white text-blue-900 font-black px-8 py-4 rounded-xl hover:bg-gray-100 transition shadow-lg text-lg">
+                ← Volver al Menú
+            </a>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <a href="clase6_explorador.html" class="glass-panel card-hover p-10 text-center border-2 border-transparent hover:border-sky-300">
+                <span class="text-8xl block mb-6">🗂️</span>
+                <h2 class="text-3xl font-black mb-2">Clase 1</h2>
+                <p class="text-sky-200 font-bold text-xl">El Explorador</p>
+            </a>
+
+            <a href="clase7_carpetas.html" class="glass-panel card-hover p-10 text-center border-2 border-transparent hover:border-emerald-300">
+                <span class="text-8xl block mb-6">💾</span>
+                <h2 class="text-3xl font-black mb-2">Clase 2</h2>
+                <p class="text-emerald-200 font-bold text-xl">Crear y Guardar</p>
+            </a>
+        </section>
+    </div>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
+
