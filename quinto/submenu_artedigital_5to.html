@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arte Digital - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #22c55e 0%, #38bdf8 50%, #f59e0b 100%);
+            --texto-principal: #ffffff;
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --header-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #14532d 50%, #78350f 100%);
+            --texto-principal: #e2e8f0;
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --tarjeta-hover: rgba(0, 0, 0, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(0, 0, 0, 0.4);
+        }
+
+        body, html {
+            margin: 0; padding: 0; min-height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+            transition: background 0.5s ease;
+        }
+
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.2); border: none;
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+
+        .tema-card {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .tema-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: var(--tarjeta-hover);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .tema-card-disabled {
+            opacity: 0.55;
+            pointer-events: none;
+            filter: grayscale(0.1);
+        }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="w-full max-w-5xl mx-auto pt-16 md:pt-4 space-y-12">
+        <header class="fade-up flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-8 md:p-9 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg gap-6">
+            <div class="flex items-center gap-6 text-center md:text-left">
+                <span class="text-7xl drop-shadow-lg">🎨</span>
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black drop-shadow-lg mb-2">Arte Digital</h1>
+                    <p class="text-lg md:text-xl font-bold opacity-80 text-emerald-100">Pixel art y animación para 5to grado</p>
+                </div>
+            </div>
+            <a href="index5to.html" class="mt-6 md:mt-0 bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 gap-6">
+                <div onclick="window.location.href='clase1_piskel_5to.html'" class="tema-card rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6 border-l-8 border-emerald-400">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        🟩
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-emerald-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Clase 1</span>
+                        <h3 class="text-3xl font-black mb-2 text-white drop-shadow">Piskel App</h3>
+                        <p class="font-bold opacity-90 text-lg">Entrar, dibujar con pixeles y crear una animación simple.</p>
+                    </div>
+                </div>
+
+                <div class="tema-card tema-card-disabled rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6 border-l-8 border-amber-400">
+                    <div class="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-5xl shrink-0 shadow-inner">
+                        ✨
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <span class="bg-amber-500 text-white font-black px-3 py-1 rounded-lg text-sm mb-3 inline-block shadow">Próximamente</span>
+                        <h3 class="text-3xl font-black mb-2 text-white drop-shadow">Más proyectos pixel art</h3>
+                        <p class="font-bold opacity-90 text-lg">Personajes, fondos y mini animaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const btn = document.getElementById('btnT');
+        if (localStorage.getItem('tema5to') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            btn.innerHTML = '🌙';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            btn.innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('tema5to', esOscuro ? 'oscuro' : 'claro');
+        }
+    </script>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>

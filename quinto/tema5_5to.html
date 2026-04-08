@@ -3,63 +3,637 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Avanzado - 5to Grado</title>
+    <title>Word - Mision Word - 5to Grado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
         :root {
-            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #6366f1 50%, #f472b6 100%);
-            --tarjeta-bg: rgba(255, 255, 255, 0.18);
-            --border-color: rgba(255, 255, 255, 0.28);
-            --texto-principal: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #38bdf8 0%, #22c55e 45%, #facc15 100%);
+            --card-bg: rgba(255, 255, 255, 0.22);
+            --soft-bg: rgba(255, 255, 255, 0.18);
+            --border-color: rgba(255, 255, 255, 0.35);
+            --text-main: #123047;
+            --text-soft: #38556d;
         }
+
         .dark-mode {
-            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
-            --tarjeta-bg: rgba(0, 0, 0, 0.35);
-            --border-color: rgba(255, 255, 255, 0.12);
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #14532d 45%, #1e3a8a 100%);
+            --card-bg: rgba(0, 0, 0, 0.35);
+            --soft-bg: rgba(15, 23, 42, 0.45);
+            --border-color: rgba(255, 255, 255, 0.14);
+            --text-main: #f8fafc;
+            --text-soft: #dbeafe;
         }
+
         body {
             margin: 0;
             min-height: 100vh;
             font-family: 'Quicksand', sans-serif;
-            background: var(--fondo-gradiente);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255,255,255,0.18) 0 2px, transparent 3px),
+                radial-gradient(circle at 85% 18%, rgba(255,255,255,0.14) 0 3px, transparent 4px),
+                radial-gradient(circle at 30% 75%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
+                var(--bg-gradient);
             background-attachment: fixed;
-            color: var(--texto-principal);
+            color: var(--text-main);
         }
+
         .glass-panel {
-            background: var(--tarjeta-bg);
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.14);
+        }
+
+        .soft-panel {
+            background: var(--soft-bg);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 22px;
+        }
+
+        .code-box {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 1rem 1.1rem;
+            font-family: Consolas, Monaco, monospace;
+            overflow-x: auto;
+            line-height: 1.65;
+            color: #f8fafc;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.38);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            font-weight: 800;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.75s ease forwards;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .step-line {
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .step-line::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.55rem;
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 999px;
+            background: #f97316;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.55);
+        }
+
+        .tool-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.7rem 0.95rem;
+            border-radius: 16px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.28);
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+
+        .word-sheet {
+            background: #ffffff;
+            color: #1e293b;
             border-radius: 24px;
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.18);
+            border: 10px solid #dbeafe;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+        }
+
+        .toolbar {
+            background: linear-gradient(90deg, #2563eb, #38bdf8);
+            color: white;
+            border-radius: 18px 18px 0 0;
+        }
+
+        .sim-btn {
+            border: 0;
+            border-radius: 16px;
+            padding: 0.85rem 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            background: rgba(255, 255, 255, 0.82);
+            color: #1e3a8a;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .sim-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .sim-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.28);
+        }
+
+        .sim-chip {
+            border-radius: 999px;
+            padding: 0.45rem 0.8rem;
+            font-weight: 800;
+            background: rgba(255,255,255,0.7);
+            color: #1e293b;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
-        <link rel="stylesheet" href="../shared/ui-theme.css">
+    <link rel="stylesheet" href="../shared/ui-theme.css">
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto pt-10 md:pt-4">
-        <header class="glass-panel p-8 md:p-10 text-center mb-10">
-            <div class="text-7xl mb-4">📚</div>
-            <h1 class="text-4xl md:text-5xl font-black mb-3">Word Avanzado</h1>
-            <p class="text-xl font-bold text-sky-100">5to Grado</p>
+    <div class="max-w-6xl mx-auto pt-14 md:pt-6 pb-16 space-y-8">
+
+        <header class="glass-panel p-8 md:p-10 fade-up flex flex-col lg:flex-row justify-between items-center gap-8 text-center lg:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="text-7xl md:text-8xl drop-shadow-lg">📝</div>
+                <div>
+                    <p class="pill mb-4">5to grado • Word</p>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white">Misión Word: mi página especial</h1>
+                    <p class="text-lg md:text-2xl font-bold text-emerald-50">Teoría sencilla, mucha práctica y una producción divertida.</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 text-lg font-bold">
+                <a href="index5to.html" class="bg-white/90 text-blue-900 px-6 py-3 rounded-2xl hover:bg-white transition shadow-lg">← Volver</a>
+            </div>
         </header>
-        <section class="glass-panel p-8 md:p-10 text-center space-y-6">
-            <h2 class="text-2xl md:text-3xl font-black">Sección conectada</h2>
-            <p class="text-lg md:text-xl font-bold text-white/90">Espacio preparado para agregar clases de edición y formato.</p>
-            <p class="text-base md:text-lg font-bold text-white/75">Podés volver al menú del curso y seguir navegando sin enlaces vacíos.</p>
-            <div class="pt-2">
-                <a href="index5to.html" class="inline-block bg-white text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-slate-100 transition shadow-xl">← Volver</a>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.08s;">
+            <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl md:text-4xl font-black mb-4">Vamos a usar Word para...</h2>
+                    <p class="text-lg leading-relaxed mb-5">
+                        escribir, decorar y ordenar un documento. La idea es crear una hoja linda, clara y colorida
+                        con texto e imagen.
+                    </p>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">⌨️</div>
+                            <p class="font-black">Escribir</p>
+                            <p class="text-sm">texto simple</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">🎨</div>
+                            <p class="font-black">Decorar</p>
+                            <p class="text-sm">color y tamaño</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">🖼️</div>
+                            <p class="font-black">Agregar</p>
+                            <p class="text-sm">imagen</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">💾</div>
+                            <p class="font-black">Guardar</p>
+                            <p class="text-sm">tu trabajo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Hoy vas a poder</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Escribir un título y un texto breve.</p>
+                        <p class="step-line">Cambiar fuente, tamaño y color.</p>
+                        <p class="step-line">Usar negrita, cursiva y subrayado.</p>
+                        <p class="step-line">Centrar títulos e insertar una imagen.</p>
+                        <p class="step-line">Guardar tu documento con tu nombre.</p>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.14s;">
+            <div class="grid lg:grid-cols-[1fr_0.95fr] gap-6 items-stretch">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Teoría sencilla</h2>
+                    <p class="text-lg leading-relaxed mb-5">
+                        Word es un procesador de texto. Sirve para escribir documentos, cambiar el aspecto de las letras,
+                        ordenar la información y agregar imágenes para que el trabajo quede más claro y más lindo.
+                    </p>
+                    <div class="flex flex-wrap gap-3 text-base">
+                        <span class="tool-chip">🔤 Fuente</span>
+                        <span class="tool-chip">📏 Tamaño</span>
+                        <span class="tool-chip">🌈 Color</span>
+                        <span class="tool-chip">🅱️ Negrita</span>
+                        <span class="tool-chip">✍️ Cursiva</span>
+                        <span class="tool-chip">📎 Subrayado</span>
+                        <span class="tool-chip">↔️ Alineación</span>
+                        <span class="tool-chip">🖼️ Imagen</span>
+                    </div>
+                </div>
+
+                <div class="word-sheet overflow-hidden">
+                    <div class="toolbar p-4 font-black text-lg">Microsoft Word</div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex flex-wrap gap-3 text-sm font-black">
+                            <span class="bg-blue-100 text-blue-700 px-3 py-2 rounded-xl">Fuente</span>
+                            <span class="bg-green-100 text-green-700 px-3 py-2 rounded-xl">Tamaño</span>
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-2 rounded-xl">Negrita</span>
+                            <span class="bg-pink-100 text-pink-700 px-3 py-2 rounded-xl">Cursiva</span>
+                            <span class="bg-purple-100 text-purple-700 px-3 py-2 rounded-xl">Subrayado</span>
+                        </div>
+                        <div class="border-2 border-dashed border-slate-300 rounded-2xl p-5">
+                            <h3 class="text-3xl font-black text-center text-blue-700 mb-3">Mi animal favorito</h3>
+                            <p class="text-lg font-semibold mb-2">El perro es un amigo fiel y divertido.</p>
+                            <p class="text-lg"><strong>Le gusta jugar</strong>, <em>correr</em> y <u>acompañar</u> a las personas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-sky-300" style="animation-delay: 0.32s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Herramientas que vamos a usar</h2>
+            <div class="grid md:grid-cols-3 gap-5">
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Formato de letra</h3>
+                    <p class="font-bold mb-3">Sirve para cambiar cómo se ve el texto.</p>
+                    <div class="space-y-2 text-lg font-bold">
+                        <p class="step-line">Tipo de letra</p>
+                        <p class="step-line">Tamaño</p>
+                        <p class="step-line">Color</p>
+                    </div>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Efectos de texto</h3>
+                    <p class="font-bold mb-3">Nos ayudan a destacar palabras importantes.</p>
+                    <div class="space-y-2 text-lg font-bold">
+                        <p class="step-line">Negrita</p>
+                        <p class="step-line">Cursiva</p>
+                        <p class="step-line">Subrayado</p>
+                    </div>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Orden y diseño</h3>
+                    <p class="font-bold mb-3">Hacen que el trabajo quede prolijo.</p>
+                    <div class="space-y-2 text-lg font-bold">
+                        <p class="step-line">Alinear a la izquierda</p>
+                        <p class="step-line">Centrar el título</p>
+                        <p class="step-line">Insertar imagen</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-blue-300" style="animation-delay: 0.35s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🕹️</span>
+                <h2 class="text-3xl md:text-4xl font-black">Simulador de Word</h2>
+            </div>
+            <div class="grid lg:grid-cols-[0.95fr_1.05fr] gap-6">
+                <div class="soft-panel p-6">
+                    <p class="text-lg font-bold mb-5">Probá los botones y mirá cómo cambia el texto. Podés experimentar sin miedo.</p>
+
+                    <label class="block font-black text-lg mb-2" for="simText">Escribí tu texto</label>
+                    <textarea id="simText" class="w-full rounded-2xl border border-white/40 bg-white/80 text-slate-800 p-4 text-lg font-semibold min-h-[120px] resize-none" placeholder="Escribí acá tu título o una oración...">Mi página especial en Word</textarea>
+
+                    <div class="mt-5">
+                        <label class="block font-black text-lg mb-2" for="fontFamily">Tipo de letra</label>
+                        <select id="fontFamily" class="w-full rounded-2xl border border-white/40 bg-white/85 text-slate-800 p-3 text-lg font-bold">
+                            <option value="quicksand">Quicksand</option>
+                            <option value="arial">Arial</option>
+                            <option value="comic">Comic Sans</option>
+                            <option value="georgia">Georgia</option>
+                            <option value="courier">Courier New</option>
+                            <option value="verdana">Verdana</option>
+                        </select>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4 mt-5">
+                        <div>
+                            <label class="block font-black text-lg mb-2" for="fontSize">Tamaño</label>
+                            <input id="fontSize" type="range" min="18" max="56" value="30" class="w-full">
+                            <div class="mt-2 sim-chip inline-flex" id="fontSizeValue">30 px</div>
+                        </div>
+                        <div>
+                            <label class="block font-black text-lg mb-2" for="fontColor">Color</label>
+                            <input id="fontColor" type="color" value="#2563eb" class="w-full h-14 rounded-2xl border border-white/40 bg-white/80 p-2">
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <p class="font-black text-lg mb-3">Efectos</p>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button id="boldBtn" class="sim-btn" type="button">Negrita</button>
+                            <button id="italicBtn" class="sim-btn" type="button">Cursiva</button>
+                            <button id="underlineBtn" class="sim-btn" type="button">Subrayado</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <p class="font-black text-lg mb-3">Alineación</p>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button class="sim-btn active align-btn" data-align="left" type="button">Izquierda</button>
+                            <button class="sim-btn align-btn" data-align="center" type="button">Centro</button>
+                            <button class="sim-btn align-btn" data-align="right" type="button">Derecha</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <button id="resetSim" class="sim-btn w-full !bg-amber-400 !text-slate-900" type="button">Volver al inicio</button>
+                    </div>
+                </div>
+
+                <div class="soft-panel p-6">
+                    <p class="font-black text-lg mb-4">Vista previa</p>
+                    <div class="word-sheet overflow-hidden">
+                        <div class="toolbar p-4 font-black text-lg">Tu documento</div>
+                        <div class="p-6">
+                            <div id="previewText" class="min-h-[260px] text-[30px] leading-tight break-words" style="font-family: Quicksand, sans-serif; color: #2563eb; text-align: left; font-weight: 700;">
+                                Mi página especial en Word
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-center text-base font-black">
+                        <div class="soft-panel p-3">Probá combinar color + tamaño</div>
+                        <div class="soft-panel p-3">Después sumá negrita o subrayado</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.38s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Práctica 1: texto con poderes</h2>
+            <div class="grid lg:grid-cols-[1fr_0.95fr] gap-6">
+                <div class="soft-panel p-6">
+                    <p class="text-lg mb-4">Copiá este texto en Word y después aplicá los cambios pedidos.</p>
+                    <div class="code-box text-sky-100 text-base md:text-lg">
+Mi animal favorito<br>
+<br>
+Mi animal favorito es el perro.<br>
+Es un compañero fiel, juguetón y cariñoso.<br>
+Me gusta porque puede correr, jugar y acompañar a las personas.
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Consignas</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Poner el título en tamaño 20 o más.</p>
+                        <p class="step-line">Centrar el título.</p>
+                        <p class="step-line">Cambiar el color del título.</p>
+                        <p class="step-line">Poner una palabra en negrita.</p>
+                        <p class="step-line">Otra en cursiva.</p>
+                        <p class="step-line">Otra subrayada.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-amber-300" style="animation-delay: 0.44s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🎯</span>
+                <h2 class="text-3xl md:text-4xl font-black">Práctica 2: cartel creativo</h2>
+            </div>
+            <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Tema 1</h3>
+                    <p class="font-bold text-lg">Cuidemos el agua</p>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Tema 2</h3>
+                    <p class="font-bold text-lg">Mi escuela</p>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Tema 3</h3>
+                    <p class="font-bold text-lg">Comer saludable</p>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Tema 4</h3>
+                    <p class="font-bold text-lg">Animales en peligro</p>
+                </div>
+            </div>
+            <div class="soft-panel p-6 mt-6">
+                <h3 class="text-2xl font-black mb-4">El cartel debe tener</h3>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-lg font-bold">
+                    <p class="step-line">Un título centrado.</p>
+                    <p class="step-line">Dos colores.</p>
+                    <p class="step-line">Una palabra en negrita.</p>
+                    <p class="step-line">Una palabra subrayada.</p>
+                    <p class="step-line">Dos oraciones.</p>
+                    <p class="step-line">Una imagen.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.5s;">
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Mini teoría: insertar imagen</h2>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Ir a la pestaña Insertar.</p>
+                        <p class="step-line">Elegir Imagen.</p>
+                        <p class="step-line">Buscar el archivo.</p>
+                        <p class="step-line">Cambiar el tamaño desde las esquinas.</p>
+                        <p class="step-line">Ubicarla sin tapar el texto.</p>
+                    </div>
+                    <div class="mt-5 bg-yellow-300/25 border border-yellow-300/40 rounded-2xl p-4 font-bold">
+                        Consejo: no estirar la imagen desde los costados para que no se deforme.
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Mini teoría: guardar el archivo</h2>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Archivo → Guardar como.</p>
+                        <p class="step-line">Elegir la carpeta correcta.</p>
+                        <p class="step-line">Escribir un nombre claro.</p>
+                        <p class="step-line">Ejemplo: apellido_nombre_word.</p>
+                    </div>
+                    <div class="mt-5 bg-emerald-300/25 border border-emerald-300/40 rounded-2xl p-4 font-bold">
+                        Guardar seguido evita perder el trabajo.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-pink-300" style="animation-delay: 0.56s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Producción principal: Mi página especial</h2>
+            <div class="grid lg:grid-cols-[1fr_0.95fr] gap-6">
+                <div class="soft-panel p-6">
+                    <p class="text-lg mb-4">
+                        Cada estudiante va a crear una hoja especial sobre un tema que le guste. La idea es combinar
+                        texto, colores, formato e imagen para que el trabajo quede bonito y ordenado.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-3 font-bold text-lg">
+                        <div class="soft-panel p-4">🐶 Mi animal favorito</div>
+                        <div class="soft-panel p-4">⚽ Mi deporte favorito</div>
+                        <div class="soft-panel p-4">🍕 Mi comida favorita</div>
+                        <div class="soft-panel p-4">🌈 Un lugar que me gusta</div>
+                        <div class="soft-panel p-4">🎉 Mi mejor día</div>
+                        <div class="soft-panel p-4">📚 Mi personaje favorito</div>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Debe incluir</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Título grande y centrado.</p>
+                        <p class="step-line">Texto de al menos 5 oraciones.</p>
+                        <p class="step-line">Distintos formatos de letra.</p>
+                        <p class="step-line">Una imagen.</p>
+                        <p class="step-line">Nombre del estudiante al final.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.62s;">
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Consigna para copiar</h2>
+                    <div class="code-box text-emerald-100 text-base md:text-lg">
+CLASE DE WORD<br>
+<br>
+1. Escribí un título grande y centrado.<br>
+2. Escribí un texto de 5 oraciones.<br>
+3. Cambiá color, tamaño y tipo de letra.<br>
+4. Usá negrita, cursiva y subrayado.<br>
+5. Insertá una imagen.<br>
+6. Guardá el archivo con tu nombre.
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Para quienes terminan antes</h2>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Agregar un borde con símbolos.</p>
+                        <p class="step-line">Insertar una segunda imagen.</p>
+                        <p class="step-line">Escribir 3 datos curiosos más.</p>
+                        <p class="step-line">Cambiar el color del título otra vez para mejorarlo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.68s;">
+            <div class="soft-panel p-6 text-center">
+                <h2 class="text-3xl font-black mb-4">Antes de terminar</h2>
+                <div class="space-y-3 text-lg font-bold">
+                    <p class="step-line text-left">Mostrá tu trabajo a un compañero o compañera.</p>
+                    <p class="step-line text-left">Contá qué herramienta te gustó más usar.</p>
+                    <p class="step-line text-left">No te olvides de guardar el archivo.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="glass-panel p-6 md:p-8 fade-up text-center" style="animation-delay: 0.74s;">
+            <p class="text-lg md:text-xl font-bold">Objetivo cumplido si al final de la clase cada estudiante tiene una página escrita, decorada, con imagen y guardada correctamente.</p>
+        </footer>
     </div>
     <script>
-        if (localStorage.getItem('modo') === 'oscuro') {
-            document.body.classList.add('dark-mode');
+        const simText = document.getElementById('simText');
+        const previewText = document.getElementById('previewText');
+        const fontFamily = document.getElementById('fontFamily');
+        const fontSize = document.getElementById('fontSize');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        const fontColor = document.getElementById('fontColor');
+        const boldBtn = document.getElementById('boldBtn');
+        const italicBtn = document.getElementById('italicBtn');
+        const underlineBtn = document.getElementById('underlineBtn');
+        const alignButtons = document.querySelectorAll('.align-btn');
+        const resetSim = document.getElementById('resetSim');
+        const fontMap = {
+            quicksand: 'Quicksand, sans-serif',
+            arial: 'Arial, Helvetica, sans-serif',
+            comic: '"Comic Sans MS", "Comic Sans", cursive',
+            georgia: 'Georgia, "Times New Roman", serif',
+            courier: '"Courier New", Courier, monospace',
+            verdana: 'Verdana, Geneva, sans-serif'
+        };
+
+        const simState = {
+            bold: false,
+            italic: false,
+            underline: false,
+            align: 'left'
+        };
+
+        function updatePreview() {
+            previewText.textContent = simText.value || 'Escribí algo para probar';
+            previewText.style.fontFamily = fontMap[fontFamily.value] || fontMap.quicksand;
+            previewText.style.fontSize = fontSize.value + 'px';
+            previewText.style.color = fontColor.value;
+            previewText.style.fontWeight = simState.bold ? '900' : '700';
+            previewText.style.fontStyle = simState.italic ? 'italic' : 'normal';
+            previewText.style.textDecoration = simState.underline ? 'underline' : 'none';
+            previewText.style.textAlign = simState.align;
+            fontSizeValue.textContent = fontSize.value + ' px';
         }
+
+        function toggleActive(button, isActive) {
+            button.classList.toggle('active', isActive);
+        }
+
+        simText.addEventListener('input', updatePreview);
+        fontFamily.addEventListener('change', updatePreview);
+        fontFamily.addEventListener('input', updatePreview);
+        fontSize.addEventListener('input', updatePreview);
+        fontColor.addEventListener('input', updatePreview);
+
+        boldBtn.addEventListener('click', () => {
+            simState.bold = !simState.bold;
+            toggleActive(boldBtn, simState.bold);
+            updatePreview();
+        });
+
+        italicBtn.addEventListener('click', () => {
+            simState.italic = !simState.italic;
+            toggleActive(italicBtn, simState.italic);
+            updatePreview();
+        });
+
+        underlineBtn.addEventListener('click', () => {
+            simState.underline = !simState.underline;
+            toggleActive(underlineBtn, simState.underline);
+            updatePreview();
+        });
+
+        alignButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                simState.align = button.dataset.align;
+                alignButtons.forEach((btn) => btn.classList.remove('active'));
+                button.classList.add('active');
+                updatePreview();
+            });
+        });
+
+        resetSim.addEventListener('click', () => {
+            simText.value = 'Mi pagina especial en Word';
+            fontFamily.value = 'quicksand';
+            fontSize.value = 30;
+            fontColor.value = '#2563eb';
+            simState.bold = false;
+            simState.italic = false;
+            simState.underline = false;
+            simState.align = 'left';
+            boldBtn.classList.remove('active');
+            italicBtn.classList.remove('active');
+            underlineBtn.classList.remove('active');
+            alignButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.align === 'left'));
+            updatePreview();
+        });
+
+        updatePreview();
     </script>
-        <script src="../shared/ui-theme.js" defer></script>
+    <script src="../shared/ui-theme.js" defer></script>
 </body>
 </html>
-
-
-

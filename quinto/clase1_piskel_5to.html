@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piskel App - 5to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #22c55e 0%, #38bdf8 45%, #f59e0b 100%);
+            --card-bg: rgba(255, 255, 255, 0.22);
+            --soft-bg: rgba(255, 255, 255, 0.18);
+            --border-color: rgba(255, 255, 255, 0.34);
+            --text-main: #123047;
+        }
+
+        .dark-mode {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #14532d 45%, #78350f 100%);
+            --card-bg: rgba(0, 0, 0, 0.35);
+            --soft-bg: rgba(15, 23, 42, 0.45);
+            --border-color: rgba(255, 255, 255, 0.14);
+            --text-main: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background:
+                radial-gradient(circle at 14% 20%, rgba(255,255,255,0.18) 0 2px, transparent 3px),
+                radial-gradient(circle at 84% 22%, rgba(255,255,255,0.12) 0 3px, transparent 4px),
+                radial-gradient(circle at 28% 78%, rgba(255,255,255,0.1) 0 2px, transparent 3px),
+                var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.14);
+        }
+
+        .soft-panel {
+            background: var(--soft-bg);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 22px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.38);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            font-weight: 800;
+        }
+
+        .code-box {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 1rem 1.1rem;
+            font-family: Consolas, Monaco, monospace;
+            overflow-x: auto;
+            line-height: 1.65;
+            color: #f8fafc;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.75s ease forwards;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .step-line {
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .step-line::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.55rem;
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 999px;
+            background: #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+        }
+
+        .pixel-demo {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            max-width: 230px;
+            margin: 0 auto;
+        }
+
+        .pixel-demo span {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.25);
+        }
+
+        .pixel-black { background: #111827 !important; }
+        .pixel-green { background: #22c55e !important; }
+        .pixel-blue { background: #38bdf8 !important; }
+        .pixel-red { background: #ef4444 !important; }
+        .pixel-yellow { background: #facc15 !important; }
+
+        .frame-box {
+            border: 3px dashed rgba(255,255,255,0.45);
+            border-radius: 20px;
+            padding: 1rem;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto pt-14 md:pt-6 pb-16 space-y-8">
+        <header class="glass-panel p-8 md:p-10 fade-up flex flex-col lg:flex-row justify-between items-center gap-8 text-center lg:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="text-7xl md:text-8xl drop-shadow-lg">🟩</div>
+                <div>
+                    <p class="pill mb-4">5to grado • Arte Digital • Clase 1</p>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white">Piskel App</h1>
+                    <p class="text-lg md:text-2xl font-bold text-emerald-50">Entrar, dibujar con pixeles y hacer una animación simple.</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 text-lg font-bold">
+                <a href="submenu_artedigital_5to.html" class="bg-white/90 text-blue-900 px-6 py-3 rounded-2xl hover:bg-white transition shadow-lg">← Volver</a>
+                <a href="https://www.piskelapp.com/" target="_blank" rel="noopener noreferrer" class="bg-black/15 text-white px-6 py-3 rounded-2xl hover:bg-black/25 transition border border-white/20">Abrir Piskel</a>
+            </div>
+        </header>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.08s;">
+            <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl md:text-4xl font-black mb-4">¿Qué es Piskel?</h2>
+                    <p class="text-lg leading-relaxed mb-5">
+                        Piskel es una app para crear dibujos con píxeles. Un píxel es un cuadradito de color. Muchos
+                        cuadraditos juntos forman personajes, objetos y animaciones.
+                    </p>
+                    <div class="grid sm:grid-cols-3 gap-3">
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">🟦</div>
+                            <p class="font-black">Pixel</p>
+                            <p class="text-sm">un cuadradito</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">🎨</div>
+                            <p class="font-black">Dibujo</p>
+                            <p class="text-sm">con pocos colores</p>
+                        </div>
+                        <div class="soft-panel p-4 text-center">
+                            <div class="text-3xl mb-2">🎞️</div>
+                            <p class="font-black">Animación</p>
+                            <p class="text-sm">varios cuadros</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Hoy vamos a aprender a...</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Entrar a Piskel App.</p>
+                        <p class="step-line">Crear un dibujo pixelado simple.</p>
+                        <p class="step-line">Usar lápiz, goma y colores.</p>
+                        <p class="step-line">Hacer una animación básica de 2 o 3 cuadros.</p>
+                        <p class="step-line">Guardar o descargar el trabajo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.14s;">
+            <div class="grid md:grid-cols-4 gap-4">
+                <article class="glass-panel p-5 border-l-8 border-sky-400">
+                    <h3 class="text-xl font-black mb-2">Paso 1</h3>
+                    <p>Entrar a [piskelapp.com]</p>
+                </article>
+                <article class="glass-panel p-5 border-l-8 border-emerald-400">
+                    <h3 class="text-xl font-black mb-2">Paso 2</h3>
+                    <p>Crear un sprite nuevo.</p>
+                </article>
+                <article class="glass-panel p-5 border-l-8 border-amber-400">
+                    <h3 class="text-xl font-black mb-2">Paso 3</h3>
+                    <p>Dibujar pixel por pixel.</p>
+                </article>
+                <article class="glass-panel p-5 border-l-8 border-pink-400">
+                    <h3 class="text-xl font-black mb-2">Paso 4</h3>
+                    <p>Agregar cuadros para animar.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Cómo entrar a Piskel</h2>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="soft-panel p-6">
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Abrí el navegador.</p>
+                        <p class="step-line">Escribí `www.piskelapp.com`.</p>
+                        <p class="step-line">Tocá `Create Sprite` o `Create New Sprite`.</p>
+                        <p class="step-line">Elegí un tamaño simple, por ejemplo 32 x 32.</p>
+                        <p class="step-line">Ya podés empezar a dibujar.</p>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Herramientas principales</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Lápiz: para pintar píxeles.</p>
+                        <p class="step-line">Goma: para borrar.</p>
+                        <p class="step-line">Balde: para rellenar una zona.</p>
+                        <p class="step-line">Selector de color: para cambiar color.</p>
+                        <p class="step-line">Frames: para hacer animación.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-emerald-300" style="animation-delay: 0.26s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Ejemplo de pixel art</h2>
+            <div class="grid lg:grid-cols-[0.95fr_1.05fr] gap-6 items-center">
+                <div class="soft-panel p-6 text-center">
+                    <p class="font-black text-lg mb-4">Carita simple</p>
+                    <div class="pixel-demo">
+                        <span></span><span></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span></span><span></span>
+                        <span></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span></span>
+                        <span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-black"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-black"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span>
+                        <span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span>
+                        <span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-red"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-red"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span>
+                        <span></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-black"></span><span class="pixel-black"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span></span>
+                        <span></span><span></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span></span><span></span>
+                        <span></span><span></span><span></span><span class="pixel-yellow"></span><span class="pixel-yellow"></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Guía paso a paso</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Elegí un lienzo chico para que sea fácil.</p>
+                        <p class="step-line">Dibujá primero el contorno.</p>
+                        <p class="step-line">Después pintá adentro con el color principal.</p>
+                        <p class="step-line">Agregá ojos o detalles con pocos píxeles.</p>
+                        <p class="step-line">Si algo no te gusta, usá la goma.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.32s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Cómo hacer una animación simple</h2>
+            <div class="grid lg:grid-cols-3 gap-6">
+                <div class="soft-panel p-6 frame-box">
+                    <p class="font-black text-xl mb-3">Frame 1</p>
+                    <div class="pixel-demo">
+                        <span></span><span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span><span></span>
+                        <span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span>
+                        <span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-black"></span><span class="pixel-blue"></span><span class="pixel-black"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span>
+                        <span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span>
+                        <span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span>
+                        <span></span><span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span class="pixel-blue"></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="soft-panel p-6 frame-box">
+                    <p class="font-black text-xl mb-3">Frame 2</p>
+                    <div class="pixel-demo">
+                        <span></span><span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span><span></span>
+                        <span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span>
+                        <span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-black"></span><span class="pixel-blue"></span><span class="pixel-black"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span>
+                        <span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span>
+                        <span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span>
+                        <span></span><span></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span class="pixel-blue"></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span class="pixel-blue"></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h3 class="text-2xl font-black mb-4">Pasos</h3>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Terminá el primer dibujo.</p>
+                        <p class="step-line">Duplicá el frame.</p>
+                        <p class="step-line">Cambiá un detalle chiquito.</p>
+                        <p class="step-line">Repetí con 2 o 3 cuadros.</p>
+                        <p class="step-line">Probá el botón play para ver la animación.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-t-8 border-amber-300" style="animation-delay: 0.38s;">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">🎯</span>
+                <h2 class="text-3xl md:text-4xl font-black">Práctica en clase</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-5">
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Desafío 1</h3>
+                    <p class="font-bold text-lg">Creá un dibujo simple: una carita, fruta o corazón.</p>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Desafío 2</h3>
+                    <p class="font-bold text-lg">Usá al menos 3 colores diferentes.</p>
+                </div>
+                <div class="soft-panel p-5">
+                    <h3 class="text-2xl font-black mb-3">Desafío 3</h3>
+                    <p class="font-bold text-lg">Hacé una mini animación con 2 o 3 frames.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.44s;">
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Consigna para copiar</h2>
+                    <div class="code-box text-emerald-100 text-base md:text-lg">
+PISKEL APP<br>
+<br>
+1. Entrar a piskelapp.com<br>
+2. Crear un sprite nuevo<br>
+3. Dibujar con pixeles una figura simple<br>
+4. Usar al menos 3 colores<br>
+5. Agregar 2 o 3 frames<br>
+6. Ver la animacion
+                    </div>
+                </div>
+                <div class="soft-panel p-6">
+                    <h2 class="text-3xl font-black mb-4">Consejos</h2>
+                    <div class="space-y-3 text-lg font-bold">
+                        <p class="step-line">Empezá con dibujos chicos y fáciles.</p>
+                        <p class="step-line">No uses demasiados colores al principio.</p>
+                        <p class="step-line">Cambiá solo un detalle por frame.</p>
+                        <p class="step-line">Guardá o descargá tu trabajo al final.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="glass-panel p-6 md:p-8 fade-up text-center" style="animation-delay: 0.5s;">
+            <p class="text-lg md:text-xl font-bold">Misión cumplida si lográs entrar a Piskel, hacer un dibujo pixelado y probar una animación sencilla.</p>
+        </footer>
+    </div>
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
