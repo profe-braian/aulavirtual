@@ -7,22 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
-        :root{--hero:linear-gradient(135deg,#7c3aed 0%,#ec4899 52%,#f97316 100%);--bg:linear-gradient(180deg,#fff8fb 0%,#f8f1ff 100%);--card:rgba(255,255,255,.95);--border:rgba(236,72,153,.12);--text:#3b0764;--soft:#6b4d78}
-        .dark-mode{--hero:linear-gradient(135deg,#312e81 0%,#831843 52%,#7c2d12 100%);--bg:linear-gradient(180deg,#111827 0%,#1f2937 100%);--card:rgba(17,24,39,.84);--border:rgba(255,255,255,.08);--text:#f5d0fe;--soft:#e9d5ff}
+        :root{--hero:linear-gradient(135deg,#7c3aed 0%,#ec4899 52%,#f97316 100%);--bg:linear-gradient(180deg,#fff8fb 0%,#f8f1ff 100%);--card:rgba(255,255,255,.95);--border:rgba(236,72,153,.12);--text:#3b0764;--soft:#6b4d78;--soft-bg:rgba(255,255,255,.72)}
+        .dark-mode{--hero:linear-gradient(135deg,#312e81 0%,#831843 52%,#7c2d12 100%);--bg:linear-gradient(180deg,#111827 0%,#1f2937 100%);--card:rgba(17,24,39,.84);--border:rgba(255,255,255,.08);--text:#f5d0fe;--soft:#e9d5ff;--soft-bg:rgba(31,41,55,.82)}
         html,body{margin:0;min-height:100%;font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text)}
-        .hero{background:var(--hero);color:#fff}.card{background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:0 20px 40px rgba(236,72,153,.12)}
-        .pill,.tool-btn{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;font-weight:900}
+        .hero{background:var(--hero);color:#fff}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:0 20px 40px rgba(236,72,153,.12)}
+        .pill,.tool-btn,.mini-pill{display:inline-flex;align-items:center;gap:.45rem;border-radius:999px;font-weight:900}
         .pill{padding:.65rem 1rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.18)}
+        .mini-pill{padding:.45rem .8rem;background:rgba(236,72,153,.08);color:var(--text)}
         .tool-btn{padding:.8rem 1rem;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.14);color:#fff}
         .ghost-btn{border-radius:999px;background:rgba(255,255,255,.94);color:#7c2d12;padding:.9rem 1.2rem;font-weight:900}
         .icon{width:78px;height:78px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff}
-        .diagram{min-height:340px;position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,rgba(244,114,182,.1),rgba(249,115,22,.08));border:1px solid var(--border)}
+        .diagram{min-height:360px;position:relative;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,rgba(244,114,182,.1),rgba(249,115,22,.08));border:1px solid var(--border)}
         .piece{position:absolute;width:124px;height:92px;border-radius:22px;background:rgba(255,255,255,.9);color:#6b21a8;border:2px solid rgba(236,72,153,.14);display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;box-shadow:0 12px 24px rgba(236,72,153,.14)}
         .dark-mode .piece{background:rgba(31,41,55,.92);color:#f5d0fe;border-color:rgba(255,255,255,.09)}
         .beam{position:absolute;height:4px;border-radius:999px;background:linear-gradient(90deg,#f97316,#ec4899,#8b5cf6)}
         .packet{position:absolute;width:18px;height:18px;border-radius:50%;background:#fde047;box-shadow:0 0 0 8px rgba(253,224,71,.18);transition:all .35s ease}
+        .option-btn,.choice-btn{width:100%;text-align:left;border-radius:16px;border:2px solid rgba(236,72,153,.15);background:var(--soft-bg);color:var(--text);padding:.9rem 1rem;font-weight:800}
+        .choice-btn{width:auto;cursor:pointer}
+        .option-btn.selected,.choice-btn.selected{background:rgba(236,72,153,.12)}
+        .option-btn.good,.choice-btn.good,.select-box.good{border-color:#22c55e!important}
+        .option-btn.bad,.choice-btn.bad,.select-box.bad{border-color:#f59e0b!important}
         .select-box{width:100%;border-radius:14px;border:2px solid rgba(236,72,153,.18);background:#fff;color:#7c2d12;padding:.8rem 1rem;font-weight:800}
-        .good{border-color:#22c55e!important}.bad{border-color:#f59e0b!important}
+        .dark-mode .select-box{background:#f3e8ff}
+        .sortable-item{display:flex;align-items:center;gap:.8rem;padding:1rem 1.1rem;border-radius:20px;background:var(--soft-bg);border:2px solid rgba(236,72,153,.12);font-weight:900}
+        .move-btn{border:none;border-radius:999px;padding:.45rem .75rem;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:900}
+        .match-grid{display:grid;grid-template-columns:1fr;gap:12px}
+        .match-row{display:grid;grid-template-columns:1fr;gap:10px;padding:1rem;border-radius:20px;background:var(--soft-bg);border:2px solid rgba(236,72,153,.12)}
+        .match-row.good{border-color:#22c55e}
+        .match-row.bad{border-color:#f59e0b}
+        @media (min-width: 900px){.match-grid{grid-template-columns:1fr 1fr}}
     </style>
 </head>
 <body>
@@ -30,100 +44,499 @@
         <div class="max-w-6xl mx-auto px-4 py-6 md:py-8">
             <div class="flex flex-wrap justify-between gap-3 mb-10">
                 <a href="tema1_7mo.html" class="ghost-btn no-underline">← Volver a Redes</a>
-                <div class="flex gap-3 flex-wrap"><button id="themeToggle" class="tool-btn">Modo claro</button><button id="fontToggle" class="tool-btn">Texto normal</button></div>
+                <div class="flex gap-3 flex-wrap">
+                    <button id="themeToggle" class="tool-btn">Modo claro</button>
+                    <button id="fontToggle" class="tool-btn">Texto normal</button>
+                </div>
             </div>
             <div class="max-w-4xl mx-auto text-center pb-16">
                 <div class="pill mb-5">🧩 Clase 2 · Las Piezas de una Red</div>
-                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Armar la red paso a paso</h1>
-                <p class="text-lg md:text-xl font-bold text-white/85 max-w-3xl mx-auto mb-8">En esta clase conocemos los componentes que hacen posible una red: tarjeta de red, cables, hub, switch, router y wifi.</p>
-                <div class="flex flex-wrap justify-center gap-5 text-sm md:text-base font-bold text-white/80"><span>💳 NIC</span><span>🔌 Cables y fibra</span><span>🧷 Hub/Switch/Router</span><span>📶 Wifi</span></div>
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Conectando cada pieza</h1>
+                <p class="text-lg md:text-xl font-bold text-white/85 max-w-3xl mx-auto mb-8">En esta clase vas a reconocer la tarjeta de red, la direccion MAC, los cables, el hub, el switch, el router y el WiFi. Tambien hay actividades para practicar todo.</p>
+                <div class="flex flex-wrap justify-center gap-5 text-sm md:text-base font-bold text-white/80">
+                    <span>💳 Tarjeta de red</span>
+                    <span>🔌 RJ45 y fibra</span>
+                    <span>🧠 Hub, switch y router</span>
+                    <span>📶 WiFi</span>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
         <section class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
-            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">💳</div><h2 class="text-2xl font-extrabold mb-2">Tarjeta de red</h2><p class="font-bold" style="color:var(--soft)">Permite que un equipo pueda conectarse y enviar o recibir datos.</p></article>
-            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#f97316,#ef4444)">🔌</div><h2 class="text-2xl font-extrabold mb-2">Cable</h2><p class="font-bold" style="color:var(--soft)">Transporta la señal por un camino fisico. Puede ser cobre o fibra optica.</p></article>
-            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#06b6d4,#2563eb)">🧷</div><h2 class="text-2xl font-extrabold mb-2">Switch</h2><p class="font-bold" style="color:var(--soft)">Ordena mejor el trafico y envia la informacion al destino correcto.</p></article>
-            <article class="card p-6"><div class="icon mb-4" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">📶</div><h2 class="text-2xl font-extrabold mb-2">Wifi</h2><p class="font-bold" style="color:var(--soft)">Conecta sin cables usando señal inalambrica. Depende de la distancia y las paredes.</p></article>
+            <article class="card p-6">
+                <div class="icon mb-4" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">💳</div>
+                <h2 class="text-2xl font-extrabold mb-2">Tarjeta de red</h2>
+                <p class="font-bold" style="color:var(--soft)">Es la parte que le permite a la compu conectarse a una red y comunicarse con otras maquinas.</p>
+            </article>
+            <article class="card p-6">
+                <div class="icon mb-4" style="background:linear-gradient(135deg,#f97316,#ef4444)">🪪</div>
+                <h2 class="text-2xl font-extrabold mb-2">Direccion MAC</h2>
+                <p class="font-bold" style="color:var(--soft)">Cada tarjeta de red tiene un identificador unico. Es como el DNI de esa tarjeta.</p>
+            </article>
+            <article class="card p-6">
+                <div class="icon mb-4" style="background:linear-gradient(135deg,#06b6d4,#2563eb)">🔌</div>
+                <h2 class="text-2xl font-extrabold mb-2">Cables</h2>
+                <p class="font-bold" style="color:var(--soft)">La red puede viajar por cable RJ45 con senales electricas o por fibra optica usando luz.</p>
+            </article>
+            <article class="card p-6">
+                <div class="icon mb-4" style="background:linear-gradient(135deg,#22c55e,#14b8a6)">📶</div>
+                <h2 class="text-2xl font-extrabold mb-2">WiFi</h2>
+                <p class="font-bold" style="color:var(--soft)">Conecta sin cables con ondas invisibles y usa un nombre de red llamado SSID.</p>
+            </article>
         </section>
 
         <section class="card p-6 md:p-8">
             <div class="grid lg:grid-cols-[1.08fr_.92fr] gap-6 items-start">
                 <div>
-                    <h2 class="text-3xl font-extrabold mb-3">Grafico interactivo de componentes</h2>
-                    <p class="font-bold mb-4" style="color:var(--soft)">Cambia la pieza para ver como participa dentro de una red.</p>
+                    <div class="mini-pill mb-4">Interactivo</div>
+                    <h2 class="text-3xl font-extrabold mb-3">Como se arma una red</h2>
+                    <p class="font-bold mb-4" style="color:var(--soft)">Elegi una pieza para ver su lugar dentro de una red simple de aula o casa.</p>
                     <div class="flex flex-wrap gap-3 mb-4">
-                        <button class="tool-btn piece-btn active" data-piece="nic" style="background:#8b5cf6">NIC</button>
+                        <button class="tool-btn piece-btn active" data-piece="nic" style="background:#8b5cf6">Tarjeta</button>
                         <button class="tool-btn piece-btn" data-piece="switch" style="background:#ec4899">Switch</button>
                         <button class="tool-btn piece-btn" data-piece="router" style="background:#f97316">Router</button>
+                        <button class="tool-btn piece-btn" data-piece="wifi" style="background:#14b8a6">WiFi</button>
                     </div>
                     <div class="diagram">
-                        <div class="piece" style="left:8%;top:56%">PC</div>
-                        <div class="piece" style="left:39%;top:36%">SWITCH</div>
-                        <div class="piece" style="left:71%;top:20%">ROUTER</div>
-                        <div class="piece" style="left:71%;top:66%">INTERNET</div>
-                        <div class="beam" style="left:20%;top:66%;width:150px;transform:rotate(-15deg)"></div>
-                        <div class="beam" style="left:51%;top:46%;width:145px;transform:rotate(-18deg)"></div>
-                        <div class="beam" style="left:51%;top:64%;width:145px;transform:rotate(18deg)"></div>
-                        <div id="packet" class="packet" style="left:20%;top:62%"></div>
+                        <div class="piece" style="left:8%;top:60%">PC</div>
+                        <div class="piece" style="left:36%;top:40%">SWITCH</div>
+                        <div class="piece" style="left:67%;top:22%">ROUTER</div>
+                        <div class="piece" style="left:68%;top:69%">WIFI</div>
+                        <div class="beam" style="left:20%;top:68%;width:130px;transform:rotate(-16deg)"></div>
+                        <div class="beam" style="left:48%;top:50%;width:142px;transform:rotate(-20deg)"></div>
+                        <div class="beam" style="left:48%;top:66%;width:146px;transform:rotate(18deg)"></div>
+                        <div id="packet" class="packet" style="left:20%;top:64%"></div>
                     </div>
                 </div>
                 <div class="space-y-4">
-                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Pieza activa</p><p id="pieceTitle" class="text-3xl font-extrabold mt-1">NIC</p></div>
-                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Funcion</p><p id="pieceText" class="font-bold mt-1" style="color:var(--soft)">Es la puerta de entrada y salida de datos en el equipo.</p></div>
-                    <div class="card p-5"><p class="text-sm uppercase tracking-wide opacity-70">Idea clave</p><p id="pieceFact" class="font-bold mt-1 text-fuchsia-600">Sin esta pieza, la computadora no participa de la red.</p></div>
+                    <div class="card p-5">
+                        <p class="text-sm uppercase tracking-wide opacity-70">Pieza activa</p>
+                        <p id="pieceTitle" class="text-3xl font-extrabold mt-1">Tarjeta de red</p>
+                    </div>
+                    <div class="card p-5">
+                        <p class="text-sm uppercase tracking-wide opacity-70">Funcion</p>
+                        <p id="pieceText" class="font-bold mt-1" style="color:var(--soft)">Es la puerta de entrada y salida de datos del equipo.</p>
+                    </div>
+                    <div class="card p-5">
+                        <p class="text-sm uppercase tracking-wide opacity-70">Idea clave</p>
+                        <p id="pieceFact" class="font-bold mt-1 text-fuchsia-600">Sin tarjeta de red, la computadora no puede participar de la red.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="grid lg:grid-cols-2 gap-6">
             <article class="card p-6">
-                <h2 class="text-3xl font-extrabold mb-4">Hub, switch y router</h2>
+                <div class="mini-pill mb-4">Concepto</div>
+                <h2 class="text-3xl font-extrabold mb-4">La tarjeta de red y la MAC</h2>
                 <div class="space-y-4">
-                    <div class="p-4 rounded-3xl" style="background:rgba(249,115,22,.08)"><p class="font-extrabold text-xl mb-1">Hub</p><p class="font-bold" style="color:var(--soft)">Repite a todos. Es simple, pero menos eficiente.</p></div>
-                    <div class="p-4 rounded-3xl" style="background:rgba(236,72,153,.08)"><p class="font-extrabold text-xl mb-1">Switch</p><p class="font-bold" style="color:var(--soft)">Organiza y manda al destino correcto. Es mas inteligente que un hub.</p></div>
-                    <div class="p-4 rounded-3xl" style="background:rgba(139,92,246,.08)"><p class="font-extrabold text-xl mb-1">Router</p><p class="font-bold" style="color:var(--soft)">Conecta redes distintas y dirige el trafico hacia fuera o hacia dentro.</p></div>
+                    <div class="p-5 rounded-3xl" style="background:rgba(139,92,246,.08)">
+                        <p class="font-extrabold text-xl mb-2">Tarjeta de red</p>
+                        <p class="font-bold" style="color:var(--soft)">Le permite a la compu conectarse a una red. Puede estar conectada por cable o de forma inalambrica.</p>
+                    </div>
+                    <div class="p-5 rounded-3xl" style="background:rgba(236,72,153,.08)">
+                        <p class="font-extrabold text-xl mb-2">Direccion MAC</p>
+                        <p class="font-bold" style="color:var(--soft)">Cada tarjeta tiene una direccion MAC unica. No se repite y sirve para identificarla dentro de la red.</p>
+                    </div>
+                    <div class="p-5 rounded-3xl" style="background:rgba(249,115,22,.08)">
+                        <p class="font-black mb-2">Comparacion simple</p>
+                        <p class="font-bold" style="color:var(--soft)">La tarjeta de red es como tu carnet para entrar. La MAC es el numero unico escrito en ese carnet.</p>
+                    </div>
                 </div>
             </article>
             <article class="card p-6">
-                <h2 class="text-3xl font-extrabold mb-4">Wifi y señal</h2>
-                <div class="grid sm:grid-cols-2 gap-4">
-                    <div class="p-5 rounded-3xl" style="background:rgba(34,197,94,.08)"><div class="text-4xl mb-3">📶</div><p class="font-extrabold text-xl mb-2">Ventaja</p><p class="font-bold" style="color:var(--soft)">Permite moverse sin estar atado a un cable.</p></div>
-                    <div class="p-5 rounded-3xl" style="background:rgba(14,165,233,.08)"><div class="text-4xl mb-3">🧱</div><p class="font-extrabold text-xl mb-2">Limite</p><p class="font-bold" style="color:var(--soft)">Las paredes, distancia e interferencias pueden bajar la calidad.</p></div>
+                <div class="mini-pill mb-4">Actividad</div>
+                <h2 class="text-3xl font-extrabold mb-4">Verdadero o falso</h2>
+                <div class="space-y-4">
+                    <div class="vf" data-answer="v">
+                        <p class="font-black mb-2">La tarjeta de red permite que una computadora se conecte a una red.</p>
+                        <div class="flex gap-3"><button class="choice-btn">V</button><button class="choice-btn">F</button></div>
+                    </div>
+                    <div class="vf" data-answer="v">
+                        <p class="font-black mb-2">La direccion MAC es unica para cada tarjeta de red.</p>
+                        <div class="flex gap-3"><button class="choice-btn">V</button><button class="choice-btn">F</button></div>
+                    </div>
+                    <div class="vf" data-answer="f">
+                        <p class="font-black mb-2">La direccion MAC es lo mismo que la contraseña del WiFi.</p>
+                        <div class="flex gap-3"><button class="choice-btn">V</button><button class="choice-btn">F</button></div>
+                    </div>
                 </div>
+                <button id="checkVf" class="mt-5 tool-btn" style="background:#8b5cf6">Revisar V/F</button>
             </article>
         </section>
 
         <section class="grid lg:grid-cols-2 gap-6">
             <article class="card p-6">
-                <h2 class="text-3xl font-extrabold mb-4">Actividad: elegi la pieza correcta</h2>
-                <div class="space-y-4">
-                    <div><p class="font-extrabold mb-2">1. La pieza que conecta el equipo a la red es la <span class="text-fuchsia-600">_____</span>.</p><select class="select-box quiz" data-answer="nic"><option value="">Elegir</option><option value="nic">tarjeta de red</option><option value="mouse">mouse</option><option value="camara">camara</option></select></div>
-                    <div><p class="font-extrabold mb-2">2. El dispositivo que ordena mejor el trafico dentro de la red es el <span class="text-fuchsia-600">_____</span>.</p><select class="select-box quiz" data-answer="switch"><option value="">Elegir</option><option value="hub">hub</option><option value="switch">switch</option><option value="teclado">teclado</option></select></div>
-                    <div><p class="font-extrabold mb-2">3. El equipo que conecta una red con otra suele ser el <span class="text-fuchsia-600">_____</span>.</p><select class="select-box quiz" data-answer="router"><option value="">Elegir</option><option value="monitor">monitor</option><option value="router">router</option><option value="parlante">parlante</option></select></div>
+                <div class="mini-pill mb-4">Medios fisicos</div>
+                <h2 class="text-3xl font-extrabold mb-4">Los cables de la red</h2>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="p-5 rounded-3xl" style="background:rgba(236,72,153,.08)">
+                        <div class="text-4xl mb-3">🔌</div>
+                        <p class="font-extrabold text-xl mb-2">Cable RJ45</p>
+                        <p class="font-bold" style="color:var(--soft)">Es el cable mas comun en redes. Se parece al del telefono, pero es mas ancho. Lleva senales electricas.</p>
+                        <div class="mt-3 p-3 rounded-2xl bg-white/80 font-bold text-sm" style="color:var(--soft)">Suele ir desde la PC al switch o al router.</div>
+                    </div>
+                    <div class="p-5 rounded-3xl" style="background:rgba(249,115,22,.08)">
+                        <div class="text-4xl mb-3">💡</div>
+                        <p class="font-extrabold text-xl mb-2">Fibra optica</p>
+                        <p class="font-bold" style="color:var(--soft)">Envia datos usando luz. Es mas rapida y muy usada para conexiones de Internet modernas.</p>
+                        <div class="mt-3 p-3 rounded-2xl bg-white/80 font-bold text-sm" style="color:var(--soft)">Permite grandes velocidades y largas distancias.</div>
+                    </div>
                 </div>
-                <button id="checkQuiz" class="mt-5 tool-btn" style="background:#ec4899">Revisar</button>
             </article>
             <article class="card p-6">
-                <h2 class="text-3xl font-extrabold mb-4">Desafio del aula</h2>
-                <div class="space-y-4 font-bold" style="color:var(--soft)">
-                    <div class="p-4 rounded-3xl" style="background:rgba(139,92,246,.08)">📝 Nombra los componentes que ves en la sala de informatica.</div>
-                    <div class="p-4 rounded-3xl" style="background:rgba(236,72,153,.08)">🎨 Dibuja un recorrido desde una PC hasta el router.</div>
-                    <div class="p-4 rounded-3xl" style="background:rgba(249,115,22,.08)">🗣️ Explica cual parte podria fallar si se corta la señal o un cable.</div>
+                <div class="mini-pill mb-4">Actividad</div>
+                <h2 class="text-3xl font-extrabold mb-4">Completá la frase</h2>
+                <div class="space-y-4">
+                    <div>
+                        <p class="font-extrabold mb-2">El cable RJ45 transmite datos usando senales ___.</p>
+                        <select class="select-box fill" data-answer="electricas">
+                            <option value="">Elegir</option>
+                            <option value="electricas">electricas</option>
+                            <option value="de luz">de luz</option>
+                            <option value="de sonido">de sonido</option>
+                        </select>
+                    </div>
+                    <div>
+                        <p class="font-extrabold mb-2">La fibra optica envia datos usando ___.</p>
+                        <select class="select-box fill" data-answer="luz">
+                            <option value="">Elegir</option>
+                            <option value="electricidad">electricidad</option>
+                            <option value="luz">luz</option>
+                            <option value="aire">aire</option>
+                        </select>
+                    </div>
+                    <div>
+                        <p class="font-extrabold mb-2">La direccion ___ es el identificador unico de cada tarjeta de red.</p>
+                        <select class="select-box fill" data-answer="MAC">
+                            <option value="">Elegir</option>
+                            <option value="IP">IP</option>
+                            <option value="USB">USB</option>
+                            <option value="MAC">MAC</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="checkFill" class="mt-5 tool-btn" style="background:#ec4899">Corregir frases</button>
+            </article>
+        </section>
+
+        <section class="card p-6">
+            <div class="grid lg:grid-cols-2 gap-6 items-start">
+                <div>
+                    <div class="mini-pill mb-4">Dispositivos</div>
+                    <h2 class="text-3xl font-extrabold mb-4">Hub, switch y router</h2>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-3xl" style="background:rgba(249,115,22,.08)">
+                            <p class="font-extrabold text-xl mb-1">Hub</p>
+                            <p class="font-bold" style="color:var(--soft)">Recibe un mensaje y lo manda a todos. Es como gritarle a toda la clase aunque el mensaje sea para una sola persona.</p>
+                        </div>
+                        <div class="p-4 rounded-3xl" style="background:rgba(236,72,153,.08)">
+                            <p class="font-extrabold text-xl mb-1">Switch</p>
+                            <p class="font-bold" style="color:var(--soft)">Es mas inteligente. Envía el mensaje solo al destinatario correcto dentro de la red local.</p>
+                        </div>
+                        <div class="p-4 rounded-3xl" style="background:rgba(139,92,246,.08)">
+                            <p class="font-extrabold text-xl mb-1">Router</p>
+                            <p class="font-bold" style="color:var(--soft)">Conecta tu red con otras redes, como Internet. Funciona como la puerta de salida y entrada.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="mini-pill mb-4">Simulacion</div>
+                    <h2 class="text-3xl font-extrabold mb-4">Pensalo en el aula</h2>
+                    <div class="space-y-4">
+                        <div class="p-5 rounded-3xl" style="background:rgba(255,255,255,.58);border:1px solid var(--border)">
+                            <p class="font-black mb-2">Hub</p>
+                            <p class="font-bold" style="color:var(--soft)">El profe dice algo y todos lo escuchan aunque sea solo para una persona.</p>
+                        </div>
+                        <div class="p-5 rounded-3xl" style="background:rgba(255,255,255,.58);border:1px solid var(--border)">
+                            <p class="font-black mb-2">Switch</p>
+                            <p class="font-bold" style="color:var(--soft)">El profe le pasa una nota solo al alumno correcto.</p>
+                        </div>
+                        <div class="p-5 rounded-3xl" style="background:rgba(255,255,255,.58);border:1px solid var(--border)">
+                            <p class="font-black mb-2">Router</p>
+                            <p class="font-bold" style="color:var(--soft)">Es la puerta del aula que conecta con el resto de la escuela o con Internet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid lg:grid-cols-2 gap-6">
+            <article class="card p-6">
+                <div class="mini-pill mb-4">Actividad</div>
+                <h2 class="text-3xl font-extrabold mb-4">Ordená del menos inteligente al mas inteligente</h2>
+                <div id="orderList" class="space-y-3 mb-5">
+                    <div class="sortable-item" data-value="hub"><span class="text-2xl">1</span><span class="flex-1">Hub (manda a todos, no decide)</span><button class="move-btn" data-dir="up">↑</button><button class="move-btn" data-dir="down">↓</button></div>
+                    <div class="sortable-item" data-value="router"><span class="text-2xl">2</span><span class="flex-1">Router (conecta redes y decide rutas)</span><button class="move-btn" data-dir="up">↑</button><button class="move-btn" data-dir="down">↓</button></div>
+                    <div class="sortable-item" data-value="switch"><span class="text-2xl">3</span><span class="flex-1">Switch (envia solo al correcto)</span><button class="move-btn" data-dir="up">↑</button><button class="move-btn" data-dir="down">↓</button></div>
+                </div>
+                <button id="checkOrder" class="tool-btn" style="background:#f97316">Revisar orden</button>
+                <p id="orderResult" class="font-bold mt-4" style="color:var(--soft)"></p>
+            </article>
+            <article class="card p-6">
+                <div class="mini-pill mb-4">WiFi</div>
+                <h2 class="text-3xl font-extrabold mb-4">Internet sin cables</h2>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-3xl" style="background:rgba(34,197,94,.08)">
+                        <p class="font-extrabold text-xl mb-1">WiFi</p>
+                        <p class="font-bold" style="color:var(--soft)">Permite conectarse sin cables usando ondas que viajan por el aire.</p>
+                    </div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(14,165,233,.08)">
+                        <p class="font-extrabold text-xl mb-1">SSID</p>
+                        <p class="font-bold" style="color:var(--soft)">Es el nombre de la red. Es lo que ves cuando buscás WiFi en tu celular o notebook.</p>
+                    </div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(139,92,246,.08)">
+                        <p class="font-extrabold text-xl mb-1">Contraseña</p>
+                        <p class="font-bold" style="color:var(--soft)">Protege la red para que solo puedan conectarse quienes la conocen.</p>
+                    </div>
+                    <div class="p-4 rounded-3xl" style="background:rgba(236,72,153,.08)">
+                        <p class="font-black mb-2">Idea clave</p>
+                        <p class="font-bold" style="color:var(--soft)">Cuando buscás una red para conectarte, lo que aparece en pantalla es el nombre o SSID.</p>
+                    </div>
                 </div>
             </article>
+        </section>
+
+        <section class="card p-6">
+            <div class="mini-pill mb-4">Actividad</div>
+            <h2 class="text-3xl font-extrabold mb-4">Uni cada concepto con lo que hace</h2>
+            <div class="match-grid font-bold">
+                <div class="match-row" data-answer="Tarjeta de red">
+                    <p>Le permite a la compu conectarse a una red</p>
+                    <select class="select-box match-select">
+                        <option value="">Elegir concepto</option>
+                        <option value="Hub">Hub</option>
+                        <option value="Tarjeta de red">Tarjeta de red</option>
+                        <option value="SSID">SSID</option>
+                    </select>
+                </div>
+                <div class="match-row" data-answer="Hub">
+                    <p>Envia el mensaje a todos</p>
+                    <select class="select-box match-select">
+                        <option value="">Elegir concepto</option>
+                        <option value="Direccion MAC">Direccion MAC</option>
+                        <option value="Hub">Hub</option>
+                        <option value="Router">Router</option>
+                    </select>
+                </div>
+                <div class="match-row" data-answer="Switch">
+                    <p>Envia solo al destinatario correcto</p>
+                    <select class="select-box match-select">
+                        <option value="">Elegir concepto</option>
+                        <option value="Switch">Switch</option>
+                        <option value="SSID">SSID</option>
+                        <option value="Hub">Hub</option>
+                    </select>
+                </div>
+                <div class="match-row" data-answer="Router">
+                    <p>Conecta tu red con Internet</p>
+                    <select class="select-box match-select">
+                        <option value="">Elegir concepto</option>
+                        <option value="Router">Router</option>
+                        <option value="Tarjeta de red">Tarjeta de red</option>
+                        <option value="Direccion MAC">Direccion MAC</option>
+                    </select>
+                </div>
+                <div class="match-row" data-answer="Direccion MAC">
+                    <p>Es el DNI unico de la tarjeta de red</p>
+                    <select class="select-box match-select">
+                        <option value="">Elegir concepto</option>
+                        <option value="SSID">SSID</option>
+                        <option value="Direccion MAC">Direccion MAC</option>
+                        <option value="Switch">Switch</option>
+                    </select>
+                </div>
+                <div class="match-row" data-answer="SSID">
+                    <p>Es el nombre de una red WiFi</p>
+                    <select class="select-box match-select">
+                        <option value="">Elegir concepto</option>
+                        <option value="SSID">SSID</option>
+                        <option value="Hub">Hub</option>
+                        <option value="Router">Router</option>
+                    </select>
+                </div>
+            </div>
+            <button id="checkMatch" class="mt-5 tool-btn" style="background:#8b5cf6">Revisar uniones</button>
+        </section>
+
+        <section class="card p-6">
+            <div class="mini-pill mb-4">Cierre</div>
+            <h2 class="text-3xl font-extrabold mb-4">Quiz final - Clase 2</h2>
+            <div class="space-y-5">
+                <div class="quiz" data-answer="1">
+                    <p class="font-black mb-3">¿Que hace la tarjeta de red?</p>
+                    <div class="grid gap-2">
+                        <button class="option-btn">Muestra videos</button>
+                        <button class="option-btn">Permite que la compu se conecte a una red</button>
+                        <button class="option-btn">Imprime documentos</button>
+                        <button class="option-btn">Guarda archivos</button>
+                    </div>
+                </div>
+                <div class="quiz" data-answer="2">
+                    <p class="font-black mb-3">¿Que es la direccion MAC?</p>
+                    <div class="grid gap-2">
+                        <button class="option-btn">La contraseña del WiFi</button>
+                        <button class="option-btn">Un tipo de cable</button>
+                        <button class="option-btn">El numero unico de cada tarjeta de red</button>
+                        <button class="option-btn">El nombre de una red</button>
+                    </div>
+                </div>
+                <div class="quiz" data-answer="1">
+                    <p class="font-black mb-3">¿Cual es la diferencia entre un hub y un switch?</p>
+                    <div class="grid gap-2">
+                        <button class="option-btn">El hub es mas nuevo</button>
+                        <button class="option-btn">El switch envia datos solo al correcto, el hub a todos</button>
+                        <button class="option-btn">El hub es mas caro</button>
+                        <button class="option-btn">No hay diferencia</button>
+                    </div>
+                </div>
+                <div class="quiz" data-answer="2">
+                    <p class="font-black mb-3">¿Que cable envia datos usando luz?</p>
+                    <div class="grid gap-2">
+                        <button class="option-btn">Cable RJ45</button>
+                        <button class="option-btn">Cable HDMI</button>
+                        <button class="option-btn">Fibra optica</button>
+                        <button class="option-btn">Cable USB</button>
+                    </div>
+                </div>
+                <div class="quiz" data-answer="1">
+                    <p class="font-black mb-3">¿Que es el SSID?</p>
+                    <div class="grid gap-2">
+                        <button class="option-btn">La contraseña del WiFi</button>
+                        <button class="option-btn">El nombre de la red WiFi</button>
+                        <button class="option-btn">Un tipo de cable</button>
+                        <button class="option-btn">La direccion MAC</button>
+                    </div>
+                </div>
+                <div class="quiz" data-answer="3">
+                    <p class="font-black mb-3">¿Que aparato conecta tu red de casa con Internet?</p>
+                    <div class="grid gap-2">
+                        <button class="option-btn">Hub</button>
+                        <button class="option-btn">Switch</button>
+                        <button class="option-btn">Impresora</button>
+                        <button class="option-btn">Router</button>
+                    </div>
+                </div>
+            </div>
+            <button id="checkQuiz" class="mt-5 tool-btn" style="background:#ec4899">Revisar quiz</button>
         </section>
     </main>
 
     <script>
-        const body=document.body,themeToggle=document.getElementById('themeToggle'),fontToggle=document.getElementById('fontToggle');let large=false;
-        themeToggle.addEventListener('click',()=>{body.classList.toggle('dark-mode');themeToggle.textContent=body.classList.contains('dark-mode')?'Modo oscuro':'Modo claro';});
-        fontToggle.addEventListener('click',()=>{large=!large;body.style.fontSize=large?'19px':'';fontToggle.textContent=large?'Texto grande':'Texto normal';});
-        const states={nic:{title:'NIC',text:'Es la puerta de entrada y salida de datos en el equipo.',fact:'Sin esta pieza, la computadora no participa de la red.',left:'20%',top:'62%'},switch:{title:'Switch',text:'Recibe conexiones de varios equipos y organiza el trafico.',fact:'Hace que la red local funcione de forma mas ordenada.',left:'51%',top:'46%'},router:{title:'Router',text:'Une redes y dirige el trafico hacia Internet u otras conexiones.',fact:'Es el puente entre la red local y redes mas grandes.',left:'80%',top:'30%'}};
-        document.querySelectorAll('.piece-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.piece-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const s=states[btn.dataset.piece];document.getElementById('pieceTitle').textContent=s.title;document.getElementById('pieceText').textContent=s.text;document.getElementById('pieceFact').textContent=s.fact;const p=document.getElementById('packet');p.style.left=s.left;p.style.top=s.top;}));
-        document.getElementById('checkQuiz').addEventListener('click',()=>{document.querySelectorAll('.quiz').forEach(el=>{el.classList.remove('good','bad');el.classList.add(el.value===el.dataset.answer?'good':'bad');}));
+        const body=document.body;
+        const themeToggle=document.getElementById('themeToggle');
+        const fontToggle=document.getElementById('fontToggle');
+        let large=false;
+
+        themeToggle.addEventListener('click',()=>{
+            body.classList.toggle('dark-mode');
+            themeToggle.textContent=body.classList.contains('dark-mode')?'Modo oscuro':'Modo claro';
+        });
+
+        fontToggle.addEventListener('click',()=>{
+            large=!large;
+            body.style.fontSize=large?'19px':'';
+            fontToggle.textContent=large?'Texto grande':'Texto normal';
+        });
+
+        const states={
+            nic:{title:'Tarjeta de red',text:'Es la puerta de entrada y salida de datos en el equipo.',fact:'Sin tarjeta de red, la computadora no puede participar de la red.',left:'20%',top:'64%'},
+            switch:{title:'Switch',text:'Recibe varias conexiones y manda los datos al destino correcto dentro de la red local.',fact:'Es mas inteligente que un hub porque no repite a todos.',left:'48%',top:'50%'},
+            router:{title:'Router',text:'Conecta redes distintas y lleva el trafico entre tu red local e Internet.',fact:'Funciona como la puerta de enlace hacia afuera.',left:'80%',top:'28%'},
+            wifi:{title:'WiFi',text:'Permite conectarse sin cables usando ondas invisibles por el aire.',fact:'Su nombre visible es el SSID y suele estar protegido con contraseña.',left:'80%',top:'72%'}
+        };
+
+        document.querySelectorAll('.piece-btn').forEach(btn=>btn.addEventListener('click',()=>{
+            document.querySelectorAll('.piece-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            const s=states[btn.dataset.piece];
+            document.getElementById('pieceTitle').textContent=s.title;
+            document.getElementById('pieceText').textContent=s.text;
+            document.getElementById('pieceFact').textContent=s.fact;
+            const p=document.getElementById('packet');
+            p.style.left=s.left;
+            p.style.top=s.top;
+        }));
+
+        document.querySelectorAll('.vf .choice-btn').forEach((btn,index)=>btn.addEventListener('click',()=>{
+            const wrap=btn.closest('.vf');
+            wrap.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+            btn.classList.add('selected');
+            wrap.dataset.pick=index%2===0?'v':'f';
+        }));
+
+        document.getElementById('checkVf').addEventListener('click',()=>{
+            document.querySelectorAll('.vf').forEach(item=>{
+                item.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('good','bad'));
+                if(!item.dataset.pick)return;
+                const selected=[...item.querySelectorAll('.choice-btn')].find(b=>b.classList.contains('selected'));
+                if(selected)selected.classList.add(item.dataset.pick===item.dataset.answer?'good':'bad');
+            });
+        });
+
+        document.getElementById('checkFill').addEventListener('click',()=>{
+            document.querySelectorAll('.fill').forEach(sel=>{
+                sel.classList.remove('good','bad');
+                sel.classList.add(sel.value===sel.dataset.answer?'good':'bad');
+            });
+        });
+
+        function refreshOrderNumbers(){
+            document.querySelectorAll('#orderList .sortable-item').forEach((item,index)=>{
+                item.querySelector('span').textContent=String(index+1);
+            });
+        }
+
+        document.querySelectorAll('#orderList .move-btn').forEach(btn=>btn.addEventListener('click',()=>{
+            const item=btn.parentElement;
+            const list=item.parentElement;
+            if(btn.dataset.dir==='up' && item.previousElementSibling){
+                list.insertBefore(item,item.previousElementSibling);
+            }
+            if(btn.dataset.dir==='down' && item.nextElementSibling){
+                list.insertBefore(item.nextElementSibling,item);
+            }
+            refreshOrderNumbers();
+        }));
+
+        document.getElementById('checkOrder').addEventListener('click',()=>{
+            const values=[...document.querySelectorAll('#orderList .sortable-item')].map(el=>el.dataset.value);
+            const correct=['hub','switch','router'];
+            const ok=values.every((value,index)=>value===correct[index]);
+            document.getElementById('orderResult').textContent=ok?'Muy bien: el orden correcto es Hub, Switch, Router.':'Todavia no. Recorda: Hub manda a todos, Switch elige al correcto y Router conecta redes distintas.';
+        });
+
+        document.getElementById('checkMatch').addEventListener('click',()=>{
+            document.querySelectorAll('.match-row').forEach(row=>{
+                row.classList.remove('good','bad');
+                const select=row.querySelector('.match-select');
+                select.classList.remove('good','bad');
+                if(!select.value)return;
+                const ok=select.value===row.dataset.answer;
+                row.classList.add(ok?'good':'bad');
+                select.classList.add(ok?'good':'bad');
+            });
+        });
+
+        document.querySelectorAll('.quiz .option-btn').forEach(btn=>btn.addEventListener('click',()=>{
+            const block=btn.closest('.quiz');
+            block.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+            btn.classList.add('selected');
+            block.dataset.pick=[...block.querySelectorAll('.option-btn')].indexOf(btn).toString();
+        }));
+
+        document.getElementById('checkQuiz').addEventListener('click',()=>{
+            document.querySelectorAll('.quiz').forEach(block=>{
+                const answer=Number(block.dataset.answer);
+                block.querySelectorAll('.option-btn').forEach((btn,index)=>{
+                    btn.classList.remove('good','bad');
+                    if(index===answer)btn.classList.add('good');
+                    else if(btn.classList.contains('selected'))btn.classList.add('bad');
+                });
+            });
+        });
     </script>
 </body>
 </html>
