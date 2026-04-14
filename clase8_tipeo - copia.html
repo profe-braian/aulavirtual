@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 8: Tipeo - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&family=Fira+Code:wght@600&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg); border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo { transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; cursor: pointer; }
+        .btn-interactivo:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-interactivo:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); transform: none; }
+
+        /* TECLAS ESTILO CSS */
+        .tecla {
+            display: inline-block; background: #f8fafc; color: #334155; border: 2px solid #cbd5e1;
+            border-bottom: 6px solid #94a3b8; border-radius: 8px; padding: 4px 12px; font-family: 'Fira Code', monospace;
+            font-weight: 900; margin: 0 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-transform: uppercase;
+        }
+        .dark-mode .tecla { background: #1e293b; color: #f8fafc; border-color: #475569; border-bottom-color: #0f172a; }
+        
+        .tecla-larga { padding: 4px 30px; }
+        .tecla-espacio { padding: 4px 60px; }
+
+        /* JUEGO 1: PALABRAS */
+        .input-tipeo {
+            width: 100%; max-width: 400px; padding: 15px 20px; border-radius: 16px; border: 4px solid var(--border-color);
+            background: rgba(255,255,255,0.9); font-size: 2rem; font-weight: 900; text-align: center; color: #0f172a;
+            outline: none; transition: all 0.3s; font-family: 'Fira Code', monospace; text-transform: lowercase;
+        }
+        .input-tipeo:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+        .dark-mode .input-tipeo { background: rgba(0,0,0,0.6); color: white; border-color: #475569; }
+        .dark-mode .input-tipeo:focus { border-color: #818cf8; }
+
+        /* JUEGO 2: LLUVIA DE LETRAS */
+        .area-lluvia { position: relative; width: 100%; aspect-ratio: 16/9; max-height: 450px; background: rgba(0,0,0,0.3); border-radius: 16px; overflow: hidden; border: 4px solid #cbd5e1; }
+        .dark-mode .area-lluvia { border-color: #475569; }
+        .letra-cae { position: absolute; font-size: 2.5rem; font-weight: 900; color: white; font-family: 'Fira Code', monospace; text-shadow: 0 4px 6px rgba(0,0,0,0.5); padding: 10px; background: #3b82f6; border-radius: 12px; border-bottom: 4px solid #1e3a8a; display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; }
+        .suelo-lluvia { position: absolute; bottom: 0; width: 100%; height: 20px; background: #ef4444; opacity: 0.8; }
+        
+        /* JUEGO 3: FRASES */
+        .char-correcto { color: #4ade80; text-shadow: 0 0 5px rgba(74,222,128,0.5); }
+        .char-incorrecto { color: #ef4444; text-decoration: underline; text-shadow: 0 0 5px rgba(239,68,68,0.5); }
+        .char-actual { border-bottom: 4px solid #38bdf8; animation: parpadeo 1s infinite; }
+
+        /* JUEGO FINAL: SALTO EN GLOBO ANIMACIONES */
+        .nube-flota { animation: flotar 4s ease-in-out infinite alternate; }
+        @keyframes flotar { from { transform: translateY(0px); } to { transform: translateY(-15px); } }
+
+        .shake-anim { animation: shake 0.5s; }
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes parpadeo { 0%, 100% { border-color: #38bdf8; } 50% { border-color: transparent; } }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .confeti { position: fixed; width: 15px; height: 15px; z-index: 9999; pointer-events: none; border-radius: 4px; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">⌨️</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Clase 8: Tipeo Aventurero</h1>
+                    <p class="text-xl md:text-2xl font-bold opacity-90">Vamos a practicar el tipeo como verdaderos programadores.</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center justify-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-blue-400" style="animation-delay: 0.1s;">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-black mb-4 text-white drop-shadow-md">¿Qué es el teclado?</h2>
+                <div class="bg-black/20 p-6 rounded-2xl border border-white/30 inline-block max-w-4xl">
+                    <p class="text-xl font-bold text-white leading-relaxed">
+                        El teclado sirve para meter información a la compu: escribir letras, números, símbolos y darle órdenes.
+                    </p>
+                </div>
+            </div>
+            
+            <h3 class="text-2xl font-black text-center mb-6 text-white">⭐ Las Teclas Más Importantes ⭐</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white/20 p-6 rounded-2xl border border-white/30 flex items-center gap-6 shadow-lg">
+                    <div class="tecla tecla-espacio text-xl">Espacio</div>
+                    <div>
+                        <h4 class="font-black text-xl text-blue-900 dark:text-blue-300">Barra Espaciadora</h4>
+                        <p class="font-bold opacity-90 text-sm">Es la más larga. Sirve para separar las palabras.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 p-6 rounded-2xl border border-white/30 flex items-center gap-6 shadow-lg">
+                    <div class="tecla tecla-larga text-xl">Enter ↵</div>
+                    <div>
+                        <h4 class="font-black text-xl text-green-900 dark:text-green-300">Enter (Entrar)</h4>
+                        <p class="font-bold opacity-90 text-sm">Sirve para bajar un renglón o para confirmar una orden.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 p-6 rounded-2xl border border-white/30 flex items-center gap-6 shadow-lg">
+                    <div class="tecla tecla-larga text-xl">← Backspace</div>
+                    <div>
+                        <h4 class="font-black text-xl text-red-900 dark:text-red-300">Retroceso (Borrar)</h4>
+                        <p class="font-bold opacity-90 text-sm">¡Nuestra mejor amiga! Sirve para borrar lo que escribimos mal.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 p-6 rounded-2xl border border-white/30 flex items-center gap-6 shadow-lg">
+                    <div class="tecla text-xl">⇧ Shift</div>
+                    <div>
+                        <h4 class="font-black text-xl text-purple-900 dark:text-purple-300">Mayúsculas (Shift)</h4>
+                        <p class="font-bold opacity-90 text-sm">Si la mantenés apretada mientras tocás otra letra, sale en MAYÚSCULA.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-green-400 bg-green-500/10" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black mb-6 text-green-800 dark:text-green-300 drop-shadow-md">Postura de Programador</h2>
+                    <ul class="space-y-4 text-lg font-bold">
+                        <li class="flex items-center gap-4 bg-black/20 p-3 rounded-xl border border-green-400/50"><span class="text-3xl">🪑</span> Espalda bien recta apoyada en la silla.</li>
+                        <li class="flex items-center gap-4 bg-black/20 p-3 rounded-xl border border-green-400/50"><span class="text-3xl">👀</span> Mirar directo a la pantalla, no para abajo.</li>
+                        <li class="flex items-center gap-4 bg-black/20 p-3 rounded-xl border border-green-400/50"><span class="text-3xl">🦶</span> Los dos pies apoyados en el suelo.</li>
+                        <li class="flex items-center gap-4 bg-black/20 p-3 rounded-xl border border-green-400/50"><span class="text-3xl">👐</span> Usar las DOS manos para escribir.</li>
+                    </ul>
+                </div>
+                <div class="text-center bg-black/30 p-8 rounded-3xl border-2 border-white/20 shadow-inner">
+                    <h3 class="text-2xl font-black mb-4 text-white">La Fila Guía</h3>
+                    <p class="font-bold opacity-90 mb-6 text-white">Acá deben descansar tus dedos siempre:</p>
+                    <div class="flex justify-center gap-2 mb-4 text-2xl">
+                        <span class="tecla">A</span><span class="tecla">S</span><span class="tecla">D</span><span class="tecla">F</span>
+                        <span class="mx-4 text-3xl">✋</span>
+                        <span class="tecla">J</span><span class="tecla">K</span><span class="tecla">L</span><span class="tecla">Ñ</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-yellow-400 bg-yellow-500/10" style="animation-delay: 0.3s;">
+            <div class="text-center mb-8">
+                <span class="text-6xl block mb-4 animate-bounce">⚡</span>
+                <h2 class="text-3xl md:text-4xl font-black text-yellow-600 dark:text-yellow-400 drop-shadow-md mb-2">Entrenamiento Rápido</h2>
+                <p class="text-xl font-bold opacity-90 text-white">Escribí la palabra que aparece en pantalla y tocá <span class="tecla text-sm">Enter ↵</span>.</p>
+                <div class="bg-white/20 px-4 py-2 rounded-xl inline-block mt-4 font-bold text-white text-xl">Palabra <span id="palabra-progreso">1</span> de 10</div>
+            </div>
+            
+            <div class="bg-black/40 p-8 md:p-12 rounded-3xl text-center border-2 border-white/20 max-w-2xl mx-auto shadow-inner flex flex-col justify-center items-center min-h-[300px]">
+                <p id="palabra-objetivo" class="text-6xl md:text-[5rem] font-black text-white mb-8 font-mono tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">sol</p>
+                <input type="text" id="input-palabra" class="input-tipeo" placeholder="Escribí acá..." autocomplete="off">
+                <div id="palabra-feedback" class="mt-6 text-2xl font-black hidden p-4 rounded-xl w-full max-w-4xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-purple-400 bg-purple-900/30" style="animation-delay: 0.4s;">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-black text-purple-300 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">☄️</span> Lluvia de Letras</h2>
+                <p class="text-xl font-bold opacity-90 text-white">Apretá la letra en tu teclado antes de que choque contra el piso rojo.</p>
+                <div class="mt-4 flex justify-center gap-6 text-2xl font-black text-white">
+                    <div class="bg-black/40 px-6 py-2 rounded-xl border border-purple-500">Puntos: <span id="lluvia-pts" class="text-green-400">0</span>/15</div>
+                    <div class="bg-black/40 px-6 py-2 rounded-xl border border-purple-500">Vidas: <span id="lluvia-vidas" class="text-red-400">❤️❤️❤️</span></div>
+                </div>
+            </div>
+
+            <input type="text" id="input-oculto-lluvia" class="opacity-0 absolute w-0 h-0" autocomplete="off">
+
+            <div class="area-lluvia" id="area-lluvia" onclick="document.getElementById('input-oculto-lluvia').focus()">
+                <div class="suelo-lluvia"></div>
+                <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-20 backdrop-blur-sm" id="lluvia-start">
+                    <button onclick="empezarLluvia()" class="btn-interactivo bg-purple-600 text-white font-black text-3xl px-10 py-5 rounded-2xl border-b-4 border-purple-800 shadow-[0_0_20px_purple] hover:scale-110 transition">¡JUGAR!</button>
+                    <p class="mt-4 text-purple-200 font-bold bg-black/50 px-4 py-2 rounded-lg">(Tocá acá primero si usás tablet)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-pink-400 bg-pink-900/30" style="animation-delay: 0.5s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-pink-300 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">📝</span> El Escritor Experto</h2>
+                <p class="text-xl font-bold opacity-90 text-white">Copiá la frase exactamente igual. ¡Ojo con los espacios y las mayúsculas!</p>
+                <div class="bg-white/20 px-4 py-2 rounded-xl inline-block mt-4 font-bold text-white text-xl">Frase <span id="frase-progreso">1</span> de 3</div>
+            </div>
+
+            <div class="bg-black/40 p-8 md:p-12 rounded-3xl border-2 border-white/20 shadow-inner flex flex-col items-center">
+                <div id="frase-display" class="text-3xl md:text-4xl font-mono font-bold text-slate-400 mb-8 bg-black/50 p-6 rounded-xl w-full text-left leading-relaxed break-words border border-slate-600">
+                    </div>
+                <input type="text" id="input-frase" class="input-tipeo w-full max-w-full font-sans text-left text-xl md:text-3xl" placeholder="Empezá a escribir acá..." autocomplete="off">
+            </div>
+            <div id="frase-feedback" class="mt-6 text-3xl font-black text-center hidden p-6 rounded-2xl"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-sky-400 bg-sky-900/40" style="animation-delay: 0.6s;">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-black text-sky-300 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🎈</span> Salto del Mono Aventurero</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡Tipeá la letra del próximo globo para que el monito salte! A medida que sumes puntos, la barra de fuego bajará más rápido.</p>
+                
+                <div class="mt-6 flex flex-wrap justify-center gap-4 md:gap-8">
+                    <div class="bg-[#d2b48c] border-4 border-[#8b5a2b] rounded-xl px-6 py-2 text-[#5d3a1a] font-black text-xl shadow-lg">
+                        Puntos: <span id="globo-pts" class="text-green-800 text-2xl">0</span>
+                    </div>
+                    <div class="bg-[#d2b48c] border-4 border-[#8b5a2b] rounded-xl px-6 py-2 text-[#5d3a1a] font-black text-xl shadow-lg">
+                        Récord: <span id="globo-record" class="text-orange-800 text-2xl">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <input type="text" id="input-oculto-globo" class="opacity-0 absolute w-0 h-0" autocomplete="off">
+
+            <div class="relative w-full aspect-video min-h-[350px] max-h-[500px] bg-gradient-to-b from-sky-400 to-sky-100 rounded-2xl border-4 border-white overflow-hidden shadow-inner cursor-pointer" id="area-globo" onclick="document.getElementById('input-oculto-globo').focus()">
+                
+                <div class="absolute top-10 left-[10%] text-5xl opacity-80 nube-flota" style="animation-delay: 0s;">☁️</div>
+                <div class="absolute top-24 right-[20%] text-6xl opacity-60 nube-flota" style="animation-delay: 1s;">☁️</div>
+                <div class="absolute bottom-20 left-[40%] text-4xl opacity-70 nube-flota" style="animation-delay: 2s;">☁️</div>
+                
+                <div class="absolute bottom-4 left-4 right-4 h-4 bg-yellow-900/50 border-2 border-yellow-950 rounded-full z-50">
+                    <div id="globo-timer-bar-fill" class="h-full bg-gradient-to-r from-orange-500 to-yellow-400 rounded-full transition-all duration-75 relative w-full">
+                        <div class="absolute right-[-10px] top-1/2 -translate-y-1/2 text-3xl drop-shadow-md">🔥</div>
+                    </div>
+                </div>
+
+                <div id="globo-game-elements" class="absolute inset-0 z-20 pointer-events-none"></div>
+
+                <div class="absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center z-[100] backdrop-blur-sm" id="globo-start">
+                    <button onclick="empezarGlobo()" class="btn-interactivo bg-sky-500 text-white font-black text-3xl px-10 py-5 rounded-2xl border-b-4 border-sky-700 shadow-[0_0_20px_#38bdf8] hover:scale-110 transition flex items-center gap-3">¡SALTAR! 🐒</button>
+                    <p class="mt-4 text-sky-100 font-bold bg-black/50 px-4 py-2 rounded-lg">(Tocá acá primero si usás tablet)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-green-400" style="animation-delay: 0.7s;">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <span class="text-5xl">🏫</span>
+                <h2 class="text-3xl md:text-4xl font-black text-white">Práctica en Bloc de Notas</h2>
+            </div>
+            <p class="text-xl font-bold opacity-90 mb-6 text-center">Abrí la compu, buscá el programa "Bloc de Notas" (o Word) y hacé tu primera tarea escrita:</p>
+            
+            <div class="bg-black/30 p-6 md:p-10 rounded-3xl border-2 border-green-400/50 max-w-3xl mx-auto">
+                <ul class="space-y-6 text-xl md:text-2xl font-bold text-white">
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 1. Escribí tu nombre completo.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 2. Apretá <span class="tecla text-sm">Enter ↵</span> para bajar un renglón.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 3. Escribí el nombre de 3 animales.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 4. Apretá <span class="tecla text-sm">Enter ↵</span> otra vez.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 5. Escribí cuál es tu comida favorita.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-yellow-500" style="animation-delay: 0.8s;">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">🏆</span>
+                    <h2 class="text-3xl md:text-4xl font-black text-yellow-600 dark:text-yellow-400">Quiz Final de Unidad</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-6 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span> / 8</div>
+            </div>
+            
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-yellow-400 h-4 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+            </div>
+
+            <div id="quiz-container" class="min-h-[250px] flex flex-col justify-center">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center text-white drop-shadow leading-relaxed"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            
+            <div id="quiz-result" class="hidden text-center py-10">
+                <span class="text-[6rem] block mb-4 animate-bounce">🎓⭐⭐⭐</span>
+                <h3 class="text-4xl md:text-5xl font-black mb-4 text-yellow-400 drop-shadow">¡Dedos Mágicos!</h3>
+                <p id="quiz-score-text" class="text-2xl font-bold mb-8 text-white">Ya sabés usar el teclado como un profesional.</p>
+                <button onclick="reiniciarQuiz()" class="btn-interactivo bg-yellow-600 text-yellow-900 font-black px-8 py-4 rounded-2xl border-b-4 border-yellow-800 text-xl mr-4 mb-4 md:mb-0">Reintentar Quiz 🔄</button>
+                <a href="index4to.html" class="btn-interactivo bg-blue-600 text-white font-black px-8 py-4 rounded-2xl border-b-4 border-blue-800 text-xl inline-block shadow-lg">Volver al Menú 🏫</a>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-8" style="animation-delay: 0.9s;">
+            <h2 class="text-3xl font-black mb-4 flex items-center gap-3"><span class="text-4xl">📋</span> Tarea de la clase</h2>
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <div class="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xl border-4 border-dashed border-gray-300 m-4 w-[calc(100%-32px)] rounded-xl">
+                    (Acá va tu iframe de Google Forms)
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema_4to_c8', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema_4to_c8') === 'oscuro') { document.body.classList.add('dark-mode'); document.getElementById('btnT').innerHTML = '🌙'; }
+
+        function lanzarParticulas(x, y) {
+            const iconos = ['⭐', '🍌', '💥', '✨'];
+            for(let i=0; i<8; i++) {
+                const p = document.createElement('div');
+                p.className = 'absolute text-4xl z-50 transition-all duration-300 ease-out pointer-events-none';
+                p.innerText = iconos[Math.floor(Math.random() * iconos.length)];
+                p.style.left = x + 'px'; p.style.top = y + 'px';
+                document.getElementById('area-globo').appendChild(p);
+                setTimeout(() => {
+                    p.style.transform = `translate(${(Math.random()-0.5)*200}px, ${(Math.random()-0.5)*200}px) scale(0.1)`;
+                    p.style.opacity = '0';
+                }, 50);
+                setTimeout(() => p.remove(), 400);
+            }
+        }
+
+        // --- JUEGO 1: PALABRAS ---
+        const palabras = ["asdf", "jklñ", "sol", "gato", "casa", "luna", "perro", "teclado", "mouse", "computadora"];
+        let palAct = 0; const inputPal = document.getElementById('input-palabra');
+        function cargarPalabra() {
+            if(palAct >= palabras.length) {
+                document.getElementById('palabra-objetivo').innerHTML = "¡EXCELENTE! 🏆";
+                document.getElementById('palabra-objetivo').classList.add('text-green-400');
+                inputPal.style.display = 'none'; document.getElementById('palabra-progreso').innerText = palabras.length;
+                lanzarConfeti(); return;
+            }
+            document.getElementById('palabra-progreso').innerText = palAct + 1;
+            document.getElementById('palabra-objetivo').innerText = palabras[palAct];
+            inputPal.value = ''; inputPal.focus();
+        }
+        inputPal.addEventListener('keyup', (e) => {
+            if(palAct >= palabras.length) return;
+            const target = palabras[palAct].toLowerCase(); const current = inputPal.value.toLowerCase().trim();
+            const feed = document.getElementById('palabra-feedback');
+            if(current === target && e.key === 'Enter') {
+                feed.style.display = 'block'; feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-green-500/20 text-green-300 border-2 border-green-400 w-full max-w-md mx-auto";
+                feed.innerHTML = "✅ ¡Perfecto!"; palAct++;
+                setTimeout(() => { feed.style.display = 'none'; cargarPalabra(); }, 800);
+            } else if (e.key === 'Enter' && current !== target) {
+                feed.style.display = 'block'; feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-red-500/20 text-red-300 border-2 border-red-400 shake-anim w-full max-w-md mx-auto";
+                feed.innerHTML = "❌ Hay un error. Borrá y probá de nuevo.";
+                setTimeout(() => { feed.style.display = 'none'; }, 1500);
+            }
+        });
+        cargarPalabra();
+
+        // --- JUEGO 2: LLUVIA DE LETRAS ---
+        let lluviaPts = 0; let lluviaVidas = 3; let lluviaActiva = false; let lluviaInterval; let letrasEnPantalla = [];
+        const areaLluvia = document.getElementById('area-lluvia'); const inputLluvia = document.getElementById('input-oculto-lluvia');
+        function empezarLluvia() {
+            document.getElementById('lluvia-start').style.display = 'none';
+            document.querySelectorAll('.letra-cae').forEach(e => e.remove());
+            lluviaPts = 0; lluviaVidas = 3; lluviaActiva = true; letrasEnPantalla = [];
+            actualizarHUDLluvia(); inputLluvia.focus();
+            generarLetraLluvia(); lluviaInterval = setInterval(generarLetraLluvia, 1500);
+            requestAnimationFrame(moverLetras);
+        }
+        function generarLetraLluvia() {
+            if(!lluviaActiva) return;
+            const char = String.fromCharCode(97 + Math.floor(Math.random() * 26)); 
+            const el = document.createElement('div'); el.className = 'letra-cae'; el.innerText = char.toUpperCase();
+            const maxX = areaLluvia.clientWidth - 80; el.style.left = Math.max(10, Math.floor(Math.random() * maxX)) + 'px'; el.style.top = '0px';
+            areaLluvia.appendChild(el); letrasEnPantalla.push({ char: char, el: el, top: 0, speed: Math.random() * 1.5 + 1 });
+        }
+        function moverLetras() {
+            if(!lluviaActiva) return;
+            const maxTop = areaLluvia.clientHeight - 60; 
+            for(let i = letrasEnPantalla.length - 1; i >= 0; i--) {
+                let l = letrasEnPantalla[i]; l.top += l.speed; l.el.style.top = l.top + 'px';
+                if(l.top >= maxTop) {
+                    l.el.remove(); letrasEnPantalla.splice(i, 1); lluviaVidas--;
+                    actualizarHUDLluvia(); if(lluviaVidas <= 0) terminarLluvia(false);
+                }
+            }
+            if(lluviaActiva) requestAnimationFrame(moverLetras);
+        }
+        function actualizarHUDLluvia() {
+            document.getElementById('lluvia-pts').innerText = lluviaPts;
+            let corazones = ""; for(let i=0; i<lluviaVidas; i++) corazones += "❤️";
+            document.getElementById('lluvia-vidas').innerText = corazones || "☠️";
+        }
+        inputLluvia.addEventListener('input', (e) => {
+            if(!lluviaActiva) return;
+            const key = inputLluvia.value.toLowerCase().charAt(inputLluvia.value.length - 1); inputLluvia.value = ''; 
+            let targetIdx = -1; let maxTop = -1;
+            for(let i=0; i<letrasEnPantalla.length; i++) {
+                if(letrasEnPantalla[i].char === key && letrasEnPantalla[i].top > maxTop) { maxTop = letrasEnPantalla[i].top; targetIdx = i; }
+            }
+            if(targetIdx > -1) {
+                letrasEnPantalla[targetIdx].el.style.transform = 'scale(1.5)'; letrasEnPantalla[targetIdx].el.style.opacity = '0';
+                setTimeout((element) => { if(element) element.remove(); }, 200, letrasEnPantalla[targetIdx].el);
+                letrasEnPantalla.splice(targetIdx, 1); lluviaPts++;
+                actualizarHUDLluvia(); if(lluviaPts >= 15) terminarLluvia(true);
+            }
+        });
+        areaLluvia.addEventListener('click', () => { if(lluviaActiva) inputLluvia.focus(); });
+        function terminarLluvia(ganado) {
+            lluviaActiva = false; clearInterval(lluviaInterval); document.querySelectorAll('.letra-cae').forEach(e => e.remove());
+            const screen = document.getElementById('lluvia-start'); screen.style.display = 'flex';
+            if(ganado) {
+                screen.innerHTML = `<span class="text-[5rem] mb-2">🏆</span><h3 class="text-4xl font-black text-green-400 drop-shadow mb-4">¡Sos rapidísimo!</h3><button onclick="empezarLluvia()" class="btn-interactivo bg-green-600 text-white font-black text-2xl px-8 py-4 rounded-xl border-b-4 border-green-800">Jugar de nuevo</button>`;
+                lanzarConfeti();
+            } else {
+                screen.innerHTML = `<span class="text-[5rem] mb-2">💥</span><h3 class="text-4xl font-black text-red-500 drop-shadow mb-4">¡Cayeron muchos!</h3><button onclick="empezarLluvia()" class="btn-interactivo bg-red-600 text-white font-black text-2xl px-8 py-4 rounded-xl border-b-4 border-red-800">Reintentar</button>`;
+            }
+        }
+
+        // --- JUEGO 3: COPIAR LA FRASE ---
+        const frases = ["El teclado tiene letras y numeros.", "Me gusta usar la computadora.", "La tecla mas grande es el Espacio."];
+        let fraseAct = 0; const inputFrase = document.getElementById('input-frase'); const displayFrase = document.getElementById('frase-display');
+        function cargarFrase() {
+            if(fraseAct >= frases.length) {
+                displayFrase.innerHTML = "<span class='text-green-400'>¡Terminaste todas las frases!</span>";
+                inputFrase.style.display = 'none'; document.getElementById('frase-progreso').innerText = "3";
+                lanzarConfeti(); return;
+            }
+            document.getElementById('frase-progreso').innerText = fraseAct + 1; inputFrase.value = ''; renderFraseSpans();
+        }
+        function renderFraseSpans() {
+            const f = frases[fraseAct]; const val = inputFrase.value; displayFrase.innerHTML = '';
+            for(let i=0; i<f.length; i++) {
+                const span = document.createElement('span'); span.innerText = f[i];
+                if(i < val.length) { if(val[i] === f[i]) span.className = 'char-correcto'; else span.className = 'char-incorrecto'; }
+                else if (i === val.length) { span.className = 'char-actual'; }
+                displayFrase.appendChild(span);
+            }
+        }
+        inputFrase.addEventListener('input', () => {
+            if(fraseAct >= frases.length) return;
+            renderFraseSpans(); const f = frases[fraseAct]; const val = inputFrase.value;
+            if(val === f) {
+                const feed = document.getElementById('frase-feedback');
+                feed.style.display = 'block'; feed.className = "mt-6 text-3xl font-black p-6 rounded-2xl bg-green-500/20 text-green-300 border-2 border-green-400 w-full";
+                feed.innerHTML = "✅ ¡Perfecto!"; fraseAct++; inputFrase.disabled = true;
+                setTimeout(() => { feed.style.display = 'none'; inputFrase.disabled = false; cargarFrase(); inputFrase.focus(); }, 1500);
+            }
+        });
+        cargarFrase();
+
+        // --- JUEGO FINAL 4: SALTO EN GLOBO (¡LETRAS ARREGLADAS Y VISIBLES!) ---
+        let globoPts = 0; let globoRecord = 0; let globoTimer = 100; let globoSpeed = 0.3; let globoActivo = false; let globoInterval; let currentLetraGlobo = '';
+        const letrasPosibles = "abcdefghijklmnopqrstuvwxyz";
+        const inputGlobo = document.getElementById('input-oculto-globo');
+        const areaGlobo = document.getElementById('area-globo');
+        const contElementos = document.getElementById('globo-game-elements');
+
+        function empezarGlobo() {
+            document.getElementById('globo-start').style.display = 'none';
+            // Remover cualquier cartel viejo de game over
+            const oldScreen = document.querySelector('.rústico-perder-screen');
+            if(oldScreen) oldScreen.remove();
+            
+            globoPts = 0; globoTimer = 100; globoSpeed = 0.3; globoActivo = true;
+            document.getElementById('globo-pts').innerText = globoPts;
+            document.getElementById('globo-record').innerText = globoRecord;
+            inputGlobo.focus();
+
+            // Estructura inicial: Primer globo a la izquierda, segundo a la derecha (SIN opacity-0)
+            contElementos.innerHTML = `
+                <div id="mono-sprite" class="absolute z-50 transition-all duration-300" style="left: 20%; top: 50%; transform: translate(-50%, -50%);">
+                    <div class="text-[5rem] md:text-[6rem] drop-shadow-[0_10px_8px_rgba(0,0,0,0.5)]">🐒</div>
+                </div>
+                
+                <div id="globo-actual" class="absolute z-40 flex flex-col items-center transition-all duration-300" style="left: 20%; top: 30%; transform: translate(-50%, -50%);">
+                    <div class="relative">
+                        <div class="text-[6rem] md:text-[7rem] drop-shadow-[0_10px_8px_rgba(0,0,0,0.4)] leading-none globo-color">🎈</div>
+                    </div>
+                    <div class="w-1 h-16 bg-yellow-900 border-x border-yellow-950 -mt-4 shadow-md"></div>
+                </div>
+                
+                <div id="globo-siguiente" class="absolute z-40 flex flex-col items-center transition-all duration-300" style="left: 70%; top: 30%; transform: translate(-50%, -50%);">
+                    <div class="relative">
+                        <div class="text-[6rem] md:text-[7rem] drop-shadow-[0_10px_8px_rgba(0,0,0,0.4)] leading-none globo-color">🎈</div>
+                        <div class="la-letra absolute top-[25%] left-1/2 -translate-x-1/2 text-white font-black text-[4rem] font-mono uppercase z-50 pointer-events-none" style="text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 6px rgba(0,0,0,0.8);"></div>
+                    </div>
+                    <div class="w-1 h-16 bg-yellow-900 border-x border-yellow-950 -mt-4 shadow-md"></div>
+                </div>
+            `;
+            
+            generarLetraGlobo();
+            clearInterval(globoInterval); 
+            globoInterval = setInterval(updateGlobo, 50);
+        }
+
+        function generarLetraGlobo() {
+            currentLetraGlobo = letrasPosibles[Math.floor(Math.random() * letrasPosibles.length)];
+            const sigGlobo = document.getElementById('globo-siguiente');
+            if(sigGlobo) {
+                const spanLetra = sigGlobo.querySelector('.la-letra');
+                if(spanLetra) spanLetra.innerText = currentLetraGlobo.toUpperCase();
+                
+                const globoDiv = sigGlobo.querySelector('.globo-color');
+                if(globoDiv) {
+                    const hue = Math.floor(Math.random() * 360);
+                    globoDiv.style.filter = `hue-rotate(${hue}deg)`;
+                }
+            }
+        }
+
+        function updateGlobo() {
+            if(!globoActivo) return;
+            globoTimer -= globoSpeed;
+            const fill = document.getElementById('globo-timer-bar-fill');
+            if(fill) fill.style.width = Math.max(0, globoTimer) + '%';
+            if(globoTimer <= 0) perderGlobo();
+        }
+
+        inputGlobo.addEventListener('input', (e) => {
+            if(!globoActivo) return;
+            const inputVal = inputGlobo.value.toLowerCase();
+            inputGlobo.value = ''; 
+            
+            if(inputVal.length > 0) {
+                const char = inputVal.charAt(inputVal.length - 1);
+                if(char === currentLetraGlobo) {
+                    globoPts++; 
+                    document.getElementById('globo-pts').innerText = globoPts;
+                    if(globoPts > globoRecord) { 
+                        globoRecord = globoPts; 
+                        document.getElementById('globo-record').innerText = globoRecord; 
+                    }
+                    globoSpeed += 0.015; 
+                    globoTimer = 100;
+                    animarSaltoYCaida();
+                } else {
+                    globoTimer -= 15; 
+                    const fill = document.getElementById('globo-timer-bar-fill');
+                    if(fill) {
+                        fill.classList.add('bg-white'); 
+                        setTimeout(() => fill.classList.remove('bg-white'), 100);
+                    }
+                }
+            }
+        });
+        
+        areaGlobo.addEventListener('click', () => { if(globoActivo) inputGlobo.focus(); });
+
+        function animarSaltoYCaida() {
+            const actual = document.getElementById('globo-actual');
+            const siguiente = document.getElementById('globo-siguiente');
+            const mono = document.getElementById('mono-sprite');
+            
+            lanzarParticulas(mono.offsetLeft + 20, mono.offsetTop + 20);
+
+            // Quitamos la letra vieja para que no moleste visualmente al saltar
+            const oldLetra = actual.querySelector('.la-letra');
+            if(oldLetra) oldLetra.remove();
+
+            // Mono salta
+            mono.style.top = '20%'; 
+            mono.style.left = '70%'; 
+            setTimeout(() => { 
+                if(globoActivo) mono.style.top = '50%'; 
+            }, 200); 
+
+            // Globo viejo cae y se achica
+            actual.style.transform = 'translate(-50%, -50%) rotate(180deg) scale(0.2)';
+            actual.style.opacity = '0';
+            
+            // Siguiente globo se mueve al centro y se convierte en el "actual"
+            siguiente.style.transition = 'none'; 
+            siguiente.id = 'globo-actual'; 
+            siguiente.style.left = '20%'; 
+            siguiente.style.transform = 'translate(-50%, -50%)';
+
+            const gc = siguiente.querySelector('.globo-color');
+            if(gc) {
+                gc.classList.add('shake-anim');
+                setTimeout(() => gc.classList.remove('shake-anim'), 300);
+            }
+
+            setTimeout(() => actual.remove(), 400);
+
+            // Crear y preparar el nuevo globo que vendrá por la derecha
+            const newNext = document.createElement('div');
+            newNext.id = 'globo-siguiente';
+            // Empieza escondido a la derecha (left: 100%) y transparente
+            newNext.className = 'absolute z-40 flex flex-col items-center opacity-0 transition-all duration-300';
+            newNext.style.left = '100%'; 
+            newNext.style.top = '30%'; 
+            newNext.style.transform = 'translate(-50%, -50%)';
+            newNext.innerHTML = `
+                <div class="relative">
+                    <div class="text-[6rem] md:text-[7rem] drop-shadow-[0_10px_8px_rgba(0,0,0,0.4)] leading-none globo-color">🎈</div>
+                    <div class="la-letra absolute top-[25%] left-1/2 -translate-x-1/2 text-white font-black text-[4rem] font-mono uppercase z-50 pointer-events-none" style="text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 6px rgba(0,0,0,0.8);"></div>
+                </div>
+                <div class="w-1 h-16 bg-yellow-900 border-x border-yellow-950 -mt-4 shadow-md"></div>
+            `;
+            contElementos.appendChild(newNext);
+
+            // Le asignamos la letra enseguida antes de que aparezca en pantalla
+            generarLetraGlobo();
+
+            // Animación de entrada suave
+            setTimeout(() => {
+                newNext.classList.remove('opacity-0');
+                newNext.style.left = '70%'; 
+            }, 50);
+        }
+
+        function perderGlobo() {
+            globoActivo = false; 
+            clearInterval(globoInterval);
+            
+            const mono = document.getElementById('mono-sprite');
+            if(mono) {
+                mono.style.transition = "transform 0.8s ease-in, top 0.8s ease-in, opacity 0.8s ease-in";
+                mono.style.top = '120%'; 
+                mono.style.transform = 'translate(-50%, -50%) rotate(180deg) scale(0.5)';
+                mono.style.opacity = '0';
+            }
+            
+            setTimeout(() => {
+                areaGlobo.insertAdjacentHTML('beforeend', `
+                    <div class="rústico-perder-screen absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center z-[100] backdrop-blur-sm p-4 transition-all">
+                        <span class="text-[6rem] mb-2 animate-bounce drop-shadow-xl">💥🐒</span>
+                        <h3 class="text-4xl md:text-5xl font-black text-white drop-shadow-md mb-2 leading-tight">¡Se pinchó el globo!</h3>
+                        <p class="text-2xl text-yellow-300 font-bold mb-6">Puntos logrados: ${globoPts}</p>
+                        <button onclick="empezarGlobo()" class="btn-interactivo bg-sky-500 text-white font-black text-2xl md:text-3xl px-8 py-4 rounded-2xl border-b-4 border-sky-700 shadow-[0_0_20px_#38bdf8] hover:scale-110 transition flex items-center gap-3">¡JUGAR DE NUEVO! 🐒</button>
+                    </div>
+                `);
+            }, 600);
+        }
+
+        // --- MEGA QUIZ FINAL ---
+        const preguntasQuiz = [
+            { q: "¿Para qué sirve el Teclado?", options: ["Para escribir letras, números y dar órdenes a la compu", "Para ver videos en internet"], correct: 0 },
+            { q: "¿Cuál es la tecla que sirve para borrar?", options: ["El Espacio (la larga de abajo)", "El Backspace (Retroceso)"], correct: 1 },
+            { q: "¿Qué hace la tecla ENTER?", options: ["Baja al renglón de abajo o confirma una orden", "Apaga la computadora al instante"], correct: 0 },
+            { q: "¿Cómo debe estar nuestra espalda cuando usamos la compu?", options: ["Doblada hacia adelante para ver de cerca", "Recta y apoyada en la silla"], correct: 1 },
+            { q: "REPASO: ¿En qué programa de Windows puedo hacer dibujos?", options: ["En el Bloc de Notas", "En Paint"], correct: 1 },
+            { q: "¿Para qué sirve la tecla SHIFT?", options: ["Para borrar todo el texto de una vez", "Si la mantengo apretada, escribe en MAYÚSCULAS"], correct: 1 },
+            { q: "REPASO: ¿Para qué sirven las Carpetas?", options: ["Para guardar y organizar nuestros archivos adentro", "Para cambiar el fondo de pantalla"], correct: 0 },
+            { q: "La Fila Guía es donde descansan los dedos al escribir. ¿Qué letras son?", options: ["A S D F y J K L Ñ", "Q W E R y U I O P"], correct: 0 }
+        ];
+        let quizAct = 0; let quizPts = 0;
+
+        function cargarQuiz() {
+            if(quizAct >= preguntasQuiz.length) {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('quiz-score-text').innerText = `Puntaje Final: ${quizPts} de ${preguntasQuiz.length}`;
+                if(quizPts >= 6) lanzarConfeti();
+                return;
+            }
+            const p = preguntasQuiz[quizAct];
+            document.getElementById('quiz-question').innerText = p.q;
+            document.getElementById('quiz-count').innerText = quizAct + 1;
+            document.getElementById('quiz-progress').style.width = ((quizAct) / preguntasQuiz.length) * 100 + "%";
+            const cont = document.getElementById('quiz-options'); cont.innerHTML = '';
+            
+            p.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-black/20 p-6 rounded-2xl font-bold border-2 border-white/30 hover:bg-white/20 transition text-white text-xl text-left leading-relaxed';
+                btn.innerText = opt; 
+                btn.onclick = () => { if(index === p.correct) quizPts++; quizAct++; cargarQuiz(); };
+                cont.appendChild(btn);
+            });
+        }
+        cargarQuiz();
+
+        function reiniciarQuiz() {
+            quizAct = 0; quizPts = 0;
+            document.getElementById('quiz-container').style.display = 'flex';
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

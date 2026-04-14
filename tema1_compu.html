@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La computadora - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #f472b6 50%, #2563eb 100%);
+            --texto-principal: #ffffff;
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --tarjeta-hover: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --header-bg: rgba(255, 255, 255, 0.1);
+            --text-dark: #1e293b;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            --texto-principal: #e2e8f0;
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --tarjeta-hover: rgba(0, 0, 0, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(0, 0, 0, 0.4);
+            --text-dark: #f8fafc;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; min-height: 100%; 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+            transition: background 0.5s ease;
+        }
+
+        /* BOTÓN SOL/LUNA */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.2); border: none; 
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+
+        /* EFECTOS DE TARJETA (Glassmorphism) */
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        /* Tarjetas interactivas */
+        .card-hover {
+            background: rgba(255, 255, 255, 0.8);
+            color: #1e293b;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .dark-mode .card-hover { background: rgba(15, 23, 42, 0.8); color: #f8fafc; border: 2px solid rgba(255,255,255,0.1); }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            border-color: #38bdf8;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Animación para errores en juegos */
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .error-shake { animation: shake 0.4s; }
+
+        /* Animación de entrada */
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        
+        iframe { max-width: 100%; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="w-full max-w-5xl mx-auto pt-16 md:pt-4">
+        
+        <header class="flex flex-col md:flex-row justify-between items-center bg-[var(--header-bg)] p-6 rounded-3xl backdrop-blur-sm border border-[var(--border-color)] shadow-lg mb-10 fade-up" style="animation-delay: 0.1s;">
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <span class="text-6xl drop-shadow-md">🤖</span>
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black drop-shadow-lg leading-tight">La Computadora</h1>
+                    <p class="text-xl font-bold opacity-90 mt-1 text-sky-200">Importancia y usos en la escuela</p>
+                </div>
+            </div>
+            <a href="submenu_compu.html" class="mt-6 md:mt-0 bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-gray-200 transition shadow-md flex items-center gap-2">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel fade-up border-l-8 border-sky-400" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">¿Qué es una computadora?</h2>
+            <p class="text-xl leading-relaxed opacity-90 mb-6">
+                Una computadora es una máquina electrónica muy rápida. ¡Ojo! Ella no piensa sola, pero nos ayuda a procesar un montón de información si nosotros le damos las instrucciones correctas.
+            </p>
+            
+            <h3 class="text-2xl font-bold text-sky-200 mb-4">Es una súper herramienta que nos ayuda a:</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-white/20 p-4 rounded-xl flex items-center gap-3 font-bold text-lg"><span class="text-3xl">✍️</span> Escribir</div>
+                <div class="bg-white/20 p-4 rounded-xl flex items-center gap-3 font-bold text-lg"><span class="text-3xl">🔍</span> Buscar info</div>
+                <div class="bg-white/20 p-4 rounded-xl flex items-center gap-3 font-bold text-lg"><span class="text-3xl">🧠</span> Aprender</div>
+                <div class="bg-white/20 p-4 rounded-xl flex items-center gap-3 font-bold text-lg"><span class="text-3xl">🎨</span> Dibujar</div>
+                <div class="bg-white/20 p-4 rounded-xl flex items-center gap-3 font-bold text-lg"><span class="text-3xl">🎮</span> Jugar</div>
+                <div class="bg-white/20 p-4 rounded-xl flex items-center gap-3 font-bold text-lg"><span class="text-3xl">💬</span> Comunicarnos</div>
+            </div>
+        </section>
+
+        <section class="glass-panel fade-up border-l-8 border-pink-400" style="animation-delay: 0.3s;">
+            <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">🎒 ¿Para qué la usamos en la escuela?</h2>
+            <p class="text-xl mb-6 opacity-90">Toca cada tarjeta para descubrir cómo usamos esta herramienta en nuestras clases.</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="card-hover group" onclick="this.querySelector('.secreto').classList.toggle('hidden')">
+                    <span class="text-5xl block mb-3">📝</span>
+                    <h4 class="font-bold text-xl">Escribir</h4>
+                    <p class="secreto hidden mt-4 text-sm font-bold text-sky-600 dark:text-sky-300 bg-sky-100 dark:bg-sky-900 p-3 rounded-lg">Usamos programas como Word para hacer trabajos sin gastar papel.</p>
+                </div>
+                <div class="card-hover group" onclick="this.querySelector('.secreto').classList.toggle('hidden')">
+                    <span class="text-5xl block mb-3">🌍</span>
+                    <h4 class="font-bold text-xl">Investigar</h4>
+                    <p class="secreto hidden mt-4 text-sm font-bold text-pink-600 dark:text-pink-300 bg-pink-100 dark:bg-pink-900 p-3 rounded-lg">Internet es una biblioteca gigante para buscar info de ciencias.</p>
+                </div>
+                <div class="card-hover group" onclick="this.querySelector('.secreto').classList.toggle('hidden')">
+                    <span class="text-5xl block mb-3">🎨</span>
+                    <h4 class="font-bold text-xl">Dibujar</h4>
+                    <p class="secreto hidden mt-4 text-sm font-bold text-purple-600 dark:text-purple-300 bg-purple-100 dark:bg-purple-900 p-3 rounded-lg">Creamos arte digital con programas como Paint o Canva.</p>
+                </div>
+                <div class="card-hover group" onclick="this.querySelector('.secreto').classList.toggle('hidden')">
+                    <span class="text-5xl block mb-3">🕹️</span>
+                    <h4 class="font-bold text-xl">Jugar</h4>
+                    <p class="secreto hidden mt-4 text-sm font-bold text-green-600 dark:text-green-300 bg-green-100 dark:bg-green-900 p-3 rounded-lg">Juegos matemáticos que hacen que aprender sea divertido.</p>
+                </div>
+                <div class="card-hover group" onclick="this.querySelector('.secreto').classList.toggle('hidden')">
+                    <span class="text-5xl block mb-3">🤖</span>
+                    <h4 class="font-bold text-xl">Programar</h4>
+                    <p class="secreto hidden mt-4 text-sm font-bold text-orange-600 dark:text-orange-300 bg-orange-100 dark:bg-orange-900 p-3 rounded-lg">Aprendemos el idioma de las máquinas para crear animaciones.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel fade-up border-l-8 border-blue-600" style="animation-delay: 0.4s;">
+            <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">🖥️ Tipos de Computadoras</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center">
+                    <span class="text-6xl block mb-4">🖥️</span>
+                    <h3 class="font-black text-xl mb-2 text-sky-200">De Escritorio</h3>
+                    <p class="opacity-90">Grandes, siempre enchufadas. El teclado y el monitor están separados.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center">
+                    <span class="text-6xl block mb-4">💻</span>
+                    <h3 class="font-black text-xl mb-2 text-pink-200">Notebook / Laptop</h3>
+                    <p class="opacity-90">Portátiles y con batería. Ideales para llevar en la mochila.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center">
+                    <span class="text-6xl block mb-4">📱</span>
+                    <h3 class="font-black text-xl mb-2 text-purple-200">Tablet</h3>
+                    <p class="opacity-90">Pantalla táctil sin teclado físico. Muy livianas y cómodas.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center">
+                    <span class="text-6xl block mb-4">📲</span>
+                    <h3 class="font-black text-xl mb-2 text-green-200">Celular</h3>
+                    <p class="opacity-90">¡Los teléfonos modernos son computadoras de bolsillo súper potentes!</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel fade-up border-l-8 border-yellow-400 text-center" style="animation-delay: 0.5s;">
+            <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">🎬 Clase Audiovisual</h2>
+            
+            <div class="w-full rounded-2xl overflow-hidden border-4 border-white/30 shadow-2xl bg-black mb-6">
+                <video class="w-full aspect-video focus:outline-none" controls>
+                    <source src="lacompu.mp4" type="video/mp4">
+                    Tu navegador no soporta el formato de video.
+                </video>
+            </div>
+        </section>
+
+        <section class="glass-panel fade-up border-l-8 border-green-400" style="animation-delay: 0.6s;">
+            <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">🕵️‍♂️ Misión 1: Encuentra las computadoras</h2>
+            <p class="text-xl mb-6 opacity-90">Toca <strong>SÓLO</strong> los dispositivos que sean un tipo de computadora. ¡Cuidado con las trampas!</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button onclick="checkIdentificar(this, true)" class="card-hover border-2 border-white/30"><span class="text-5xl block mb-2">💻</span><span class="font-bold text-lg">Laptop</span></button>
+                <button onclick="checkIdentificar(this, false)" class="card-hover border-2 border-white/30"><span class="text-5xl block mb-2">📺</span><span class="font-bold text-lg">Televisor</span></button>
+                <button onclick="checkIdentificar(this, true)" class="card-hover border-2 border-white/30"><span class="text-5xl block mb-2">📱</span><span class="font-bold text-lg">Tablet</span></button>
+                <button onclick="checkIdentificar(this, false)" class="card-hover border-2 border-white/30"><span class="text-5xl block mb-2">🧊</span><span class="font-bold text-lg">Heladera</span></button>
+                <button onclick="checkIdentificar(this, true)" class="card-hover border-2 border-white/30"><span class="text-5xl block mb-2">📲</span><span class="font-bold text-lg">Celular</span></button>
+                <button onclick="checkIdentificar(this, false)" class="card-hover border-2 border-white/30"><span class="text-5xl block mb-2">🎮</span><span class="font-bold text-lg">Consola</span></button>
+            </div>
+        </section>
+
+        <section class="glass-panel fade-up border-l-8 border-purple-400" style="animation-delay: 0.7s;">
+            <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">🔗 Misión 2: Unir con flechas</h2>
+            <p class="text-xl mb-6 opacity-90">Toca una actividad de la izquierda y luego su herramienta correcta a la derecha.</p>
+
+            <div class="flex flex-col md:flex-row gap-6 justify-between">
+                <div class="flex-1 space-y-4">
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-left transition" data-lado="izq" data-par="1" onclick="jugarUnir(this)">🎨 Dibujar</button>
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-left transition" data-lado="izq" data-par="2" onclick="jugarUnir(this)">✍️ Escribir un cuento</button>
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-left transition" data-lado="izq" data-par="3" onclick="jugarUnir(this)">🔍 Buscar información</button>
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-left transition" data-lado="izq" data-par="4" onclick="jugarUnir(this)">🧠 Aprender sumas</button>
+                </div>
+                
+                <div class="flex-1 space-y-4">
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-right transition" data-lado="der" data-par="3" onclick="jugarUnir(this)">🌐 Internet / Google</button>
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-right transition" data-lado="der" data-par="1" onclick="jugarUnir(this)">🖌️ Programa Paint</button>
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-right transition" data-lado="der" data-par="4" onclick="jugarUnir(this)">🕹️ Juegos Educativos</button>
+                    <button class="w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-right transition" data-lado="der" data-par="2" onclick="jugarUnir(this)">📝 Microsoft Word</button>
+                </div>
+            </div>
+            <div id="msj-unir" class="text-center font-black text-2xl mt-6 min-h-[40px] drop-shadow-md"></div>
+        </section>
+
+        <section class="glass-panel fade-up border-l-8 border-orange-400" style="animation-delay: 0.8s;">
+            <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">🏆 Misión 3: El Gran Quiz</h2>
+            
+            <div id="caja-quiz" class="bg-black/20 p-6 md:p-8 rounded-2xl border border-white/20">
+                <p id="num-pregunta" class="font-bold text-orange-200 mb-2 text-lg">Pregunta 1 de 5</p>
+                <h3 id="texto-pregunta" class="text-2xl font-black mb-6">Cargando...</h3>
+                
+                <div id="opciones-quiz" class="space-y-4">
+                </div>
+                
+                <button id="btn-sig-quiz" style="display:none;" onclick="siguientePregunta()" class="mt-8 w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-4 rounded-xl text-xl shadow-lg transition transform hover:scale-105">
+                    Siguiente Pregunta ➡️
+                </button>
+            </div>
+
+            <div id="caja-resultados" style="display:none;" class="bg-black/20 p-8 rounded-2xl border border-white/20 text-center">
+                <span class="text-7xl block mb-4">🌟</span>
+                <h3 class="text-4xl font-black text-white mb-2">¡Terminaste!</h3>
+                <p class="text-2xl font-bold mb-8">Tu puntaje: <span id="puntaje-final" class="text-orange-400 text-4xl"></span> / 5</p>
+                
+                <button onclick="reiniciarQuiz()" class="bg-sky-500 hover:bg-sky-600 text-white font-black py-4 px-8 rounded-xl text-xl shadow-lg transition transform hover:scale-105">
+                    🔄 Jugar de nuevo
+                </button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-yellow-400 fade-up">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-5xl">🤔</span>
+                <div>
+                    <h2 class="text-3xl font-black text-yellow-400">Reflexión Final</h2>
+                    <p class="text-lg font-bold text-white/80">Completá el formulario para que tu respuesta le llegue al Profe Braian.</p>
+                </div>
+            </div>
+            
+            <div class="form-wrapper rounded-2xl overflow-hidden bg-white shadow-2xl border-4 border-yellow-400/30 max-w-4xl mx-auto">
+                <iframe 
+                    src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" 
+                    width="100%" 
+                    height="700" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0">
+                    Cargando formulario...
+                </iframe>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-yellow-200 font-bold italic drop-shadow-md">
+                    🚀 ¡No te olvides de darle al botón "Enviar" antes de cerrar la página!
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- 1. MODO OSCURO ---
+        const btnT = document.getElementById('btnT');
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            btnT.innerHTML = '🌙';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            btnT.innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modo', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        // --- 2. ACTIVIDAD 1: IDENTIFICAR ---
+        function checkIdentificar(btn, esCompu) {
+            if(btn.classList.contains('bg-green-500') || btn.classList.contains('bg-red-500')) return;
+            
+            if(esCompu) {
+                btn.classList.add('bg-green-500', 'text-white', 'border-green-400');
+                btn.classList.remove('card-hover');
+                btn.innerHTML += '<div class="absolute top-2 right-2 text-2xl">✅</div>';
+            } else {
+                btn.classList.add('bg-red-500', 'text-white', 'border-red-400', 'error-shake');
+                setTimeout(() => {
+                    btn.classList.remove('bg-red-500', 'text-white', 'border-red-400', 'error-shake');
+                }, 1000);
+            }
+        }
+
+        // --- 3. ACTIVIDAD 2: UNIR CON FLECHAS ---
+        let selIzq = null, selDer = null;
+        const msjUnir = document.getElementById('msj-unir');
+
+        function jugarUnir(btn) {
+            if (btn.classList.contains('bg-green-500')) return; 
+
+            const lado = btn.getAttribute('data-lado');
+            
+            document.querySelectorAll(`button[data-lado="${lado}"]`).forEach(b => {
+                if(!b.classList.contains('bg-green-500')) {
+                    b.classList.remove('bg-sky-500', 'border-sky-400');
+                    b.classList.add('bg-white/10', 'border-white/30');
+                }
+            });
+
+            btn.classList.remove('bg-white/10', 'border-white/30');
+            btn.classList.add('bg-sky-500', 'border-sky-400');
+
+            if (lado === 'izq') selIzq = btn; else selDer = btn;
+
+            if (selIzq && selDer) {
+                if (selIzq.getAttribute('data-par') === selDer.getAttribute('data-par')) {
+                    [selIzq, selDer].forEach(b => {
+                        b.classList.replace('bg-sky-500', 'bg-green-500');
+                        b.classList.replace('border-sky-400', 'border-green-400');
+                        b.innerHTML += ' ✅';
+                    });
+                    msjUnir.classList.replace('text-red-400', 'text-green-400');
+                    msjUnir.innerText = "¡Excelente conexión! 🎉";
+                } else {
+                    selIzq.classList.add('error-shake', 'bg-red-500');
+                    selDer.classList.add('error-shake', 'bg-red-500');
+                    msjUnir.classList.add('text-red-400');
+                    msjUnir.innerText = "Mmm... herramienta equivocada ❌";
+                    
+                    let tempI = selIzq, tempD = selDer;
+                    setTimeout(() => {
+                        [tempI, tempD].forEach(b => {
+                            b.classList.remove('error-shake', 'bg-red-500', 'bg-sky-500', 'border-sky-400');
+                            b.classList.add('bg-white/10', 'border-white/30');
+                        });
+                        msjUnir.innerText = "";
+                    }, 1000);
+                }
+                selIzq = null; selDer = null;
+            }
+        }
+
+        // --- 4. QUIZ FINAL ---
+        const preguntas = [
+            { q: "¿Para qué usamos la computadora en la escuela?", o: ["Solo para ver videos", "Para escribir, investigar, dibujar y programar", "Para calentar la comida"], a: 1 },
+            { q: "¿Qué computadora es portátil y tiene teclado incluido?", o: ["Computadora de Escritorio", "Notebook / Laptop", "Celular"], a: 1 },
+            { q: "¿Un celular es considerado una computadora?", o: ["Sí, es una compu de bolsillo", "No, solo sirve para llamar"], a: 0 },
+            { q: "¿Qué programa usamos para escribir un cuento escolar?", o: ["Juego de autos", "Paint", "Procesador de texto (Word/Docs)"], a: 2 },
+            { q: "¿Qué NO tiene una Tablet físicamente?", o: ["Pantalla brillante", "Batería", "Teclado duro con teclas"], a: 2 }
+        ];
+
+        let indexQ = 0, pts = 0;
+
+        function cargarPregunta() {
+            const container = document.getElementById("opciones-quiz");
+            container.innerHTML = "";
+            document.getElementById("btn-sig-quiz").style.display = "none";
+            document.getElementById("num-pregunta").innerText = `Pregunta ${indexQ + 1} de 5`;
+            document.getElementById("texto-pregunta").innerText = preguntas[indexQ].q;
+
+            preguntas[indexQ].o.forEach((txt, i) => {
+                let btn = document.createElement("button");
+                btn.className = "w-full bg-white/10 hover:bg-white/30 border-2 border-white/30 text-white font-bold text-lg p-4 rounded-xl text-left transition";
+                btn.innerText = txt;
+                btn.onclick = () => checkQuiz(i, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkQuiz(iElegido, btnClick) {
+            const btns = document.getElementById("opciones-quiz").children;
+            const correcta = preguntas[indexQ].a;
+            
+            for(let b of btns) b.disabled = true;
+
+            if(iElegido === correcta) {
+                btnClick.classList.replace('bg-white/10', 'bg-green-500');
+                btnClick.classList.replace('border-white/30', 'border-green-400');
+                btnClick.innerHTML += ' ✅';
+                pts++;
+            } else {
+                btnClick.classList.replace('bg-white/10', 'bg-red-500');
+                btnClick.classList.replace('border-white/30', 'border-red-400');
+                btnClick.innerHTML += ' ❌';
+                
+                btns[correcta].classList.replace('bg-white/10', 'bg-green-500');
+                btns[correcta].classList.replace('border-white/30', 'border-green-400');
+                btns[correcta].innerHTML += ' ✅';
+            }
+            document.getElementById("btn-sig-quiz").style.display = "block";
+        }
+
+        function siguientePregunta() {
+            indexQ++;
+            if(indexQ < preguntas.length) {
+                cargarPregunta();
+            } else {
+                document.getElementById("caja-quiz").style.display = "none";
+                document.getElementById("caja-resultados").style.display = "block";
+                document.getElementById("puntaje-final").innerText = pts;
+            }
+        }
+
+        function reiniciarQuiz() {
+            indexQ = 0; pts = 0;
+            document.getElementById("caja-resultados").style.display = "none";
+            document.getElementById("caja-quiz").style.display = "block";
+            cargarPregunta();
+        }
+
+        cargarPregunta();
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
+

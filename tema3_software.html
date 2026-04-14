@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software: Los programas - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #f472b6 50%, #2563eb 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            transition: all 0.5s ease;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-hover {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: white;
+        }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .error-shake { animation: shake 0.4s; }
+        
+        .progress-bar { transition: width 0.4s ease; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 text-2xl" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10">
+        
+        <header class="glass-panel p-8 mb-10 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl drop-shadow-md">💿</span>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black">Software</h1>
+                    <p class="text-xl font-bold text-sky-200">Los programas de la computadora</p>
+                </div>
+            </div>
+            <a href="submenu_compu.html" class="bg-white text-blue-900 font-bold px-6 py-3 rounded-xl hover:bg-gray-200 transition shadow-lg">⬅️ Volver</a>
+        </header>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-sky-400">
+            <h2 class="text-3xl font-black mb-4 text-sky-100">¿Qué es el Software?</h2>
+            <div class="text-xl space-y-4 mb-8">
+                <p>🚀 El <strong>software</strong> son los programas que usamos en la computadora.</p>
+                <p>🧠 Sin software, la computadora sería solo una caja de metal; ¡no sabría qué hacer!</p>
+                <p>🎮 El software es el "cerebro" que le da instrucciones al hardware.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-white/10 p-4 rounded-xl text-center border border-white/20"><span class="text-4xl block mb-2">📝</span><p class="font-bold">Escribir</p></div>
+                <div class="bg-white/10 p-4 rounded-xl text-center border border-white/20"><span class="text-4xl block mb-2">🌐</span><p class="font-bold">Navegar</p></div>
+                <div class="bg-white/10 p-4 rounded-xl text-center border border-white/20"><span class="text-4xl block mb-2">🎨</span><p class="font-bold">Dibujar</p></div>
+                <div class="bg-white/10 p-4 rounded-xl text-center border border-white/20"><span class="text-4xl block mb-2">🎮</span><p class="font-bold">Jugar</p></div>
+                <div class="bg-white/10 p-4 rounded-xl text-center border border-white/20"><span class="text-4xl block mb-2">📊</span><p class="font-bold">Presentar</p></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-pink-400">
+            <h2 class="text-3xl font-black mb-6">Tipos de Software</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <span class="text-5xl block mb-3">📄</span>
+                    <h3 class="font-black text-xl mb-2">Escritura</h3>
+                    <p class="opacity-90">Sirve para crear cuentos y tareas. Ejemplo: <strong>Word</strong>.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <span class="text-5xl block mb-3">🎨</span>
+                    <h3 class="font-black text-xl mb-2">Dibujo</h3>
+                    <p class="opacity-90">Para hacer arte digital. Ejemplo: <strong>Paint</strong>.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <span class="text-5xl block mb-3">🌐</span>
+                    <h3 class="font-black text-xl mb-2">Navegador</h3>
+                    <p class="opacity-90">Para viajar por internet. Ejemplo: <strong>Chrome</strong>.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <span class="text-5xl block mb-3">🏫</span>
+                    <h3 class="font-black text-xl mb-2">Educativo</h3>
+                    <p class="opacity-90">Para aprender jugando matemáticas o ciencias.</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <span class="text-5xl block mb-3">👾</span>
+                    <h3 class="font-black text-xl mb-2">Juegos</h3>
+                    <p class="opacity-90">¡Diversión pura! Como Minecraft o Roblox.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-orange-500 text-center">
+            <h2 class="text-3xl font-black mb-6 italic">🎬 Video: ¿Qué es el Software?</h2>
+            <div class="bg-black aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
+                <video controls class="w-full h-full">
+                    <source src="software.mp4" type="video/mp4">
+                    Tu navegador no soporta el video.
+                </video>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-green-400">
+            <h2 class="text-3xl font-black mb-4">🕵️‍♂️ Misión 1: ¡Encuentra el Software!</h2>
+            <p class="mb-6 text-lg font-bold">Toca solo las cosas que sean programas (invisibles):</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="checkSoft(this, true)" class="card-hover p-4 rounded-xl font-bold text-lg">🎨 Paint</button>
+                <button onclick="checkSoft(this, false)" class="card-hover p-4 rounded-xl font-bold text-lg">🖥️ Monitor</button>
+                <button onclick="checkSoft(this, false)" class="card-hover p-4 rounded-xl font-bold text-lg">⌨️ Teclado</button>
+                <button onclick="checkSoft(this, true)" class="card-hover p-4 rounded-xl font-bold text-lg">🌐 Chrome</button>
+                <button onclick="checkSoft(this, true)" class="card-hover p-4 rounded-xl font-bold text-lg">📄 Word</button>
+                <button onclick="checkSoft(this, false)" class="card-hover p-4 rounded-xl font-bold text-lg">🖱️ Mouse</button>
+                <button onclick="checkSoft(this, true)" class="card-hover p-4 rounded-xl font-bold text-lg">🕹️ Juego Pro</button>
+                <button onclick="checkSoft(this, false)" class="card-hover p-4 rounded-xl font-bold text-lg">🔌 Cables</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-purple-500">
+            <h2 class="text-3xl font-black mb-4">🔗 Misión 2: Une con flechas</h2>
+            <p class="mb-6 text-lg">Toca una acción y luego el programa correcto para hacerla:</p>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1 space-y-4" id="col-izq">
+                    <button onclick="selectUnir(this, 'izq')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-left border-2 border-transparent transition" data-par="1">✍️ Escribir un cuento</button>
+                    <button onclick="selectUnir(this, 'izq')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-left border-2 border-transparent transition" data-par="2">🎨 Dibujar</button>
+                    <button onclick="selectUnir(this, 'izq')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-left border-2 border-transparent transition" data-par="3">🌐 Buscar información</button>
+                    <button onclick="selectUnir(this, 'izq')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-left border-2 border-transparent transition" data-par="4">🎮 Jugar</button>
+                </div>
+                <div class="flex-1 space-y-4" id="col-der">
+                    <button onclick="selectUnir(this, 'der')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-right border-2 border-transparent transition" data-par="3">Google Chrome 🌐</button>
+                    <button onclick="selectUnir(this, 'der')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-right border-2 border-transparent transition" data-par="1">Microsoft Word 📝</button>
+                    <button onclick="selectUnir(this, 'der')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-right border-2 border-transparent transition" data-par="4">Videojuego 👾</button>
+                    <button onclick="selectUnir(this, 'der')" class="w-full bg-white/10 p-4 rounded-xl font-bold text-right border-2 border-transparent transition" data-par="2">Paint 🖌️</button>
+                </div>
+            </div>
+            <div id="msj-unir" class="text-center font-black text-2xl mt-6 h-8 drop-shadow-md"></div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-sky-300">
+            <h2 class="text-3xl font-black mb-4">🎯 Misión Extra: Cacería de Software</h2>
+            <p class="mb-6 text-lg font-bold">¡Atrapá todos los programas que puedas en 30 segundos! (Si atrapás hardware, perdés puntos).</p>
+            
+            <div id="area-juego" class="relative w-full h-[400px] bg-black/40 rounded-3xl overflow-hidden cursor-crosshair border-4 border-white/20">
+                <div id="pantalla-inicio" class="absolute inset-0 flex flex-col items-center justify-center bg-blue-900/80 z-10 backdrop-blur-sm">
+                    <button onclick="empezarCaceria()" class="bg-yellow-400 text-blue-900 font-black px-10 py-4 rounded-2xl text-2xl shadow-xl hover:scale-110 transition">¡EMPEZAR CAZA! 🚀</button>
+                </div>
+                
+                <div class="absolute top-4 left-4 font-black text-2xl text-white pointer-events-none drop-shadow-md z-20">Puntos: <span id="puntos-caza" class="text-yellow-400">0</span></div>
+                <div class="absolute top-4 right-4 font-black text-2xl text-white pointer-events-none drop-shadow-md z-20">Tiempo: <span id="tiempo-caza" class="text-pink-400">30</span>s</div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-red-500">
+            <h2 class="text-3xl font-black mb-4">🏆 Misión Final: El Quiz</h2>
+            
+            <div class="w-full bg-white/20 h-3 rounded-full mb-8 overflow-hidden">
+                <div id="quiz-progress" class="progress-bar bg-pink-400 h-full w-0"></div>
+            </div>
+
+            <div id="quiz-box">
+                <p id="q-text" class="text-2xl font-bold mb-6 italic"></p>
+                <div id="q-options" class="grid gap-4"></div>
+                <button id="btn-next" onclick="nextQ()" class="hidden mt-8 w-full bg-sky-400 p-4 rounded-2xl font-black text-blue-900 hover:bg-sky-300 transition text-xl">Siguiente Pregunta ➡️</button>
+            </div>
+
+            <div id="quiz-result" class="hidden text-center p-6">
+                <span class="text-8xl block mb-6">🎓</span>
+                <h3 class="text-4xl font-black mb-4">¡Excelente!</h3>
+                <p class="text-2xl mb-8 font-bold">Tu puntaje final es: <span id="score-final" class="text-pink-300 text-5xl"></span> / 5</p>
+                <button onclick="location.reload()" class="bg-white text-blue-900 font-black px-10 py-4 rounded-2xl shadow-xl hover:scale-105 transition">Empezar de nuevo</button>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 mb-10 border-l-8 border-yellow-400">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-5xl">🤔</span>
+                <div>
+                    <h2 class="text-3xl font-black text-yellow-400 drop-shadow-md">Reflexión Final</h2>
+                    <p class="text-lg font-bold opacity-90">¿Qué software usás vos en tu compu?</p>
+                </div>
+            </div>
+            
+            <div class="max-w-3xl mx-auto px-2">
+                <div class="rounded-3xl overflow-hidden bg-white shadow-2xl border-4 border-yellow-400/30">
+                    <iframe 
+                        src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" 
+                        width="100%" 
+                        height="700" 
+                        frameborder="0">
+                        Cargando formulario...
+                    </iframe>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- TEMA ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('btnT').innerHTML = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+        }
+
+        // --- MISION 1: ¿ES SOFTWARE? ---
+        function checkSoft(btn, ok) {
+            if(btn.disabled) return;
+            btn.classList.add(ok ? 'bg-green-500' : 'bg-red-500', 'text-white', 'border-transparent');
+            if(ok) {
+                btn.innerHTML += ' ✔';
+                btn.disabled = true;
+            } else {
+                btn.innerHTML += ' ❌';
+                btn.classList.add('error-shake');
+                setTimeout(() => {
+                    btn.classList.remove('bg-red-500', 'error-shake', 'text-white');
+                    btn.innerHTML = btn.innerHTML.replace(' ❌', '');
+                }, 1000);
+            }
+        }
+
+        // --- MISION 2: JUEGO UNIR ---
+        let selIzq = null, selDer = null;
+        function selectUnir(btn, lado) {
+            if(btn.disabled) return;
+            const buttons = document.querySelectorAll(`#col-${lado} button`);
+            buttons.forEach(b => { if(!b.disabled) b.classList.remove('border-sky-400', 'bg-sky-400/30'); });
+            
+            btn.classList.add('border-sky-400', 'bg-sky-400/30');
+            if(lado === 'izq') selIzq = btn; else selDer = btn;
+
+            if(selIzq && selDer) {
+                if(selIzq.dataset.par === selDer.dataset.par) {
+                    selIzq.classList.add('bg-green-500', 'text-white', 'border-green-400');
+                    selDer.classList.add('bg-green-500', 'text-white', 'border-green-400');
+                    selIzq.innerHTML += ' ✅'; selDer.innerHTML += ' ✅';
+                    selIzq.disabled = true; selDer.disabled = true;
+                    document.getElementById('msj-unir').innerText = "¡Match Perfecto! 🌟";
+                    document.getElementById('msj-unir').className = "text-center font-black text-2xl mt-6 h-8 text-green-400 drop-shadow-md";
+                    selIzq = null; selDer = null;
+                } else {
+                    selIzq.classList.add('error-shake', 'bg-red-500', 'text-white');
+                    selDer.classList.add('error-shake', 'bg-red-500', 'text-white');
+                    document.getElementById('msj-unir').innerText = "¡Mmm, intenta de nuevo! ❌";
+                    document.getElementById('msj-unir').className = "text-center font-black text-2xl mt-6 h-8 text-red-400 drop-shadow-md";
+                    setTimeout(() => {
+                        selIzq.classList.remove('error-shake', 'bg-red-500', 'border-sky-400', 'bg-sky-400/30', 'text-white');
+                        selDer.classList.remove('error-shake', 'bg-red-500', 'border-sky-400', 'bg-sky-400/30', 'text-white');
+                        selIzq = null; selDer = null;
+                        document.getElementById('msj-unir').innerText = "";
+                    }, 1000);
+                }
+            }
+        }
+
+        // --- MISION EXTRA: CACERÍA (CORREGIDO) ---
+        let puntosCaza = 0;
+        let tiempoRestante = 30;
+        let juegoActivo = false;
+        
+        function empezarCaceria() {
+            const area = document.getElementById('area-juego');
+            puntosCaza = 0;
+            tiempoRestante = 30;
+            juegoActivo = true;
+            document.getElementById('puntos-caza').innerText = puntosCaza;
+            document.getElementById('pantalla-inicio').classList.add('hidden');
+            
+            const timer = setInterval(() => {
+                tiempoRestante--;
+                document.getElementById('tiempo-caza').innerText = tiempoRestante;
+                if(tiempoRestante <= 0) {
+                    clearInterval(timer);
+                    juegoActivo = false;
+                    alert("¡Tiempo cumplido! Lograste " + puntosCaza + " puntos atrapando software.");
+                    document.getElementById('pantalla-inicio').classList.remove('hidden');
+                }
+            }, 1000);
+
+            lanzarIcono(area);
+        }
+
+        function lanzarIcono(area) {
+            if(!juegoActivo) return;
+
+            const itemsCaza = [
+                { i: '🎨', s: true }, { i: '🌐', s: true }, { i: '📄', s: true }, 
+                { i: '🎮', s: true }, { i: '🎬', s: true }, { i: '🖱️', s: false }, 
+                { i: '🖥️', s: false }, { i: '⌨️', s: false }, { i: '🔊', s: false }
+            ];
+
+            const item = itemsCaza[Math.floor(Math.random() * itemsCaza.length)];
+            const el = document.createElement('div');
+            el.innerHTML = item.i;
+            
+            // CORRECCIÓN CLAVE ACÁ: transition-transform (no transition-all) para que no tiembale al caer
+            el.className = 'absolute text-5xl cursor-pointer select-none transition-transform duration-300 hover:scale-125 z-10';
+            
+            el.style.left = Math.random() * (area.clientWidth - 80) + 'px';
+            el.style.top = '-60px';
+            area.appendChild(el);
+
+            let pos = -60;
+            const caida = setInterval(() => {
+                pos += 2; // Velocidad de caída más lenta y manejable para 4to grado
+                el.style.top = pos + 'px';
+                
+                if(pos > area.clientHeight) {
+                    clearInterval(caida);
+                    if(el.parentNode) area.removeChild(el);
+                }
+            }, 30); // Intervalo un poco más largo
+
+            el.onmousedown = () => {
+                clearInterval(caida);
+                if(item.s) {
+                    puntosCaza += 10;
+                    el.style.textShadow = "0 0 20px #4ade80";
+                    el.innerHTML = '✅';
+                } else {
+                    puntosCaza -= 15;
+                    el.style.textShadow = "0 0 20px #f87171";
+                    el.innerHTML = '❌';
+                }
+                document.getElementById('puntos-caza').innerText = puntosCaza;
+                
+                setTimeout(() => { if(el.parentNode) area.removeChild(el); }, 300);
+            };
+
+            setTimeout(() => lanzarIcono(area), 800);
+        }
+
+        // --- MISION FINAL: QUIZ ---
+        const questions = [
+            { q: "¿Qué es el software?", o: ["Las piezas que se pueden tocar", "Los programas de la compu", "Los cables"], a: 1 },
+            { q: "¿Para qué sirve un programa?", o: ["Para darle instrucciones a la PC", "Para prender el monitor", "No sirven para nada"], a: 0 },
+            { q: "¿Cuál de estos es software?", o: ["Teclado", "Mouse", "Paint"], a: 2 },
+            { q: "¿Qué usamos para escribir un texto?", o: ["Google Chrome", "Microsoft Word", "Youtube"], a: 1 },
+            { q: "¿Qué usamos para navegar en internet?", o: ["Paint", "Calculadora", "Chrome / Edge"], a: 2 }
+        ];
+        let currentQ = 0, score = 0;
+
+        function loadQ() {
+            if(currentQ >= questions.length) {
+                document.getElementById('quiz-box').classList.add('hidden');
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('score-final').innerText = score;
+                return;
+            }
+            const q = questions[currentQ];
+            document.getElementById('q-text').innerText = `Pregunta ${currentQ + 1}: ${q.q}`;
+            document.getElementById('quiz-progress').style.width = ((currentQ) / questions.length * 100) + "%";
+            
+            const optBox = document.getElementById('q-options');
+            optBox.innerHTML = "";
+            q.o.forEach((opt, i) => {
+                const b = document.createElement('button');
+                b.className = "w-full p-5 bg-white/10 border-2 border-white/20 rounded-xl text-left font-bold hover:bg-white/20 transition text-lg";
+                b.innerText = opt;
+                b.onclick = () => {
+                    const btns = optBox.querySelectorAll('button');
+                    btns.forEach(btn => btn.disabled = true);
+                    if(i === q.a) {
+                        b.classList.replace('bg-white/10', 'bg-green-500');
+                        b.classList.replace('border-white/20', 'border-green-400');
+                        b.innerHTML += ' ✅';
+                        score++;
+                    } else {
+                        b.classList.replace('bg-white/10', 'bg-red-500');
+                        b.classList.replace('border-white/20', 'border-red-400');
+                        b.innerHTML += ' ❌';
+                        btns[q.a].classList.replace('bg-white/10', 'bg-green-500');
+                        btns[q.a].innerHTML += ' ✅';
+                    }
+                    document.getElementById('btn-next').classList.remove('hidden');
+                    document.getElementById('quiz-progress').style.width = ((currentQ + 1) / questions.length * 100) + "%";
+                };
+                optBox.appendChild(b);
+            });
+        }
+        function nextQ() {
+            currentQ++;
+            document.getElementById('btn-next').classList.add('hidden');
+            loadQ();
+        }
+        loadQ();
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
+

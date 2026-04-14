@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 5: Conociendo Windows - 4to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg); border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px); border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-interactivo { transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; cursor: pointer; }
+        .btn-interactivo:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-interactivo:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); transform: none; }
+
+        /* SIMULADOR DETECTIVE (JUEGO 1) */
+        .escritorio-detective {
+            background: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1000&auto=format&fit=crop') center/cover;
+            position: relative; overflow: hidden; border-radius: 12px; cursor: crosshair;
+        }
+        .zona-detective { position: absolute; border: 4px dashed transparent; transition: all 0.2s; z-index: 10; }
+        .zona-detective:hover { background: rgba(255,255,255,0.3); border-color: white; }
+        .zona-detective.flash-verde { animation: flashVerde 0.5s; border-color: #4ade80; background: rgba(74,222,128,0.5); z-index: 20; }
+        .zona-detective.flash-rojo { animation: flashRojo 0.5s; border-color: #ef4444; background: rgba(239,68,68,0.5); z-index: 20; }
+
+        @keyframes flashVerde { 0%, 100% { background: transparent; } 50% { background: rgba(74,222,128,0.8); } }
+        @keyframes flashRojo { 0%, 100% { background: transparent; } 50% { background: rgba(239,68,68,0.8); } }
+
+        /* SIMULADOR DE VENTANAS (JUEGO 3) */
+        .win-pantalla { background: linear-gradient(135deg, #0078D7, #00bcf2); position: relative; overflow: hidden; } 
+        .win-taskbar { background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255,255,255,0.1); position: absolute; bottom: 0; width: 100%; height: 48px; display: flex; align-items: center; padding: 0 10px; z-index: 50; }
+        .win-icon { width: 70px; text-align: center; padding: 8px; border-radius: 5px; color: white; cursor: pointer; transition: background 0.2s; margin-bottom: 5px; }
+        .win-icon:hover { background: rgba(255,255,255,0.2); }
+        .win-window { position: absolute; top: 10%; left: 10%; width: 80%; height: 75%; background: white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; z-index: 40; transform: scale(0); opacity: 0; transition: all 0.3s; }
+        .win-window.open { transform: scale(1); opacity: 1; }
+        .win-topbar { background: #f1f5f9; height: 35px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid #cbd5e1; user-select: none; }
+        .win-close { background: transparent; border: none; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .win-close:hover { background: #ef4444; color: white; }
+        
+        /* DRAG AND DROP ORGANIZADOR */
+        .item-drag { background: white; color: #0f172a; padding: 10px 15px; border-radius: 12px; font-weight: 900; font-size: 1rem; cursor: grab; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 8px; border: 2px solid #cbd5e1; }
+        .dark-mode .item-drag { background: #1e293b; color: white; border-color: #475569; }
+        .item-drag:active { cursor: grabbing; transform: scale(1.1); }
+        .zona-drop { min-height: 120px; border-radius: 16px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; border: 4px dashed rgba(255,255,255,0.5); transition: all 0.3s; }
+        .zona-drop.drag-over { transform: scale(1.02); filter: brightness(1.2); border-color: #fde047; background: rgba(255,255,255,0.1); }
+
+        /* JUEGO VIRUS */
+        .area-virus { position: relative; width: 100%; aspect-ratio: 16/9; max-height: 400px; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover; border-radius: 16px; overflow: hidden; border: 8px solid #334155; cursor: crosshair; }
+        .virus-enemigo { position: absolute; font-size: 3rem; cursor: pointer; transition: transform 0.1s; filter: drop-shadow(0 0 10px rgba(255,0,0,0.8)); }
+        .virus-enemigo:active { transform: scale(0.8); }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        .shake-anim { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .confeti { position: fixed; width: 15px; height: 15px; z-index: 9999; pointer-events: none; border-radius: 4px; }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12">
+        
+        <header class="glass-panel p-8 md:p-10 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-sky-400 drop-shadow-lg w-20 h-20 md:w-24 md:h-24">
+                    <svg viewBox="0 0 88 88" fill="currentColor" class="w-full h-full"><path d="M0 12.402l35.687-4.86.016 34.423-35.703.206V12.402zm35.67 33.529l.015 33.69-35.685-4.805V46.126l35.67-.195zM40.336 6.34L88 0v40.84l-47.664.376V6.34zM88 45.31l-.015 41.52-47.65-6.528V45.716L88 45.31z"/></svg>
+                </span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Clase 5: Conociendo Windows</h1>
+                    <p class="text-lg md:text-xl font-bold opacity-90 text-sky-100">Aprendemos a usar el escritorio de la computadora.</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center justify-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section id="teoria" class="glass-panel p-8 md:p-12 fade-up border-t-8 border-sky-400" style="animation-delay: 0.1s;">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-black mb-4 text-white drop-shadow-md">¿Qué es el Escritorio?</h2>
+                <div class="bg-black/20 p-6 rounded-2xl border border-white/30 inline-block max-w-4xl">
+                    <p class="text-2xl font-bold text-white leading-relaxed">
+                        El escritorio es la <strong class="text-sky-300">pantalla principal</strong> de la compu. Es lo primero que vemos cuando prende. Desde aquí podemos abrir programas, carpetas y juegos.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white/20 p-6 rounded-3xl text-center border-2 border-white/30 hover:scale-105 transition shadow-lg flex flex-col justify-between">
+                    <span class="text-6xl block mb-4 drop-shadow">🖼️</span>
+                    <div>
+                        <h3 class="text-2xl font-black mb-2 text-sky-900 dark:text-sky-300">Fondo de Pantalla</h3>
+                        <p class="font-bold opacity-90 text-sm">Es la imagen grande que decora el fondo de tu compu.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 p-6 rounded-3xl text-center border-2 border-white/30 hover:scale-105 transition shadow-lg flex flex-col justify-between">
+                    <span class="text-6xl block mb-4 drop-shadow">📁</span>
+                    <div>
+                        <h3 class="text-2xl font-black mb-2 text-yellow-900 dark:text-yellow-300">Íconos</h3>
+                        <p class="font-bold opacity-90 text-sm">Son los dibujitos chiquitos que sirven para abrir cosas.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 p-6 rounded-3xl text-center border-2 border-white/30 hover:scale-105 transition shadow-lg flex flex-col justify-between">
+                    <span class="text-6xl block mb-4 drop-shadow">➖</span>
+                    <div>
+                        <h3 class="text-2xl font-black mb-2 text-purple-900 dark:text-purple-300">Barra de Tareas</h3>
+                        <p class="font-bold opacity-90 text-sm">La cinta de abajo donde vemos la hora y lo que está abierto.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 p-6 rounded-3xl text-center border-2 border-white/30 hover:scale-105 transition shadow-lg flex flex-col justify-between">
+                    <span class="text-6xl block mb-4 drop-shadow text-blue-500">
+                        <svg viewBox="0 0 88 88" fill="currentColor" class="w-16 h-16 mx-auto inline-block"><path d="M0 12.402l35.687-4.86.016 34.423-35.703.206V12.402zm35.67 33.529l.015 33.69-35.685-4.805V46.126l35.67-.195zM40.336 6.34L88 0v40.84l-47.664.376V6.34zM88 45.31l-.015 41.52-47.65-6.528V45.716L88 45.31z"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-2xl font-black mb-2 text-green-900 dark:text-green-300">Botón Inicio</h3>
+                        <p class="font-bold opacity-90 text-sm">Sirve para ver todos los programas y apagar la PC.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-4 border-yellow-400 bg-yellow-500/10" style="animation-delay: 0.2s;">
+            <div class="text-center mb-8">
+                <span class="text-6xl block mb-4 animate-bounce">🕵️‍♂️</span>
+                <h2 class="text-3xl md:text-4xl font-black text-yellow-600 dark:text-yellow-400 drop-shadow-md mb-2">Detective de Windows</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡Te toca encontrar las partes! Hacé clic exactamente donde te pide la misión.</p>
+                <div class="bg-black/40 text-white p-4 rounded-xl inline-block mt-4 border-2 border-yellow-400 shadow-lg">
+                    <p class="text-2xl font-black" id="det-mision">Buscando...</p>
+                </div>
+            </div>
+
+            <div class="escritorio-detective w-full max-w-4xl mx-auto aspect-video border-[10px] border-slate-800 shadow-2xl flex flex-col justify-between">
+                
+                <div class="zona-detective w-1/4 h-[80%] top-0 left-0" onclick="checkDetective('iconos', this)">
+                    <div class="p-4 text-white drop-shadow-md">
+                        <div class="mb-4 text-center"><span class="text-4xl">📁</span><p class="text-xs font-bold mt-1">Juegos</p></div>
+                        <div class="text-center"><span class="text-4xl">🗑️</span><p class="text-xs font-bold mt-1">Papelera</p></div>
+                    </div>
+                </div>
+
+                <div class="zona-detective w-[75%] h-[80%] top-0 right-0" onclick="checkDetective('fondo', this)"></div>
+
+                <div class="h-12 bg-slate-900/90 w-full relative mt-auto border-t border-white/20">
+                    <div class="zona-detective w-16 h-full absolute top-0 left-0 flex items-center justify-center text-sky-400 hover:bg-white/10 transition cursor-pointer" onclick="checkDetective('inicio', this)">
+                        <svg viewBox="0 0 88 88" fill="currentColor" class="w-6 h-6 drop-shadow-[0_0_3px_#38bdf8]"><path d="M0 12.402l35.687-4.86.016 34.423-35.703.206V12.402zm35.67 33.529l.015 33.69-35.685-4.805V46.126l35.67-.195zM40.336 6.34L88 0v40.84l-47.664.376V6.34zM88 45.31l-.015 41.52-47.65-6.528V45.716L88 45.31z"/></svg>
+                    </div>
+                    <div class="zona-detective w-[calc(100%-4rem)] h-full absolute top-0 left-16 cursor-pointer" onclick="checkDetective('barra', this)">
+                        <div class="flex gap-4 ml-4 h-full items-center opacity-70 pointer-events-none">
+                            <span class="text-white text-xl">📁</span>
+                            <span class="text-white text-xl">🌐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="det-feedback" class="mt-6 text-2xl font-black text-center hidden p-4 rounded-xl"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-4 border-orange-400 bg-orange-500/10" style="animation-delay: 0.25s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-orange-600 dark:text-orange-400 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🧹</span> Limpiando el Escritorio</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡Qué desorden! Arrastrá cada archivo a la carpeta correcta para limpiar la compu.</p>
+            </div>
+
+            <div class="bg-black/30 p-6 rounded-2xl flex flex-wrap justify-center gap-4 mb-8 border border-white/20 min-h-[80px]" id="banco-archivos">
+                <div class="item-drag" draggable="true" data-tipo="foto">🖼️ Foto_Perro.jpg</div>
+                <div class="item-drag" draggable="true" data-tipo="texto">📝 Tarea_Lengua.doc</div>
+                <div class="item-drag" draggable="true" data-tipo="basura">🦠 Virus.exe</div>
+                <div class="item-drag" draggable="true" data-tipo="foto">🖼️ Paisaje.png</div>
+                <div class="item-drag" draggable="true" data-tipo="texto">📝 Cuento.txt</div>
+                <div class="item-drag" draggable="true" data-tipo="basura">🗑️ Juego_Roto.exe</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-black/20 p-4 rounded-xl border border-white/10">
+                    <h3 class="text-xl font-black text-center mb-3 text-sky-300">📁 Imágenes</h3>
+                    <div class="zona-drop bg-sky-900/30 border-sky-400/50" data-acepta="foto"></div>
+                </div>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/10">
+                    <h3 class="text-xl font-black text-center mb-3 text-yellow-300">📁 Documentos</h3>
+                    <div class="zona-drop bg-yellow-900/30 border-yellow-400/50" data-acepta="texto"></div>
+                </div>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/10">
+                    <h3 class="text-xl font-black text-center mb-3 text-red-300">🗑️ Papelera</h3>
+                    <div class="zona-drop bg-red-900/30 border-red-400/50" data-acepta="basura"></div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-6">
+                <button onclick="verificarOrganizador()" class="btn-interactivo bg-orange-500 text-white font-black px-10 py-4 rounded-xl text-2xl border-b-4 border-orange-700 shadow-lg">Comprobar Orden</button>
+                <div id="feed-organizador" class="mt-4 text-2xl font-black hidden p-4 rounded-xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-4 border-purple-400" style="animation-delay: 0.3s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-white drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🃏</span> ¿Cómo se llama?</h2>
+                <p class="text-xl font-bold opacity-90 text-purple-100">Repaso total: Mirá la imagen y elegí el nombre correcto.</p>
+                <div class="bg-white/20 px-4 py-2 rounded-xl inline-block mt-3 font-bold text-white"><span id="adivina-progreso">1</span> / 6</div>
+            </div>
+            
+            <div class="bg-black/30 p-8 rounded-3xl text-center border-2 border-white/20 max-w-2xl mx-auto shadow-inner min-h-[300px] flex flex-col justify-center">
+                <div id="img-adivina" class="text-[8rem] mb-6 drop-shadow-lg flex items-center justify-center h-32">📁</div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full" id="btn-adivina">
+                    </div>
+                <div id="adivina-feedback" class="mt-6 text-2xl font-black hidden p-4 rounded-xl"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-10 fade-up border-t-8 border-sky-500 bg-sky-900/40" style="animation-delay: 0.4s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-black text-white drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🖱️</span> Compu Interactiva</h2>
+                <p class="text-xl font-bold opacity-90 text-sky-200">¡Hacé clic en los íconos del escritorio para abrir los programas!</p>
+            </div>
+
+            <div class="win-pantalla w-full max-w-4xl aspect-[16/10] md:aspect-video rounded-xl border-[12px] border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.6)] mx-auto font-sans select-none relative">
+                
+                <div class="absolute top-4 left-4 flex flex-col gap-2">
+                    <div class="win-icon" onclick="abrirVentana('win-carpeta')">
+                        <span class="text-5xl block drop-shadow-md">📁</span>
+                        <p class="text-xs font-bold mt-1 text-white drop-shadow-md">Trabajos</p>
+                    </div>
+                    <div class="win-icon" onclick="abrirVentana('win-paint')">
+                        <span class="text-5xl block drop-shadow-md">🎨</span>
+                        <p class="text-xs font-bold mt-1 text-white drop-shadow-md">Paint</p>
+                    </div>
+                </div>
+
+                <div class="win-window" id="win-carpeta">
+                    <div class="win-topbar">
+                        <div class="flex items-center gap-2 font-bold text-sm text-slate-700"><span class="text-lg">📁</span> Trabajos de 4to</div>
+                        <button class="win-close" onclick="cerrarVentana('win-carpeta')">✕</button>
+                    </div>
+                    <div class="p-6 bg-white flex-1 flex gap-6">
+                        <div class="text-center cursor-pointer hover:bg-slate-100 p-3 rounded"><span class="text-5xl">📝</span><p class="text-xs mt-2 text-slate-800 font-bold">Cuento.doc</p></div>
+                        <div class="text-center cursor-pointer hover:bg-slate-100 p-3 rounded"><span class="text-5xl">🖼️</span><p class="text-xs mt-2 text-slate-800 font-bold">Foto.jpg</p></div>
+                    </div>
+                </div>
+
+                <div class="win-window" id="win-paint">
+                    <div class="win-topbar">
+                        <div class="flex items-center gap-2 font-bold text-sm text-slate-700"><span class="text-lg">🎨</span> Paint Escolar</div>
+                        <button class="win-close" onclick="cerrarVentana('win-paint')">✕</button>
+                    </div>
+                    <div class="bg-slate-200 h-10 flex items-center px-2 gap-2 border-b border-slate-300">
+                        <button class="bg-white p-1 px-3 border border-slate-400 rounded text-xs font-bold hover:bg-slate-100" onclick="limpiarPaint()">Nuevo 📄</button>
+                        <span class="text-sm font-bold text-slate-600 ml-4">¡Dibujá acá abajo! 👇</span>
+                    </div>
+                    <div class="flex-1 bg-white relative cursor-crosshair" id="paint-container">
+                        <canvas id="paintCanvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="win-taskbar">
+                    <div class="w-10 h-10 flex items-center justify-center text-sky-400 hover:bg-white/10 rounded cursor-pointer transition">
+                        <svg viewBox="0 0 88 88" fill="currentColor" class="w-5 h-5"><path d="M0 12.402l35.687-4.86.016 34.423-35.703.206V12.402zm35.67 33.529l.015 33.69-35.685-4.805V46.126l35.67-.195zM40.336 6.34L88 0v40.84l-47.664.376V6.34zM88 45.31l-.015 41.52-47.65-6.528V45.716L88 45.31z"/></svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-red-500 bg-red-900/20" style="animation-delay: 0.5s;">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-black text-red-400 drop-shadow-md mb-2 flex items-center justify-center gap-3"><span class="text-5xl">🚨</span> ¡Antivirus Activado!</h2>
+                <p class="text-xl font-bold opacity-90 text-white">¡Rápido! Hacé clic en los virus 👾 antes de que se escondan para limpiar la compu.</p>
+                <div class="mt-4 flex justify-center gap-6 text-2xl font-black text-white">
+                    <div class="bg-black/40 px-6 py-2 rounded-xl border border-red-500">Puntos: <span id="virus-pts" class="text-green-400">0</span>/10</div>
+                    <div class="bg-black/40 px-6 py-2 rounded-xl border border-red-500">Tiempo: <span id="virus-time" class="text-yellow-400">20</span>s</div>
+                </div>
+            </div>
+
+            <div class="area-virus" id="area-virus">
+                <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10" id="virus-overlay">
+                    <span id="virus-icon" class="text-[5rem] mb-2 hidden"></span>
+                    <h3 id="virus-msg" class="text-4xl font-black text-white drop-shadow mb-4 hidden"></h3>
+                    <button id="virus-btn" onclick="empezarJuegoVirus()" class="btn-interactivo bg-red-600 text-white font-black text-3xl px-10 py-5 rounded-2xl border-b-4 border-red-800 shadow-[0_0_20px_red] hover:scale-110 transition">¡INICIAR ESCANEO!</button>
+                </div>
+                </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-green-400" style="animation-delay: 0.6s;">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <span class="text-5xl">🏫</span>
+                <h2 class="text-3xl md:text-4xl font-black text-white">¡Misión en el Aula!</h2>
+            </div>
+            <p class="text-xl font-bold opacity-90 mb-6 text-center">Ahora que ya practicaste acá, vamos a hacerlo en las computadoras reales de la escuela. Marcá cuando lo logres:</p>
+            
+            <div class="bg-black/30 p-6 md:p-10 rounded-3xl border-2 border-green-400/50 max-w-3xl mx-auto">
+                <ul class="space-y-6 text-xl md:text-2xl font-bold text-white">
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 1. Mirar y describir el Fondo de Pantalla.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 2. Encontrar el Botón Inicio.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 3. Mirar la hora en la Barra de Tareas.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 4. Encontrar el ícono de la Papelera.
+                    </li>
+                    <li class="flex items-center gap-4 cursor-pointer hover:bg-white/10 p-2 rounded transition" onclick="this.querySelector('input').click()">
+                        <input type="checkbox" class="w-8 h-8 rounded text-green-500 accent-green-500 cursor-pointer"> 5. ¡Abrir un programa o carpeta con doble clic!
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-pink-500" style="animation-delay: 0.7s;">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">🏆</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Mega Quiz Final</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-4 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span>/8</div>
+            </div>
+            
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-pink-400 h-4 rounded-full transition-all duration-500" style="width: 12.5%"></div>
+            </div>
+
+            <div id="quiz-container" class="min-h-[250px]">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center text-white drop-shadow"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+            
+            <div id="quiz-result" class="hidden text-center py-10">
+                <span class="text-[6rem] block mb-4 animate-bounce">⭐⭐⭐</span>
+                <h3 class="text-4xl md:text-5xl font-black mb-4 text-green-400 drop-shadow">¡Sos un Genio Informático!</h3>
+                <p id="quiz-score-text" class="text-2xl font-bold mb-8 text-white">Dominás Windows y sabés cuidar la computadora.</p>
+                <button onclick="reiniciarQuiz()" class="btn-interactivo bg-pink-600 text-white font-black px-10 py-5 rounded-2xl border-b-4 border-pink-800 text-2xl mr-4">Reintentar 🔄</button>
+                <a href="index4to.html" class="btn-interactivo bg-blue-600 text-white font-black px-10 py-5 rounded-2xl border-b-4 border-blue-800 text-2xl inline-block shadow-lg mt-4 md:mt-0">Ir al Menú 🏫</a>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-8" style="animation-delay: 0.8s;">
+            <h2 class="text-3xl font-black mb-4 flex items-center gap-3"><span class="text-4xl">📋</span> Tarea de la clase</h2>
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- THEME ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema_4to_win', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema_4to_win') === 'oscuro') { document.body.classList.add('dark-mode'); document.getElementById('btnT').innerHTML = '🌙'; }
+
+        // --- JUEGO 1: DETECTIVE DE WINDOWS ---
+        const misionesDet = [
+            { id: 'inicio', nombre: "Botón Inicio", txt: "Buscá y tocá el <strong>Botón Inicio</strong>" },
+            { id: 'iconos', nombre: "Íconos", txt: "Hacé clic sobre los <strong>Íconos o Carpetas</strong>" },
+            { id: 'barra', nombre: "Barra de Tareas", txt: "Tocá el espacio vacío de la <strong>Barra de Tareas</strong>" }
+        ];
+        let misionAct = 0;
+
+        function cargarMision() {
+            if(misionAct >= misionesDet.length) {
+                document.getElementById('det-mision').innerHTML = "¡Misiones Completadas! 🏆";
+                return;
+            }
+            document.getElementById('det-mision').innerHTML = misionesDet[misionAct].txt;
+        }
+        cargarMision();
+
+        function checkDetective(idTocado, elemento) {
+            if(misionAct >= misionesDet.length) return;
+            const feed = document.getElementById('det-feedback');
+            const idCorrecto = misionesDet[misionAct].id;
+
+            if(idTocado === idCorrecto) {
+                elemento.classList.add('flash-verde');
+                feed.style.display = 'block';
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-green-500/20 text-green-300 border-2 border-green-400";
+                feed.innerHTML = "✅ ¡Correcto!";
+                misionAct++;
+                setTimeout(() => { feed.style.display = 'none'; elemento.classList.remove('flash-verde'); cargarMision(); }, 1500);
+            } else {
+                elemento.classList.add('flash-rojo');
+                feed.style.display = 'block';
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-red-500/20 text-red-300 border-2 border-red-400 shake-anim";
+                feed.innerHTML = "❌ Ese no es. ¡Mirá bien!";
+                setTimeout(() => { feed.style.display = 'none'; elemento.classList.remove('flash-rojo'); }, 1500);
+            }
+        }
+
+        // --- JUEGO 2: ORGANIZADOR (DRAG & DROP) ---
+        let itemOrganizador = null;
+        document.querySelectorAll('.item-drag').forEach(item => {
+            item.addEventListener('dragstart', () => { itemOrganizador = item; setTimeout(() => item.style.opacity = '0.5', 0); });
+            item.addEventListener('dragend', () => { item.style.opacity = '1'; itemOrganizador = null; });
+        });
+
+        document.querySelectorAll('.zona-drop').forEach(zona => {
+            zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('drag-over'); });
+            zona.addEventListener('dragleave', () => zona.classList.remove('drag-over'));
+            zona.addEventListener('drop', e => {
+                e.preventDefault(); zona.classList.remove('drag-over');
+                if(itemOrganizador) { zona.appendChild(itemOrganizador); }
+            });
+        });
+
+        function verificarOrganizador() {
+            const feed = document.getElementById('feed-organizador');
+            let todoCorrecto = true;
+            
+            document.querySelectorAll('.zona-drop').forEach(zona => {
+                const tipoAceptado = zona.dataset.acepta;
+                zona.querySelectorAll('.item-drag').forEach(item => {
+                    if(item.dataset.tipo !== tipoAceptado) todoCorrecto = false;
+                });
+            });
+            
+            const totalItems = document.getElementById('banco-archivos').children.length;
+            if(totalItems > 0) {
+                feed.style.display = 'block'; feed.className = "mt-4 font-black text-yellow-300 bg-yellow-900/50 p-4 rounded-xl border border-yellow-500";
+                feed.innerHTML = "⚠️ ¡Faltan archivos por guardar!"; return;
+            }
+
+            feed.style.display = 'block';
+            if(todoCorrecto) {
+                feed.className = "mt-4 font-black text-green-300 bg-green-900/50 p-4 rounded-xl border border-green-500";
+                feed.innerHTML = "✅ ¡Escritorio Impecable!"; lanzarConfeti();
+            } else {
+                feed.className = "mt-4 font-black text-red-300 bg-red-900/50 p-4 rounded-xl border border-red-500 shake-anim";
+                feed.innerHTML = "❌ Algún archivo está en la carpeta equivocada.";
+            }
+        }
+
+        // --- JUEGO 3: ¿QUÉ ES ESTO? (AMPLIADO 6 TARJETAS) ---
+        const pregAdivina = [
+            { img: "📁", opciones: ["Fondo de Pantalla", "Carpeta / Ícono", "Mouse"], correcta: 1 },
+            { img: `<svg viewBox="0 0 88 88" fill="#38bdf8" class="w-24 h-24 mx-auto"><path d="M0 12.402l35.687-4.86.016 34.423-35.703.206V12.402zm35.67 33.529l.015 33.69-35.685-4.805V46.126l35.67-.195zM40.336 6.34L88 0v40.84l-47.664.376V6.34zM88 45.31l-.015 41.52-47.65-6.528V45.716L88 45.31z"/></svg>`, opciones: ["Botón Inicio", "Internet", "Juego"], correcta: 0 },
+            { img: "⌨️", opciones: ["Pantalla", "Teclado", "Cable"], correcta: 1 },
+            { img: "➖", opciones: ["El borde del monitor", "Escritorio", "Barra de Tareas"], correcta: 2 },
+            { img: "🗑️", opciones: ["Papelera de reciclaje", "Carpeta de fotos", "Gabinete"], correcta: 0 },
+            { img: "🗄️", opciones: ["Impresora", "CPU / Gabinete", "Parlante"], correcta: 1 }
+        ];
+        let adivAct = 0;
+
+        function cargarAdivina() {
+            if(adivAct >= pregAdivina.length) {
+                document.getElementById('img-adivina').innerHTML = "🎉";
+                document.getElementById('btn-adivina').style.display = 'none';
+                document.getElementById('adivina-progreso').innerText = "¡Completado!";
+                return;
+            }
+            document.getElementById('adivina-progreso').innerText = adivAct + 1;
+            const p = pregAdivina[adivAct];
+            document.getElementById('img-adivina').innerHTML = p.img;
+            const cont = document.getElementById('btn-adivina');
+            cont.innerHTML = '';
+            
+            p.opciones.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-interactivo bg-purple-600 text-white font-black text-xl px-6 py-5 rounded-2xl border-b-4 border-purple-800 shadow-md";
+                btn.innerHTML = opt;
+                btn.onclick = () => checkAdivina(idx, p.correcta);
+                cont.appendChild(btn);
+            });
+        }
+        cargarAdivina();
+
+        function checkAdivina(elegida, correcta) {
+            const feed = document.getElementById('adivina-feedback');
+            feed.style.display = 'block';
+            if(elegida === correcta) {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-green-500/20 text-green-300 border-2 border-green-400";
+                feed.innerHTML = "✅ ¡Muy bien!";
+                adivAct++;
+                setTimeout(() => { feed.style.display = 'none'; cargarAdivina(); }, 1200);
+            } else {
+                feed.className = "mt-6 text-2xl font-black p-4 rounded-xl bg-red-500/20 text-red-300 border-2 border-red-400 shake-anim";
+                feed.innerHTML = "❌ Ups, mirá bien.";
+                setTimeout(() => { feed.style.display = 'none'; }, 1200);
+            }
+        }
+
+        // --- SIMULADOR DE VENTANAS Y PAINT ---
+        function abrirVentana(id) {
+            document.getElementById(id).classList.add('open');
+            if(id === 'win-paint') resizePaint(); 
+        }
+        function cerrarVentana(id) { document.getElementById(id).classList.remove('open'); }
+
+        const canvas = document.getElementById('paintCanvas'); const ctx = canvas.getContext('2d'); let dibujando = false;
+        function resizePaint() {
+            const cont = document.getElementById('paint-container');
+            canvas.width = cont.clientWidth; canvas.height = cont.clientHeight;
+            ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        }
+        function iniciarDibujo(e) { dibujando = true; dibujar(e); }
+        function terminarDibujo() { dibujando = false; ctx.beginPath(); }
+        function dibujar(e) {
+            if(!dibujando) return; e.preventDefault(); 
+            const rect = canvas.getBoundingClientRect();
+            let x = e.type.includes('touch') ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+            let y = e.type.includes('touch') ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+            ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.strokeStyle = '#ef4444'; 
+            ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+        }
+        canvas.addEventListener('mousedown', iniciarDibujo); canvas.addEventListener('mouseup', terminarDibujo); canvas.addEventListener('mousemove', dibujar);
+        canvas.addEventListener('touchstart', iniciarDibujo, {passive: false}); canvas.addEventListener('touchend', terminarDibujo); canvas.addEventListener('touchmove', dibujar, {passive: false});
+        function limpiarPaint() { ctx.fillStyle = "white"; ctx.fillRect(0,0,canvas.width,canvas.height); }
+
+
+        // --- JUEGO 4 NUEVO: ¡ATRAPA EL VIRUS! (BUG CORREGIDO) ---
+        let virusPuntos = 0;
+        let virusTiempo = 20;
+        let virusInterval;
+        let virusTimer;
+        let juegoActivo = false;
+        const areaVirus = document.getElementById('area-virus');
+        const virusOverlay = document.getElementById('virus-overlay');
+        const virusMsg = document.getElementById('virus-msg');
+        const virusIcon = document.getElementById('virus-icon');
+        const virusBtn = document.getElementById('virus-btn');
+
+        function empezarJuegoVirus() {
+            // Esconder overlay
+            virusOverlay.style.display = 'none';
+            virusMsg.classList.add('hidden');
+            virusIcon.classList.add('hidden');
+
+            // Limpiar bichos anteriores si quedaron
+            document.querySelectorAll('.virus-enemigo').forEach(e => e.remove());
+
+            virusPuntos = 0; virusTiempo = 20; juegoActivo = true;
+            document.getElementById('virus-pts').innerText = virusPuntos;
+            document.getElementById('virus-time').innerText = virusTiempo;
+            
+            // Timer
+            virusTimer = setInterval(() => {
+                virusTiempo--;
+                document.getElementById('virus-time').innerText = virusTiempo;
+                if(virusTiempo <= 0) terminarJuegoVirus(false);
+            }, 1000);
+
+            // Spawner de virus
+            generarVirus();
+            virusInterval = setInterval(generarVirus, 900);
+        }
+
+        function generarVirus() {
+            if(!juegoActivo) return;
+            const v = document.createElement('div');
+            v.className = 'virus-enemigo';
+            v.innerHTML = '👾';
+            
+            // Posicion random
+            const maxX = areaVirus.clientWidth - 60;
+            const maxY = areaVirus.clientHeight - 60;
+            v.style.left = Math.floor(Math.random() * maxX) + 'px';
+            v.style.top = Math.floor(Math.random() * maxY) + 'px';
+
+            v.onmousedown = () => {
+                if(!juegoActivo) return;
+                virusPuntos++;
+                document.getElementById('virus-pts').innerText = virusPuntos;
+                v.remove();
+                if(virusPuntos >= 10) terminarJuegoVirus(true);
+            };
+
+            areaVirus.appendChild(v);
+
+            // Desaparece solo despues de 1.5s
+            setTimeout(() => { if(v.parentNode) v.remove(); }, 1500);
+        }
+
+        function terminarJuegoVirus(ganado = false) {
+            juegoActivo = false;
+            clearInterval(virusInterval);
+            clearInterval(virusTimer);
+            
+            document.querySelectorAll('.virus-enemigo').forEach(e => e.remove());
+            
+            // Mostrar overlay de nuevo
+            virusOverlay.style.display = 'flex';
+            virusMsg.classList.remove('hidden');
+            virusIcon.classList.remove('hidden');
+            
+            if(ganado) {
+                virusIcon.innerHTML = '🛡️';
+                virusMsg.innerHTML = '¡PC Limpia!';
+                virusMsg.className = 'text-4xl font-black text-green-400 drop-shadow mb-4';
+                virusBtn.innerText = 'Jugar de nuevo';
+                virusBtn.className = 'btn-interactivo bg-green-600 text-white font-black text-2xl px-8 py-4 rounded-xl border-b-4 border-green-800';
+                lanzarConfeti();
+            } else {
+                virusIcon.innerHTML = '💻💥';
+                virusMsg.innerHTML = '¡Tiempo agotado!';
+                virusMsg.className = 'text-4xl font-black text-red-500 drop-shadow mb-4';
+                virusBtn.innerText = 'Reintentar';
+                virusBtn.className = 'btn-interactivo bg-red-600 text-white font-black text-2xl px-8 py-4 rounded-xl border-b-4 border-red-800';
+            }
+        }
+
+        // --- MEGA QUIZ FINAL (8 PREGUNTAS) ---
+        const preguntasQuiz = [
+            { q: "¿Qué es el Escritorio de Windows?", options: ["La mesa de madera del aula", "La pantalla principal que veo al prender la compu"], correct: 1 },
+            { q: "¿Para qué sirve el Botón Inicio?", options: ["Para buscar programas y apagar la compu", "Para que la pantalla brille más"], correct: 0 },
+            { q: "¿Dónde están los íconos (como el de la Papelera o Carpetas)?", options: ["Adentro del teclado", "Acomodados en el Escritorio"], correct: 1 },
+            { q: "¿Para qué sirve la Barra de Tareas (la cinta de abajo)?", options: ["Para ver la hora y los programas que tengo abiertos", "Para escribir textos largos"], correct: 0 },
+            { q: "REPASO: ¿Qué componente es el 'cerebro' de la computadora?", options: ["El Monitor", "El CPU o Gabinete", "El Mouse"], correct: 1 },
+            { q: "REPASO: ¿Puedo comer galletitas arriba del teclado?", options: ["Sí, no pasa nada", "¡No! Se ensucia y se puede romper"], correct: 1 },
+            { q: "¿Qué pasa si hago DOBLE CLIC en el ícono de un juego?", options: ["Se borra", "El juego se abre y empieza a funcionar"], correct: 1 },
+            { q: "REPASO: ¿Qué componente uso para hacer CLIC en la pantalla?", options: ["El Mouse", "El Parlante"], correct: 0 }
+        ];
+        let quizAct = 0; let quizPts = 0;
+
+        function cargarQuiz() {
+            if(quizAct >= preguntasQuiz.length) {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('quiz-score-text').innerText = `Puntaje Final: ${quizPts} de ${preguntasQuiz.length}`;
+                if(quizPts >= 6) lanzarConfeti();
+                return;
+            }
+            const p = preguntasQuiz[quizAct];
+            document.getElementById('quiz-question').innerText = p.q;
+            document.getElementById('quiz-count').innerText = quizAct + 1;
+            document.getElementById('quiz-progress').style.width = ((quizAct) / preguntasQuiz.length) * 100 + "%";
+            const cont = document.getElementById('quiz-options'); cont.innerHTML = '';
+            
+            p.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-black/20 p-6 rounded-2xl font-bold border-2 border-white/30 hover:bg-white/20 transition text-white text-xl text-left';
+                btn.innerText = opt; 
+                btn.onclick = () => { if(index === p.correct) quizPts++; quizAct++; cargarQuiz(); };
+                cont.appendChild(btn);
+            });
+        }
+        cargarQuiz();
+
+        function reiniciarQuiz() {
+            quizAct = 0; quizPts = 0;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+
+        // --- CONFETI ---
+        function lanzarConfeti() {
+            const colores = ['#38bdf8', '#f472b6', '#4ade80', '#facc15'];
+            for(let i=0; i<80; i++) {
+                let conf = document.createElement('div'); conf.className = 'confeti';
+                conf.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = '-20px';
+                document.body.appendChild(conf);
+                let duracion = Math.random() * 2 + 2;
+                conf.animate([
+                    { transform: `translate3d(0,0,0) rotate(0deg)` },
+                    { transform: `translate3d(${Math.random()*400 - 200}px, ${window.innerHeight}px, 0) rotate(${Math.random()*720}deg)` }
+                ], { duration: duracion * 1000 });
+                setTimeout(() => conf.remove(), duracion * 1000);
+            }
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+

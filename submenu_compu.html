@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unidad 1: La Computadora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #f472b6 50%, #2563eb 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --texto-principal: #ffffff;
+            --header-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(0, 0, 0, 0.4);
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: background 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .card-hover {
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* BOTÓN SOL/LUNA */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            z-index: 3000; cursor: pointer; font-size: 28px;
+            background: rgba(255,255,255,0.2); border: none; 
+            border-radius: 50%; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+
+        /* Animación de entrada */
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="theme-toggle shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-5xl mx-auto pt-10 md:pt-4">
+        
+        <header class="glass-panel p-8 md:p-9 mb-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 fade-up bg-[var(--header-bg)]">
+            <div class="flex items-center gap-5">
+                <span class="text-7xl drop-shadow-md">💻</span>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black">Unidad 1: La Computadora</h1>
+                    <p class="text-lg md:text-xl font-bold text-sky-200 mt-2">Elige la clase que vas a repasar hoy</p>
+                </div>
+            </div>
+            <a href="index4to.html" class="bg-white text-blue-900 font-black px-8 py-4 rounded-xl hover:bg-gray-200 transition shadow-lg flex items-center gap-2 text-lg">
+                <span>⬅️</span> Volver al Menú
+            </a>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            
+            <a href="tema1_compu.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-sky-400 fade-up" style="animation-delay: 0.2s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">🤖</span>
+                <h2 class="text-3xl font-black mb-2">Clase 1</h2>
+                <p class="text-sky-300 font-bold text-xl">¿Qué es la PC?</p>
+            </a>
+
+            <a href="tema2_hardware.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-pink-400 fade-up" style="animation-delay: 0.3s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">🛠️</span>
+                <h2 class="text-3xl font-black mb-2">Clase 2</h2>
+                <p class="text-pink-300 font-bold text-xl">Hardware</p>
+            </a>
+
+            <a href="tema3_software.html" class="glass-panel p-10 text-center card-hover border-2 border-transparent hover:border-yellow-400 fade-up" style="animation-delay: 0.4s;">
+                <span class="text-8xl block mb-6 drop-shadow-lg">💿</span>
+                <h2 class="text-3xl font-black mb-2">Clase 3</h2>
+                <p class="text-yellow-300 font-bold text-xl">Software</p>
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = esOscuro ? '🌙' : '☀️';
+            localStorage.setItem('modo', esOscuro ? 'oscuro' : 'claro');
+        }
+
+        // Al cargar la página, se fija qué eligió el usuario antes
+        if (localStorage.getItem('modo') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
