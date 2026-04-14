@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLASE 4 - AILIN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@700;900&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, #fde68a 0, transparent 28%),
+                radial-gradient(circle at top right, #bfdbfe 0, transparent 25%),
+                linear-gradient(180deg, #fef9c3 0%, #dbeafe 45%, #fce7f3 100%);
+            color: #334155;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        h1, h2, h3, .fuente-redonda {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 42px;
+            box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+            border: 8px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .titulo-sombra {
+            text-shadow: 3px 3px 0 #ffffff;
+        }
+
+        .btn-gigante {
+            border: none;
+            border-radius: 30px;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            padding: 18px 34px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-gigante:hover {
+            transform: translateY(-3px);
+        }
+
+        .burbuja-clic {
+            width: 150px;
+            height: 150px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            box-shadow: inset 0 -10px 0 rgba(255,255,255,0.25), 0 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .burbuja-clic:hover {
+            transform: scale(1.08);
+        }
+
+        .burbuja-ok {
+            opacity: 0.35;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        .camino {
+            position: relative;
+            height: 220px;
+            border-radius: 36px;
+            background: linear-gradient(180deg, #eff6ff, #dbeafe);
+            border: 6px dashed #93c5fd;
+            overflow: hidden;
+        }
+
+        .huella {
+            position: absolute;
+            font-size: 4rem;
+            transition: transform 0.2s ease;
+            cursor: crosshair;
+        }
+
+        .huella:hover {
+            transform: scale(1.2);
+        }
+
+        .huella-ok {
+            filter: grayscale(1);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .tecla-card {
+            min-height: 180px;
+            border-radius: 34px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 8px solid transparent;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .tecla-activa {
+            transform: scale(1.05);
+            border-color: #22c55e;
+            box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.2);
+        }
+
+        .tecla-lista {
+            background: #bbf7d0 !important;
+            color: #14532d !important;
+        }
+
+        .input-gigante {
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 34px;
+            border: 8px solid #f9a8d4;
+            padding: 18px 24px;
+            outline: none;
+            color: #be185d;
+            background: white;
+        }
+
+        .input-gigante:focus {
+            border-color: #ec4899;
+            box-shadow: 0 0 0 8px rgba(236, 72, 153, 0.15);
+        }
+
+        .estrellita {
+            position: fixed;
+            font-size: 3rem;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .nube {
+            position: fixed;
+            background: rgba(255,255,255,0.8);
+            border-radius: 999px;
+            z-index: -1;
+            filter: drop-shadow(0 10px 14px rgba(0,0,0,0.06));
+            animation: moverNube linear infinite;
+        }
+
+        .nube::before,
+        .nube::after {
+            content: "";
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+        }
+
+        .n1 { width: 190px; height: 64px; top: 7%; left: -220px; animation-duration: 34s; }
+        .n1::before { width: 82px; height: 82px; top: -34px; left: 28px; }
+        .n1::after { width: 104px; height: 104px; top: -45px; right: 26px; }
+
+        .n2 { width: 240px; height: 78px; top: 30%; left: -260px; animation-duration: 42s; animation-delay: -8s; }
+        .n2::before { width: 92px; height: 92px; top: -38px; left: 34px; }
+        .n2::after { width: 120px; height: 120px; top: -56px; right: 32px; }
+
+        .n3 { width: 170px; height: 56px; top: 65%; left: -220px; animation-duration: 28s; animation-delay: -15s; }
+        .n3::before { width: 70px; height: 70px; top: -28px; left: 24px; }
+        .n3::after { width: 92px; height: 92px; top: -40px; right: 24px; }
+
+        @keyframes moverNube {
+            from { left: -280px; }
+            to { left: 110%; }
+        }
+
+        @media (max-width: 768px) {
+            .burbuja-clic {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+
+            .input-gigante {
+                font-size: 3rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8 pb-32">
+
+    <div class="nube n1"></div>
+    <div class="nube n2"></div>
+    <div class="nube n3"></div>
+
+    <div class="max-w-5xl mx-auto space-y-10">
+
+        <header class="panel p-8 md:p-12 text-center">
+            <div class="text-7xl md:text-8xl mb-4">🖱️ ⌨️ 🌈</div>
+            <h1 class="text-5xl md:text-7xl font-black text-pink-500 titulo-sombra tracking-wide">CLASE 4</h1>
+            <p class="text-3xl md:text-5xl font-black text-sky-500 mt-4 fuente-redonda">MOUSE Y TECLADO</p>
+        </header>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-yellow-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-yellow-500">1. HACÉ CLIC</h2>
+                <span class="text-5xl">☀️</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
+                <button class="burbuja-clic bg-pink-300 text-white" onclick="clicBurbuja(this)">⭐</button>
+                <button class="burbuja-clic bg-sky-300 text-white" onclick="clicBurbuja(this)">🌸</button>
+                <button class="burbuja-clic bg-lime-300 text-white" onclick="clicBurbuja(this)">💖</button>
+                <button class="burbuja-clic bg-orange-300 text-white" onclick="clicBurbuja(this)">🌈</button>
+            </div>
+            <div id="mensaje-clic" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡MUY BIEN!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-sky-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-sky-500">2. PASÁ EL MOUSE</h2>
+                <span class="text-5xl">🐾</span>
+            </div>
+            <div class="camino">
+                <div class="huella" style="left: 8%; top: 58%;" onmouseenter="pasarHuella(this)">🐾</div>
+                <div class="huella" style="left: 24%; top: 36%;" onmouseenter="pasarHuella(this)">🐾</div>
+                <div class="huella" style="left: 40%; top: 56%;" onmouseenter="pasarHuella(this)">🐾</div>
+                <div class="huella" style="left: 58%; top: 30%;" onmouseenter="pasarHuella(this)">🐾</div>
+                <div class="huella" style="left: 76%; top: 50%;" onmouseenter="pasarHuella(this)">🐾</div>
+                <div class="absolute right-4 bottom-3 text-6xl md:text-7xl">🐱</div>
+            </div>
+            <div id="mensaje-mouse" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡LLEGÓ!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-pink-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-pink-500">3. HACÉ CLIC EN LA LETRA A</h2>
+                <span class="text-5xl">🔤</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
+                <button class="burbuja-clic bg-pink-200 text-pink-700" onclick="elegirLetra(this,false,'mensaje-letra-a')">M</button>
+                <button class="burbuja-clic bg-blue-200 text-blue-700" onclick="elegirLetra(this,true,'mensaje-letra-a')">A</button>
+                <button class="burbuja-clic bg-yellow-200 text-yellow-700" onclick="elegirLetra(this,false,'mensaje-letra-a')">O</button>
+                <button class="burbuja-clic bg-green-200 text-green-700" onclick="elegirLetra(this,false,'mensaje-letra-a')">P</button>
+            </div>
+            <div id="mensaje-letra-a" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡ES LA A!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-purple-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-purple-500">4. HACÉ CLIC EN LA L</h2>
+                <span class="text-5xl">💜</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
+                <button class="burbuja-clic bg-purple-200 text-purple-700" onclick="elegirLetra(this,false,'mensaje-letra-l')">I</button>
+                <button class="burbuja-clic bg-fuchsia-200 text-fuchsia-700" onclick="elegirLetra(this,false,'mensaje-letra-l')">N</button>
+                <button class="burbuja-clic bg-indigo-200 text-indigo-700" onclick="elegirLetra(this,true,'mensaje-letra-l')">L</button>
+                <button class="burbuja-clic bg-rose-200 text-rose-700" onclick="elegirLetra(this,false,'mensaje-letra-l')">E</button>
+            </div>
+            <div id="mensaje-letra-l" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡ES LA L!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-amber-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-amber-500">5. MUCHAS A</h2>
+                <span class="text-5xl">🅰️</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6 justify-items-center">
+                <button class="burbuja-clic bg-amber-200 text-amber-700" onclick="tocarA(this,true)">A</button>
+                <button class="burbuja-clic bg-orange-200 text-orange-700" onclick="tocarA(this,false)">M</button>
+                <button class="burbuja-clic bg-yellow-200 text-yellow-700" onclick="tocarA(this,true)">A</button>
+                <button class="burbuja-clic bg-lime-200 text-lime-700" onclick="tocarA(this,false)">I</button>
+                <button class="burbuja-clic bg-pink-200 text-pink-700" onclick="tocarA(this,true)">A</button>
+            </div>
+            <div id="mensaje-muchas-a" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡TODAS LAS A!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-red-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-red-500">6. APRETÁ A</h2>
+                <span class="text-5xl">⌨️</span>
+            </div>
+            <div id="contador-a" class="text-5xl md:text-7xl font-black text-red-400 mb-8">A A A</div>
+            <div class="max-w-3xl mx-auto bg-white border-[10px] border-red-200 rounded-[36px] py-10 text-4xl md:text-6xl font-black text-red-500 shadow-lg">
+                TOCÁ LA TECLA A 3 VECES
+            </div>
+            <div id="mensaje-a-teclado" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡A A A!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-green-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-green-500">7. TOCÁ LA TECLA</h2>
+                <span class="text-5xl">⌨️</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div id="tecla-a" class="tecla-card bg-green-100 text-green-700">
+                    <div class="text-7xl md:text-8xl font-black">A</div>
+                    <div class="text-3xl md:text-4xl font-black">APRETÁ A</div>
+                </div>
+                <div id="tecla-l" class="tecla-card bg-cyan-100 text-cyan-700">
+                    <div class="text-7xl md:text-8xl font-black">L</div>
+                    <div class="text-3xl md:text-4xl font-black">APRETÁ L</div>
+                </div>
+                <div id="tecla-i" class="tecla-card bg-pink-100 text-pink-700">
+                    <div class="text-7xl md:text-8xl font-black">I</div>
+                    <div class="text-3xl md:text-4xl font-black">APRETÁ I</div>
+                </div>
+            </div>
+            <div id="mensaje-teclas" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡LO HICISTE!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-cyan-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-cyan-500">8. TOCÁ ESPACIO</h2>
+                <span class="text-5xl">⬜</span>
+            </div>
+            <div id="barra-espacio" class="max-w-3xl mx-auto bg-white border-[10px] border-cyan-200 rounded-[36px] py-10 text-4xl md:text-6xl font-black text-cyan-600 shadow-lg">
+                ESPACIO
+            </div>
+            <div id="mensaje-espacio" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡TOCASTE ESPACIO!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-fuchsia-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-fuchsia-500">9. ESCRIBÍ</h2>
+                <span class="text-5xl">💖</span>
+            </div>
+            <div class="text-5xl md:text-7xl font-black text-fuchsia-500 mb-6 tracking-[0.25em]">A I L I N</div>
+            <div class="flex justify-center">
+                <input id="input-nombre" class="input-gigante" type="text" placeholder="AILIN" maxlength="5" autocomplete="off" oninput="revisarNombre()">
+            </div>
+            <div id="mensaje-nombre" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡BRAVO!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-rose-300">
+            <div class="flex justify-center items-center gap-4 mb-8">
+                <h2 class="text-4xl md:text-6xl font-black text-rose-500">10. ESCRIBÍ TU INICIAL</h2>
+                <span class="text-5xl">🌟</span>
+            </div>
+            <div class="text-6xl md:text-8xl font-black text-rose-500 mb-6">A</div>
+            <div class="flex justify-center">
+                <input id="input-inicial" class="input-gigante" style="max-width: 260px;" type="text" placeholder="A" maxlength="1" autocomplete="off" oninput="revisarInicial()">
+            </div>
+            <div id="mensaje-inicial" class="mt-8 text-4xl md:text-5xl font-black text-green-500 hidden">¡ES LA A!</div>
+        </section>
+
+        <section class="panel p-8 md:p-12 text-center border-[8px] border-orange-300 bg-orange-50">
+            <div class="text-[6rem] md:text-[8rem] mb-4">🎉</div>
+            <h2 class="text-5xl md:text-7xl font-black text-orange-500 mb-4">¡MUY BIEN!</h2>
+            <p class="text-3xl md:text-4xl font-black text-orange-400 mb-8">MOUSE Y TECLADO</p>
+            <button class="btn-gigante bg-orange-400 text-white shadow-[0_8px_0_#c2410c]" onclick="festejarFinal()">FESTEJO</button>
+        </section>
+
+    </div>
+
+    <script>
+        let clicCount = 0;
+        let huellasCount = 0;
+        let muchasACount = 0;
+        let aTecladoCount = 0;
+        const teclasHechas = { a: false, l: false, i: false };
+        let espacioHecho = false;
+
+        function lluvia(veces = 18) {
+            const emojis = ['⭐', '🎉', '💖', '🌈', '🫧'];
+            for (let i = 0; i < veces; i++) {
+                const el = document.createElement('div');
+                el.className = 'estrellita';
+                el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                el.style.left = Math.random() * 92 + 'vw';
+                el.style.top = '-40px';
+                document.body.appendChild(el);
+                const dx = Math.random() * 160 - 80;
+                const dur = 1800 + Math.random() * 1300;
+                el.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${dx}px, ${window.innerHeight + 120}px) rotate(${Math.random() * 360}deg)`, opacity: 0.9 }
+                ], { duration: dur, easing: 'ease-in' });
+                setTimeout(() => el.remove(), dur);
+            }
+        }
+
+        function clicBurbuja(btn) {
+            if (btn.classList.contains('burbuja-ok')) return;
+            btn.classList.add('burbuja-ok');
+            btn.textContent = '⭐';
+            clicCount++;
+            if (clicCount === 4) {
+                document.getElementById('mensaje-clic').classList.remove('hidden');
+                lluvia(12);
+            }
+        }
+
+        function elegirLetra(btn, correcta, mensajeId) {
+            if (btn.classList.contains('burbuja-ok')) return;
+            if (correcta) {
+                btn.classList.add('burbuja-ok');
+                btn.textContent = '⭐';
+                document.getElementById(mensajeId).classList.remove('hidden');
+                lluvia(12);
+            } else {
+                btn.style.opacity = '0.35';
+                btn.style.transform = 'scale(0.9)';
+            }
+        }
+
+        function tocarA(btn, correcta) {
+            if (btn.classList.contains('burbuja-ok')) return;
+            if (correcta) {
+                btn.classList.add('burbuja-ok');
+                btn.textContent = '⭐';
+                muchasACount++;
+                if (muchasACount === 3) {
+                    document.getElementById('mensaje-muchas-a').classList.remove('hidden');
+                    lluvia(14);
+                }
+            } else {
+                btn.style.opacity = '0.35';
+                btn.style.transform = 'scale(0.9)';
+            }
+        }
+
+        function pasarHuella(el) {
+            if (el.classList.contains('huella-ok')) return;
+            el.classList.add('huella-ok');
+            el.textContent = '✨';
+            huellasCount++;
+            if (huellasCount === 5) {
+                document.getElementById('mensaje-mouse').classList.remove('hidden');
+                lluvia(12);
+            }
+        }
+
+        function marcarTecla(letra) {
+            const card = document.getElementById(`tecla-${letra}`);
+            if (!card || teclasHechas[letra]) return;
+            teclasHechas[letra] = true;
+            card.classList.add('tecla-activa', 'tecla-lista');
+            card.querySelector('div:last-child').textContent = '¡BIEN!';
+            setTimeout(() => card.classList.remove('tecla-activa'), 500);
+            if (teclasHechas.a && teclasHechas.l && teclasHechas.i) {
+                document.getElementById('mensaje-teclas').classList.remove('hidden');
+                lluvia(14);
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toUpperCase();
+            if (key === 'A' && aTecladoCount < 3) {
+                aTecladoCount++;
+                document.getElementById('contador-a').textContent = 'A '.repeat(3 - aTecladoCount).trim() || '⭐ ⭐ ⭐';
+                if (aTecladoCount === 3) {
+                    document.getElementById('mensaje-a-teclado').classList.remove('hidden');
+                    lluvia(14);
+                }
+            }
+            if (key === 'A') marcarTecla('a');
+            if (key === 'L') marcarTecla('l');
+            if (key === 'I') marcarTecla('i');
+            if (e.code === 'Space' && !espacioHecho) {
+                espacioHecho = true;
+                document.getElementById('barra-espacio').classList.add('bg-green-100', 'border-green-400', 'text-green-600');
+                document.getElementById('mensaje-espacio').classList.remove('hidden');
+                lluvia(14);
+            }
+        });
+
+        function revisarNombre() {
+            const input = document.getElementById('input-nombre');
+            const mensaje = document.getElementById('mensaje-nombre');
+            input.value = input.value.toUpperCase();
+            if (input.value === 'AILIN') {
+                input.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                mensaje.classList.remove('hidden');
+                lluvia(16);
+            } else {
+                input.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
+                mensaje.classList.add('hidden');
+            }
+        }
+
+        function revisarInicial() {
+            const input = document.getElementById('input-inicial');
+            const mensaje = document.getElementById('mensaje-inicial');
+            input.value = input.value.toUpperCase();
+            if (input.value === 'A') {
+                input.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                mensaje.classList.remove('hidden');
+                lluvia(12);
+            } else {
+                input.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
+                mensaje.classList.add('hidden');
+            }
+        }
+
+        function festejarFinal() {
+            lluvia(28);
+        }
+    </script>
+    <script src="../../shared/ui-theme.js" defer></script>
+</body>
+</html>
