@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3 - Animaciones - 6to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #06b6d4 0%, #2563eb 45%, #f97316 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.2);
+            --border-color: rgba(255, 255, 255, 0.32);
+            --texto-principal: #082f49;
+            --panel-suave: rgba(255, 255, 255, 0.18);
+            --panel-fuerte: rgba(255, 255, 255, 0.24);
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #082f49 0%, #1d4ed8 45%, #7c2d12 100%);
+            --tarjeta-bg: rgba(15, 23, 42, 0.38);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --texto-principal: #f8fafc;
+            --panel-suave: rgba(255, 255, 255, 0.08);
+            --panel-fuerte: rgba(255, 255, 255, 0.12);
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            color: var(--texto-principal);
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+        }
+
+        .soft-card {
+            background: var(--panel-suave);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+        }
+
+        .highlight-card {
+            background: var(--panel-fuerte);
+            border: 2px solid rgba(255, 255, 255, 0.24);
+            border-radius: 26px;
+        }
+
+        .fade-up {
+            animation: fadeUp 0.8s forwards;
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border-radius: 999px;
+            font-weight: 800;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+        }
+
+        .icon-box {
+            width: 62px;
+            height: 62px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            flex-shrink: 0;
+        }
+
+        .step-badge {
+            width: 58px;
+            height: 58px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: white;
+            background: linear-gradient(135deg, #0ea5e9, #f97316);
+            box-shadow: 0 10px 18px rgba(14, 165, 233, 0.28);
+            flex-shrink: 0;
+        }
+
+        .scratch-block {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-family: Arial, sans-serif;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+        }
+
+        .block-eventos {
+            background: #ffbf00;
+            color: #1f2937;
+            border-bottom: 4px solid #d19b00;
+        }
+
+        .block-apariencia {
+            background: #9966ff;
+            color: white;
+            border-bottom: 4px solid #774fd6;
+        }
+
+        .block-control {
+            background: #ffab19;
+            color: white;
+            border-bottom: 4px solid #cc8814;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-radius: 18px;
+            font-weight: 900;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 14px 24px rgba(15, 23, 42, 0.18);
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            opacity: 0.85;
+        }
+    </style>
+    <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto pt-16 md:pt-6 pb-16 space-y-8">
+
+        <header class="glass-panel p-8 md:p-10 fade-up flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="text-7xl md:text-8xl drop-shadow-lg">🎬</div>
+                <div>
+                    <p class="chip mb-4">Clase 3 • Scratch • Videojuegos</p>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Animaciones</h1>
+                    <p class="text-lg md:text-2xl font-bold opacity-90">Vamos a lograr que los personajes se coordinen, hablen y actúen en orden.</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full lg:w-auto">
+                <a href="submenu_videojuegos.html" class="bg-white/90 text-blue-900 font-black px-6 py-4 rounded-2xl hover:bg-white transition shadow-xl">⬅️ Volver al módulo</a>
+                <a href="index6to.html" class="bg-slate-900/70 text-white font-black px-6 py-4 rounded-2xl hover:bg-slate-900 transition shadow-xl">🏠 Inicio de 6to</a>
+            </div>
+        </header>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.1s;">
+            <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6">
+                <div class="soft-card p-6">
+                    <h2 class="text-3xl md:text-4xl font-black mb-4">¿Qué es una animación en Scratch?</h2>
+                    <p class="text-lg md:text-xl font-bold leading-relaxed">
+                        Una animación es una secuencia de acciones que ocurre en un orden: un personaje aparece, habla, cambia de disfraz, se mueve o espera su turno.
+                        En Scratch, eso se puede organizar con bloques de <strong>Eventos</strong>, <strong>Apariencia</strong> y <strong>Control</strong>.
+                    </p>
+                </div>
+                <div class="highlight-card p-6">
+                    <h3 class="text-2xl font-black mb-4">Hoy vamos a trabajar mucho con:</h3>
+                    <div class="space-y-4">
+                        <div class="soft-card p-4">
+                            <div class="scratch-block block-eventos mb-2">enviar mensaje [inicio v]</div>
+                            <p class="font-bold">Sirve para avisarle a otro personaje o al fondo que ahora le toca actuar.</p>
+                        </div>
+                        <div class="soft-card p-4">
+                            <div class="scratch-block block-eventos mb-2">al recibir [inicio v]</div>
+                            <p class="font-bold">Hace que un personaje espere una señal y recién ahí empiece su parte.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <article class="glass-panel p-6">
+                    <div class="icon-box mb-4">📨</div>
+                    <h3 class="text-2xl font-black mb-2">Enviar mensaje</h3>
+                    <p class="font-bold">Es como tocar un timbre para que otra parte del proyecto se active.</p>
+                </article>
+                <article class="glass-panel p-6">
+                    <div class="icon-box mb-4">👂</div>
+                    <h3 class="text-2xl font-black mb-2">Recibir mensaje</h3>
+                    <p class="font-bold">Permite que cada personaje espere su momento y no hagan todo al mismo tiempo.</p>
+                </article>
+                <article class="glass-panel p-6">
+                    <div class="icon-box mb-4">🎭</div>
+                    <h3 class="text-2xl font-black mb-2">Cambiar disfraces</h3>
+                    <p class="font-bold">Ayuda a mostrar movimiento, gestos o distintas partes de una escena.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.3s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Idea clave</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="soft-card p-6">
+                    <h3 class="text-2xl font-black mb-3">Si no usamos mensajes...</h3>
+                    <p class="font-bold text-lg">Todos los objetos empiezan juntos y la animación puede quedar desordenada.</p>
+                </div>
+                <div class="soft-card p-6">
+                    <h3 class="text-2xl font-black mb-3">Si usamos mensajes...</h3>
+                    <p class="font-bold text-lg">Podemos decidir qué pasa primero, qué pasa después y quién actúa en cada momento.</p>
+                </div>
+            </div>
+            <div class="highlight-card p-6 mt-6">
+                <p class="text-xl font-black mb-4">Ejemplo simple:</p>
+                <div class="space-y-3 text-lg font-bold">
+                    <p><span class="scratch-block block-eventos">al presionar bandera verde</span> El fondo empieza.</p>
+                    <p><span class="scratch-block block-eventos">enviar mensaje [escena 1 v]</span> Se avisa que inicia la escena.</p>
+                    <p><span class="scratch-block block-eventos">al recibir [escena 1 v]</span> El personaje habla y se mueve.</p>
+                    <p><span class="scratch-block block-eventos">enviar mensaje [escena 2 v]</span> Arranca la siguiente parte.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.4s;">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                <h2 class="text-3xl md:text-4xl font-black">Bloques que te van a ayudar</h2>
+                <span class="chip">Usalos combinados</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div class="soft-card p-5">
+                    <div class="scratch-block block-eventos mb-3">enviar mensaje [ ... ]</div>
+                    <p class="font-bold">Avisa que empieza otra acción.</p>
+                </div>
+                <div class="soft-card p-5">
+                    <div class="scratch-block block-eventos mb-3">al recibir [ ... ]</div>
+                    <p class="font-bold">Escucha el mensaje y activa el guion.</p>
+                </div>
+                <div class="soft-card p-5">
+                    <div class="scratch-block block-apariencia mb-3">siguiente disfraz</div>
+                    <p class="font-bold">Da sensación de movimiento.</p>
+                </div>
+                <div class="soft-card p-5">
+                    <div class="scratch-block block-control mb-3">esperar [1] segundos</div>
+                    <p class="font-bold">Deja tiempo entre una acción y otra.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="highlight-card p-6 md:p-8 fade-up" style="animation-delay: 0.45s;">
+            <div class="flex items-start gap-4">
+                <div class="icon-box">💡</div>
+                <div>
+                    <h2 class="text-3xl font-black mb-3">Importante</h2>
+                    <p class="text-lg md:text-xl font-bold leading-relaxed">
+                        No hay que copiar el proyecto exactamente igual. La propuesta es <strong>mirar cómo está organizada la animación</strong>,
+                        entender cómo usan <strong>enviar mensaje</strong> y <strong>al recibir mensaje</strong>, y después aplicar esa misma lógica
+                        para inventar una <strong>animación nueva</strong> con otros personajes, otro diálogo o una historia distinta.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.48s;">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+                <article class="glass-panel p-6 text-center">
+                    <div class="text-5xl mb-3">👀</div>
+                    <h3 class="text-2xl font-black mb-2">1. Mirar</h3>
+                    <p class="font-bold">Observá cómo empieza, quién actúa y cuándo aparecen los mensajes.</p>
+                </article>
+                <article class="glass-panel p-6 text-center">
+                    <div class="text-5xl mb-3">🧠</div>
+                    <h3 class="text-2xl font-black mb-2">2. Entender</h3>
+                    <p class="font-bold">Descubrí la lógica: qué bloque manda la señal y qué personaje la recibe.</p>
+                </article>
+                <article class="glass-panel p-6 text-center">
+                    <div class="text-5xl mb-3">🎨</div>
+                    <h3 class="text-2xl font-black mb-2">3. Crear</h3>
+                    <p class="font-bold">Inventá otra animación con esa misma estructura, pero con una idea nueva.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.49s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6 text-center">Así se organiza una animación</h2>
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] gap-4 items-center">
+                <div class="soft-card p-5 text-center">
+                    <div class="text-5xl mb-3">🏁</div>
+                    <div class="scratch-block block-eventos mb-3">bandera verde</div>
+                    <p class="font-bold">Empieza el proyecto.</p>
+                </div>
+                <div class="flow-arrow hidden md:block">➡️</div>
+                <div class="soft-card p-5 text-center">
+                    <div class="text-5xl mb-3">📨</div>
+                    <div class="scratch-block block-eventos mb-3">enviar mensaje</div>
+                    <p class="font-bold">Se manda la señal.</p>
+                </div>
+                <div class="flow-arrow hidden md:block">➡️</div>
+                <div class="soft-card p-5 text-center">
+                    <div class="text-5xl mb-3">🎬</div>
+                    <div class="scratch-block block-eventos mb-3">al recibir mensaje</div>
+                    <p class="font-bold">Otro objeto actúa.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up border-2 border-white/30" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-5xl">🛠️</span>
+                <h2 class="text-3xl md:text-4xl font-black">Guía para hacer la animación</h2>
+            </div>
+            <p class="text-lg md:text-xl font-bold mb-6">
+                Vamos a tomar como referencia esta actividad de Scratch:
+                <a href="https://scratch.mit.edu/projects/1306667333" target="_blank" rel="noopener noreferrer" class="underline decoration-4 underline-offset-4">ver proyecto</a>.
+            </p>
+
+            <div class="space-y-5">
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">1</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Abrí el proyecto y mirá la secuencia</h3>
+                            <p class="font-bold">Prestá atención a qué personaje empieza, cuál responde y en qué momento cambian las acciones. La idea no es copiarlo igual, sino entender su lógica.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">2</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Identificá los personajes y el fondo</h3>
+                            <p class="font-bold">Pensá quién tiene que hablar, quién se mueve y si el escenario cambia durante la animación. Después usá esa misma idea para inventar otra escena diferente.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">3</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Creá el primer mensaje</h3>
+                            <p class="font-bold">En el objeto o fondo que inicia todo, usá <span class="scratch-block block-eventos">al presionar bandera verde</span> y después <span class="scratch-block block-eventos">enviar mensaje [inicio v]</span>.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">4</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Hacé que otro personaje responda</h3>
+                            <p class="font-bold">En ese personaje usá <span class="scratch-block block-eventos">al recibir [inicio v]</span> y agregá acciones como hablar, moverse o cambiar disfraz.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">5</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Sumá tiempos de espera</h3>
+                            <p class="font-bold">Usá <span class="scratch-block block-control">esperar [ ] segundos</span> para que la escena no ocurra demasiado rápido.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">6</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Encadená otra escena</h3>
+                            <p class="font-bold">Cuando termine una acción, mandá otro mensaje, por ejemplo <span class="scratch-block block-eventos">enviar mensaje [segunda parte v]</span>, para que continúe la animación.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">7</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Agregá detalles visuales</h3>
+                            <p class="font-bold">Probá con <span class="scratch-block block-apariencia">siguiente disfraz</span>, cambiar tamaño, mostrar, esconder o decir mensajes para que la animación se vea más viva.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="soft-card p-5 md:p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="step-badge">8</div>
+                        <div>
+                            <h3 class="text-2xl font-black mb-2">Probá y corregí</h3>
+                            <p class="font-bold">Si algo se activa antes de tiempo, revisá los mensajes. Si va muy rápido, agregá esperas. Si no arranca, fijate si el nombre del mensaje coincide.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="glass-panel p-6 md:p-8 fade-up" style="animation-delay: 0.6s;">
+            <h2 class="text-3xl md:text-4xl font-black mb-6">Checklist final</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="soft-card p-5 font-bold text-lg">✅ Hay al menos un bloque <strong>enviar mensaje</strong>.</div>
+                <div class="soft-card p-5 font-bold text-lg">✅ Hay al menos un bloque <strong>al recibir mensaje</strong>.</div>
+                <div class="soft-card p-5 font-bold text-lg">✅ Los personajes actúan en orden.</div>
+                <div class="soft-card p-5 font-bold text-lg">✅ La animación se entiende y tiene inicio.</div>
+            </div>
+        </section>
+
+        <section class="highlight-card p-8 md:p-10 fade-up text-center" style="animation-delay: 0.7s;">
+            <h2 class="text-3xl md:text-5xl font-black mb-4">Actividad</h2>
+            <p class="text-xl md:text-2xl font-bold mb-8">Mirá el proyecto, descubrí cómo usa los mensajes para ordenar la escena y después creá una animación nueva usando esa misma lógica, pero con tus propios personajes o historia.</p>
+            <a class="cta-btn bg-white text-blue-900 text-xl shadow-xl" href="https://scratch.mit.edu/projects/1306667333" target="_blank" rel="noopener noreferrer">
+                🚀 Abrir actividad en Scratch
+            </a>
+        </section>
+
+    </div>
+
+    <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repaso Scratch - 6to Grado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&display=swap');
+        
+        :root {
+            --fondo-gradiente: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
+            --tarjeta-bg: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.4);
+            --texto-principal: #0f172a;
+            --texto-secundario: #1e293b;
+        }
+
+        .dark-mode {
+            --fondo-gradiente: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #831843 100%);
+            --tarjeta-bg: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --texto-principal: #f8fafc;
+            --texto-secundario: #cbd5e1;
+        }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--fondo-gradiente);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--texto-principal);
+            transition: all 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: var(--tarjeta-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Colores oficiales de Scratch para los íconos del repaso */
+        .sc-movimiento { background-color: #4C97FF; color: white; }
+        .sc-apariencia { background-color: #9966FF; color: white; }
+        .sc-sonido { background-color: #CF63CF; color: white; }
+        .sc-eventos { background-color: #FFBF00; color: white; }
+        .sc-control { background-color: #FFAB19; color: white; }
+        .sc-sensores { background-color: #5CB1D6; color: white; }
+
+        /* ESTILOS PARA DIBUJAR LOS BLOQUES DEL TUTORIAL */
+        .bq-forma {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 2px;
+            width: fit-content;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif; 
+        }
+        .bq-eventos { background-color: #FFBF00; color: black; border-bottom: 3px solid #CC9900; text-shadow: none; }
+        .bq-movimiento { background-color: #4C97FF; color: white; border-bottom: 3px solid #3373CC; }
+        .bq-control { background-color: #FFAB19; color: white; border-bottom: 3px solid #CC8814; }
+        .bq-sensores { background-color: #5CB1D6; color: white; border-bottom: 3px solid #4282A6; }
+        .bq-variables { background-color: #FF8C1A; color: white; border-bottom: 3px solid #CC7014; }
+        .bq-sonido { background-color: #CF63CF; color: white; border-bottom: 3px solid #A64FA6; }
+        .bq-apariencia { background-color: #9966FF; color: white; border-bottom: 3px solid #774FD6; }
+
+        .btn-juego {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .btn-juego:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-juego:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .match-btn { border: 4px solid transparent; transition: all 0.3s ease; }
+        .match-selected { border-color: #fde047; transform: scale(1.05); }
+        .match-correct { background-color: #4ade80 !important; border-color: #166534 !important; color: white; pointer-events: none; }
+        .match-wrong { animation: shake 0.5s; border-color: #ef4444; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .fade-up { animation: fadeUp 0.8s forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+        <link rel="stylesheet" href="../shared/ui-theme.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <button class="fixed top-5 right-5 z-50 bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 hover:bg-white/40 transition text-2xl shadow-lg" onclick="toggleTheme()" id="btnT">☀️</button>
+
+    <div class="max-w-6xl mx-auto pt-12 md:pt-4 space-y-12 pb-20">
+        
+        <header class="glass-panel p-8 md:p-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8 fade-up">
+            <div class="flex items-center gap-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">🐱</span>
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-black mb-3 text-white drop-shadow-md">Scratch</h1>
+                    <h2 class="text-2xl md:text-3xl font-bold opacity-90">Repasamos programando</h2>
+                    <p class="text-lg md:text-xl font-bold mt-2 opacity-80">Recordamos los bloques y creamos un juego.</p>
+                </div>
+            </div>
+            <a href="submenu_videojuegos.html" class="bg-white/90 text-blue-900 font-black px-8 py-4 rounded-2xl hover:bg-white transition shadow-xl flex items-center gap-3 text-xl shrink-0">
+                ⬅️ Volver
+            </a>
+        </header>
+
+        <section class="glass-panel p-8 md:p-10 fade-up" style="animation-delay: 0.1s;">
+            <h2 class="text-3xl font-black mb-6 flex items-center gap-3"><span class="text-4xl">🧩</span> ¿Qué es Scratch?</h2>
+            <p class="text-xl md:text-2xl font-bold mb-8 leading-relaxed">
+                Es un lenguaje de programación visual donde usamos <strong>bloques de colores</strong> para darle instrucciones a los personajes. ¡Funcionan como piezas de LEGO que se encastran!
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-black/10 border border-white/20 p-6 rounded-2xl text-center">
+                    <span class="text-6xl block mb-4">🎮</span>
+                    <h3 class="text-2xl font-black">Juegos</h3>
+                </div>
+                <div class="bg-black/10 border border-white/20 p-6 rounded-2xl text-center">
+                    <span class="text-6xl block mb-4">🎬</span>
+                    <h3 class="text-2xl font-black">Animaciones</h3>
+                </div>
+                <div class="bg-black/10 border border-white/20 p-6 rounded-2xl text-center">
+                    <span class="text-6xl block mb-4">🎵</span>
+                    <h3 class="text-2xl font-black">Historias</h3>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl font-black mb-6 text-center text-white drop-shadow-md">Tipos de bloques de Scratch</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-panel p-6 border-l-8 border-[#4C97FF]">
+                    <div class="sc-movimiento px-4 py-2 rounded-lg font-black text-xl mb-4 inline-block">Movimiento</div>
+                    <p class="font-bold text-lg mb-2">Para mover personajes por la pantalla.</p>
+                    <p class="opacity-80 italic">Ej: Mover 10 pasos.</p>
+                </div>
+                <div class="glass-panel p-6 border-l-8 border-[#9966FF]">
+                    <div class="sc-apariencia px-4 py-2 rounded-lg font-black text-xl mb-4 inline-block">Apariencia</div>
+                    <p class="font-bold text-lg mb-2">Cambiar disfraces o decir mensajes.</p>
+                    <p class="opacity-80 italic">Ej: Decir "¡Hola!".</p>
+                </div>
+                <div class="glass-panel p-6 border-l-8 border-[#CF63CF]">
+                    <div class="sc-sonido px-4 py-2 rounded-lg font-black text-xl mb-4 inline-block">Sonido</div>
+                    <p class="font-bold text-lg mb-2">Reproducir música y efectos.</p>
+                    <p class="opacity-80 italic">Ej: Tocar sonido Miau.</p>
+                </div>
+                <div class="glass-panel p-6 border-l-8 border-[#FFBF00]">
+                    <div class="sc-eventos px-4 py-2 rounded-lg font-black text-xl mb-4 inline-block">Eventos</div>
+                    <p class="font-bold text-lg mb-2">Para iniciar los programas.</p>
+                    <p class="opacity-80 italic">Ej: Al presionar bandera verde.</p>
+                </div>
+                <div class="glass-panel p-6 border-l-8 border-[#FFAB19]">
+                    <div class="sc-control px-4 py-2 rounded-lg font-black text-xl mb-4 inline-block">Control</div>
+                    <p class="font-bold text-lg mb-2">Repeticiones, pausas y condiciones.</p>
+                    <p class="opacity-80 italic">Ej: Repetir 10 veces.</p>
+                </div>
+                <div class="glass-panel p-6 border-l-8 border-[#5CB1D6]">
+                    <div class="sc-sensores px-4 py-2 rounded-lg font-black text-xl mb-4 inline-block">Sensores</div>
+                    <p class="font-bold text-lg mb-2">Detectar teclas, mouse o choques.</p>
+                    <p class="opacity-80 italic">Ej: ¿Tocando el color rojo?</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-white/30" style="animation-delay: 0.3s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🎯</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 1: Reconoce el bloque</h2>
+            </div>
+            
+            <div class="bg-black/20 p-8 rounded-3xl text-center mb-8">
+                <p class="text-2xl font-bold mb-4 opacity-80">¿De qué tipo es este bloque?</p>
+                <div id="juego1-bloque" class="text-4xl md:text-5xl font-black bg-white text-blue-900 py-6 px-10 rounded-2xl inline-block shadow-xl">
+                    "Mover 10 pasos"
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="juego1-opciones">
+                </div>
+            <div id="juego1-feedback" class="h-16 mt-6 flex justify-center items-center text-3xl font-black"></div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-white/30" style="animation-delay: 0.4s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🔗</span>
+                <h2 class="text-3xl md:text-4xl font-black">Juego 2: Unir las parejas</h2>
+            </div>
+            <p class="text-xl font-bold mb-8 text-center">Toca una acción de la izquierda y luego el bloque correcto a la derecha.</p>
+            
+            <div class="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+                <div class="flex-1 space-y-4" id="match-left">
+                    <button class="w-full text-left p-4 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="mov" onclick="selectMatch(this, 'left')">🏃 Mover personaje</button>
+                    <button class="w-full text-left p-4 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="apa" onclick="selectMatch(this, 'left')">💬 Hablar</button>
+                    <button class="w-full text-left p-4 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="con" onclick="selectMatch(this, 'left')">🔁 Repetir acciones</button>
+                    <button class="w-full text-left p-4 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="eve" onclick="selectMatch(this, 'left')">🏁 Iniciar programa</button>
+                    <button class="w-full text-left p-4 bg-black/20 rounded-xl text-xl font-bold match-btn" data-match="son" onclick="selectMatch(this, 'left')">🔊 Reproducir sonido</button>
+                </div>
+                
+                <div class="flex-1 space-y-4" id="match-right">
+                    <button class="w-full text-right p-4 sc-eventos rounded-xl text-xl font-black match-btn" data-match="eve" onclick="selectMatch(this, 'right')">Bloque Eventos</button>
+                    <button class="w-full text-right p-4 sc-movimiento rounded-xl text-xl font-black match-btn" data-match="mov" onclick="selectMatch(this, 'right')">Bloque Movimiento</button>
+                    <button class="w-full text-right p-4 sc-sonido rounded-xl text-xl font-black match-btn" data-match="son" onclick="selectMatch(this, 'right')">Bloque Sonido</button>
+                    <button class="w-full text-right p-4 sc-control rounded-xl text-xl font-black match-btn" data-match="con" onclick="selectMatch(this, 'right')">Bloque Control</button>
+                    <button class="w-full text-right p-4 sc-apariencia rounded-xl text-xl font-black match-btn" data-match="apa" onclick="selectMatch(this, 'right')">Bloque Apariencia</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-l-8 border-pink-500" style="animation-delay: 0.5s;">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-5xl">🧠</span>
+                <h2 class="text-3xl md:text-4xl font-black">¿Qué bloque usarías?</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <p class="text-xl font-bold mb-4">"Quiero que el personaje salte cuando presiono la barra espaciadora"</p>
+                    <div class="space-y-3">
+                        <button class="w-full p-3 bg-black/30 rounded-lg hover:bg-black/50 transition font-bold text-left" onclick="checkMental(this, true)">Eventos + Movimiento</button>
+                        <button class="w-full p-3 bg-black/30 rounded-lg hover:bg-black/50 transition font-bold text-left" onclick="checkMental(this, false)">Solo Sonido</button>
+                        <button class="w-full p-3 bg-black/30 rounded-lg hover:bg-black/50 transition font-bold text-left" onclick="checkMental(this, false)">Apariencia + Control</button>
+                    </div>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/20">
+                    <p class="text-xl font-bold mb-4">"Quiero que el personaje diga '¡Hola!' al tocar una pared"</p>
+                    <div class="space-y-3">
+                        <button class="w-full p-3 bg-black/30 rounded-lg hover:bg-black/50 transition font-bold text-left" onclick="checkMental(this, false)">Movimiento + Eventos</button>
+                        <button class="w-full p-3 bg-black/30 rounded-lg hover:bg-black/50 transition font-bold text-left" onclick="checkMental(this, true)">Sensores + Apariencia</button>
+                        <button class="w-full p-3 bg-black/30 rounded-lg hover:bg-black/50 transition font-bold text-left" onclick="checkMental(this, false)">Solo Control</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-t-8 border-yellow-400 relative overflow-hidden" style="animation-delay: 0.6s;">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <span class="text-5xl">🏆</span>
+                    <h2 class="text-3xl md:text-4xl font-black">Quiz Final</h2>
+                </div>
+                <div class="text-2xl font-black bg-white/20 px-4 py-2 rounded-xl border border-white/30"><span id="quiz-count">1</span>/5</div>
+            </div>
+
+            <div class="w-full bg-black/30 rounded-full h-4 mb-8">
+                <div id="quiz-progress" class="bg-yellow-400 h-4 rounded-full transition-all duration-500" style="width: 20%"></div>
+            </div>
+
+            <div id="quiz-container" class="min-h-[250px]">
+                <p id="quiz-question" class="text-2xl md:text-3xl font-bold mb-8 text-center"></p>
+                <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div id="quiz-result" class="hidden text-center py-10">
+                <h3 class="text-4xl font-black mb-4">¡Quiz Terminado!</h3>
+                <div id="quiz-medal" class="text-8xl mb-6"></div>
+                <p id="quiz-score-text" class="text-3xl font-bold mb-8"></p>
+                <button onclick="reiniciarQuiz()" class="bg-blue-600 text-white font-black px-8 py-4 rounded-xl hover:bg-blue-500 transition shadow-lg text-xl">Reintentar</button>
+            </div>
+        </section>
+
+        <section class="fade-up" style="animation-delay: 0.7s;">
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-10 text-center md:text-left">
+                <span class="text-6xl">🌟</span>
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-black text-white drop-shadow-md">Tutorial: Atrapa la estrella</h2>
+                    <p class="text-xl font-bold opacity-90 mt-2">Armá este juego copiando los bloques exactos.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 flex flex-col relative overflow-hidden shadow-xl border-t-4 border-[#FFBF00]">
+                    <div class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl font-black text-xl">Paso 1</div>
+                    <h3 class="font-black text-2xl mb-2 mt-4 text-white drop-shadow">Inicio y Variables</h3>
+                    <p class="font-bold text-base opacity-90 mb-6">En tu <strong>Personaje Principal</strong>:</p>
+                    
+                    <div class="flex flex-col items-start bg-black/10 p-4 rounded-xl">
+                        <div class="bq-forma bq-eventos">🏁 al hacer clic en bandera verde</div>
+                        <div class="bq-forma bq-variables ml-4">dar a [puntos v] el valor (0)</div>
+                        <div class="bq-forma bq-movimiento ml-4">ir a x: (0) y: (0)</div>
+                    </div>
+                </div>
+                
+                <div class="glass-panel p-6 flex flex-col relative overflow-hidden shadow-xl border-t-4 border-[#FFAB19]">
+                    <div class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl font-black text-xl">Paso 2</div>
+                    <h3 class="font-black text-2xl mb-2 mt-4 text-white drop-shadow">Mover Izquierda y Derecha</h3>
+                    <p class="font-bold text-base opacity-90 mb-6">En el mismo <strong>Personaje Principal</strong>:</p>
+                    
+                    <div class="flex flex-col items-start bg-black/10 p-4 rounded-xl">
+                        <div class="bq-forma bq-control">por siempre</div>
+                        <div class="bq-forma bq-control ml-4">si &lt;tecla [flecha derecha v] presionada?&gt; entonces</div>
+                        <div class="bq-forma bq-movimiento ml-8">sumar a x: (10)</div>
+                        <div class="bq-forma bq-control ml-4">si &lt;tecla [flecha izquierda v] presionada?&gt; entonces</div>
+                        <div class="bq-forma bq-movimiento ml-8">sumar a x: (-10)</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 flex flex-col relative overflow-hidden shadow-xl border-t-4 border-[#4C97FF]">
+                    <div class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl font-black text-xl">Paso 3</div>
+                    <h3 class="font-black text-2xl mb-2 mt-4 text-white drop-shadow">Mover Arriba y Abajo</h3>
+                    <p class="font-bold text-base opacity-90 mb-6">A continuación de los bloques anteriores:</p>
+                    
+                    <div class="flex flex-col items-start bg-black/10 p-4 rounded-xl">
+                        <div class="bq-forma bq-control ml-4">si &lt;tecla [flecha arriba v] presionada?&gt; entonces</div>
+                        <div class="bq-forma bq-movimiento ml-8">sumar a y: (10)</div>
+                        <div class="bq-forma bq-control ml-4">si &lt;tecla [flecha abajo v] presionada?&gt; entonces</div>
+                        <div class="bq-forma bq-movimiento ml-8">sumar a y: (-10)</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 flex flex-col relative overflow-hidden shadow-xl border-t-4 border-[#5CB1D6]">
+                    <div class="absolute top-0 right-0 bg-white/20 px-4 py-1 rounded-bl-2xl font-black text-xl">Paso 4</div>
+                    <h3 class="font-black text-2xl mb-2 mt-4 text-white drop-shadow">Programar la Estrella</h3>
+                    <p class="font-bold text-base opacity-90 mb-6">Hacé clic en el <strong>Objeto Estrella</strong> y agregá:</p>
+                    
+                    <div class="flex flex-col items-start bg-black/10 p-4 rounded-xl">
+                        <div class="bq-forma bq-eventos">🏁 al hacer clic en bandera verde</div>
+                        <div class="bq-forma bq-control ml-4">por siempre</div>
+                        <div class="bq-forma bq-control ml-8">si &lt;tocando [Personaje v]?&gt; entonces</div>
+                        <div class="bq-forma bq-sonido ml-12">tocar sonido [Magic Spell v]</div>
+                        <div class="bq-forma bq-movimiento ml-12">ir a posición aleatoria</div>
+                        <div class="bq-forma bq-variables ml-12">sumar a [puntos v] (1)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up border-4 border-yellow-300 bg-yellow-400/10 mt-12" style="animation-delay: 0.8s;">
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-10 text-center md:text-left">
+                <span class="text-6xl">🚀</span>
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-black text-yellow-300 drop-shadow-md">¿Terminaste rápido?</h2>
+                    <p class="text-xl font-bold opacity-90 mt-2">Elegí una de estas Misiones Extra para mejorar tu juego.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-black/20 p-6 rounded-2xl border-2 border-dashed border-blue-400 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-black text-xl mb-3 text-blue-300">1. ¡No camines para atrás!</h3>
+                        <p class="text-sm font-bold opacity-90 mb-4">Usá estos bloques en el "Si toca flecha" para que el personaje mire hacia donde camina.</p>
+                    </div>
+                    <div class="flex flex-col items-start bg-black/30 p-3 rounded-xl text-xs sm:text-sm">
+                        <div class="bq-forma bq-movimiento mb-1">fijar estilo de rotación [izquierda-derecha v]</div>
+                        <div class="bq-forma bq-movimiento mb-1">apuntar en dirección (90) <span class="opacity-70 text-black ml-1 text-[10px]">(Derecha)</span></div>
+                        <div class="bq-forma bq-movimiento">apuntar en dirección (-90) <span class="opacity-70 text-black ml-1 text-[10px]">(Izquierda)</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 p-6 rounded-2xl border-2 border-dashed border-purple-400 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-black text-xl mb-3 text-purple-300">2. ¡Mové los pies!</h3>
+                        <p class="text-sm font-bold opacity-90 mb-4">Para que tu personaje mueva las piernas al caminar, agregale este bloque de Apariencia adentro de los movimientos.</p>
+                    </div>
+                    <div class="flex flex-col items-start bg-black/30 p-3 rounded-xl text-xs sm:text-sm">
+                        <div class="bq-forma bq-apariencia">siguiente disfraz</div>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 p-6 rounded-2xl border-2 border-dashed border-red-400 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-black text-xl mb-3 text-red-300">3. El Enemigo</h3>
+                        <p class="text-sm font-bold opacity-90 mb-4">Agregá un personaje malo (ej: un fantasma). Si te toca, te resta 1 punto y volvés al inicio.</p>
+                    </div>
+                    <div class="flex flex-col items-start bg-black/30 p-3 rounded-xl text-xs sm:text-sm">
+                        <div class="bq-forma bq-control mb-1">si &lt;tocando [Fantasma v]?&gt; entonces</div>
+                        <div class="bq-forma bq-variables ml-4 mb-1">sumar a [puntos v] (-1)</div>
+                        <div class="bq-forma bq-movimiento ml-4">ir a x: (0) y: (0)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-8 md:p-12 fade-up mt-12" style="animation-delay: 0.9s;">
+            <h2 class="text-3xl font-black mb-6 text-pink-300">💭 Reflexión final</h2>
+            <p class="text-xl mb-6 font-bold">¿Qué bloque te pareció más divertido usar hoy?</p>
+            
+            <div class="w-full overflow-hidden rounded-2xl shadow-lg mt-4 bg-white">
+                <iframe src="https://forms.gle/MwSsmBQ1Z3qzVeYg7" width="100%" height="650" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- 1. MODO OSCURO ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('btnT').innerHTML = isDark ? '🌙' : '☀️';
+            localStorage.setItem('tema6to', isDark ? 'oscuro' : 'claro');
+        }
+        if (localStorage.getItem('tema6to') === 'oscuro') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('btnT').innerHTML = '🌙';
+        }
+
+        // --- 2. JUEGO 1 (RECONOCE EL BLOQUE) ---
+        const bloquesJuego1 = [
+            { texto: '"Mover 10 pasos"', tipo: 'Movimiento' },
+            { texto: '"Decir ¡Hola!"', tipo: 'Apariencia' },
+            { texto: '"Al presionar bandera verde"', tipo: 'Eventos' },
+            { texto: '"Tocar sonido Miau"', tipo: 'Sonido' }
+        ];
+        const tiposBloques = ['Movimiento', 'Apariencia', 'Sonido', 'Eventos', 'Control', 'Sensores'];
+        let indiceJuego1 = 0;
+
+        function cargarJuego1() {
+            if(indiceJuego1 >= bloquesJuego1.length) {
+                document.getElementById('juego1-bloque').innerHTML = "¡Excelente! Completaste esta parte.";
+                document.getElementById('juego1-opciones').innerHTML = "";
+                return;
+            }
+            
+            const bloqueActual = bloquesJuego1[indiceJuego1];
+            document.getElementById('juego1-bloque').innerHTML = bloqueActual.texto;
+            
+            const contenedorOpciones = document.getElementById('juego1-opciones');
+            contenedorOpciones.innerHTML = '';
+            
+            tiposBloques.forEach(tipo => {
+                const btn = document.createElement('button');
+                btn.className = `p-4 rounded-xl text-lg font-black shadow-lg btn-juego bg-white/10 border-2 border-white/30 hover:bg-white/30`;
+                btn.innerText = tipo;
+                btn.onclick = () => verificarJuego1(tipo, bloqueActual.tipo);
+                contenedorOpciones.appendChild(btn);
+            });
+        }
+
+        function verificarJuego1(elegido, correcto) {
+            const feedback = document.getElementById('juego1-feedback');
+            if(elegido === correcto) {
+                feedback.innerHTML = '<span class="text-green-400">✔ ¡Correcto!</span>';
+                indiceJuego1++;
+                setTimeout(() => {
+                    feedback.innerHTML = '';
+                    cargarJuego1();
+                }, 1000);
+            } else {
+                feedback.innerHTML = '<span class="text-red-400">❌ Intentar de nuevo</span>';
+                setTimeout(() => feedback.innerHTML = '', 1000);
+            }
+        }
+        cargarJuego1();
+
+        // --- 3. JUEGO 2 (MATCH) ---
+        let selectedLeft = null;
+        let selectedRight = null;
+
+        function selectMatch(btn, side) {
+            document.querySelectorAll(`#match-${side} .match-btn`).forEach(b => {
+                if(!b.classList.contains('match-correct')) b.classList.remove('match-selected');
+            });
+
+            btn.classList.add('match-selected');
+
+            if(side === 'left') selectedLeft = btn;
+            if(side === 'right') selectedRight = btn;
+
+            if(selectedLeft && selectedRight) {
+                if(selectedLeft.dataset.match === selectedRight.dataset.match) {
+                    selectedLeft.classList.replace('match-selected', 'match-correct');
+                    selectedRight.classList.replace('match-selected', 'match-correct');
+                    selectedLeft = null; selectedRight = null;
+                } else {
+                    selectedLeft.classList.add('match-wrong');
+                    selectedRight.classList.add('match-wrong');
+                    setTimeout(() => {
+                        selectedLeft.classList.remove('match-wrong', 'match-selected');
+                        selectedRight.classList.remove('match-wrong', 'match-selected');
+                        selectedLeft = null; selectedRight = null;
+                    }, 500);
+                }
+            }
+        }
+
+        // --- 4. DESAFÍO MENTAL ---
+        function checkMental(btn, isCorrect) {
+            if(isCorrect) {
+                btn.classList.remove('bg-black/30', 'hover:bg-black/50');
+                btn.classList.add('bg-green-500', 'text-white');
+                btn.innerHTML += " ✅";
+            } else {
+                btn.classList.remove('bg-black/30', 'hover:bg-black/50');
+                btn.classList.add('bg-red-500', 'text-white');
+                setTimeout(() => {
+                    btn.classList.remove('bg-red-500', 'text-white');
+                    btn.classList.add('bg-black/30', 'hover:bg-black/50');
+                }, 800);
+            }
+        }
+
+        // --- 5. QUIZ FINAL ---
+        const preguntasQuiz = [
+            { q: "¿Qué bloque inicia un programa?", options: ["Movimiento", "Eventos", "Sonido"], correct: 1 },
+            { q: "¿Qué bloque sirve para mover personajes?", options: ["Apariencia", "Control", "Movimiento"], correct: 2 },
+            { q: "¿Qué bloque repite acciones?", options: ["Control", "Sensores", "Eventos"], correct: 0 },
+            { q: "¿Qué bloque permite hablar al personaje?", options: ["Sonido", "Apariencia", "Sensores"], correct: 1 },
+            { q: "¿Scratch usa bloques o código escrito?", options: ["Bloques", "Código escrito", "Ambos"], correct: 0 }
+        ];
+        
+        let quizActual = 0;
+        let quizPuntaje = 0;
+
+        function cargarQuiz() {
+            if(quizActual >= preguntasQuiz.length) {
+                mostrarResultadosQuiz();
+                return;
+            }
+
+            const pregunta = preguntasQuiz[quizActual];
+            document.getElementById('quiz-question').innerText = pregunta.q;
+            document.getElementById('quiz-count').innerText = quizActual + 1;
+            document.getElementById('quiz-progress').style.width = ((quizActual) / preguntasQuiz.length) * 100 + "%";
+
+            const contenedorOpciones = document.getElementById('quiz-options');
+            contenedorOpciones.innerHTML = '';
+
+            pregunta.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-5 bg-white/10 hover:bg-white/20 border-2 border-white/20 rounded-xl font-bold text-xl transition';
+                btn.innerText = opt;
+                btn.onclick = () => responderQuiz(index, pregunta.correct);
+                contenedorOpciones.appendChild(btn);
+            });
+        }
+
+        function responderQuiz(elegido, correcto) {
+            if(elegido === correcto) quizPuntaje++;
+            quizActual++;
+            cargarQuiz();
+        }
+
+        function mostrarResultadosQuiz() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-progress').style.width = "100%";
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const scoreText = document.getElementById('quiz-score-text');
+            const medalBox = document.getElementById('quiz-medal');
+
+            scoreText.innerText = `Lograste ${quizPuntaje} de ${preguntasQuiz.length} correctas.`;
+
+            if(quizPuntaje === 5) medalBox.innerHTML = '🥇';
+            else if(quizPuntaje >= 3) medalBox.innerHTML = '🥈';
+            else medalBox.innerHTML = '🥉';
+        }
+
+        function reiniciarQuiz() {
+            quizActual = 0;
+            quizPuntaje = 0;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            cargarQuiz();
+        }
+
+        cargarQuiz();
+
+    </script>
+        <script src="../shared/ui-theme.js" defer></script>
+</body>
+</html>
+
+
+
